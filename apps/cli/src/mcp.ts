@@ -69,8 +69,8 @@ const McpCreateProjectInputSchema = CreateInputSchema.safeExtend({
 type SchemaToolInput = {
   name?: SchemaName;
 };
-type McpCreateProjectInput = z.infer<typeof McpCreateProjectInputSchema>;
-type McpAddInput = z.infer<typeof AddInputSchema>;
+type McpCreateProjectInput = z.input<typeof McpCreateProjectInputSchema>;
+type McpAddInput = z.input<typeof AddInputSchema>;
 
 function formatToolSuccess<T>(data: T) {
   return {
@@ -154,7 +154,7 @@ function getStackGuidance() {
     },
     fieldNotes: {
       frontend:
-        "frontend is for app surfaces only. Choose explicit app targets such as next, react-router, tanstack-router, native-bare, native-uniwind, or native-unistyles.",
+        "frontend is for app surfaces only. Choose TanStack Router, TanStack Start, an Expo setup, or none.",
       addons: "addons must be an explicit array. Use [] when no addons are requested.",
       examples: "examples must be an explicit array. Use [] when no examples are requested.",
       dbSetup:

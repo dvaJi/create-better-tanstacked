@@ -8,20 +8,7 @@ export async function processBackendTemplates(
   templates: TemplateData,
   config: ProjectConfig,
 ): Promise<void> {
-  if (config.backend === "none") return;
-
-  if (config.backend === "convex") {
-    processTemplatesFromPrefix(
-      vfs,
-      templates,
-      "backend/convex/packages/backend",
-      "packages/backend",
-      config,
-    );
-    return;
-  }
-
-  if (config.backend === "self") return;
+  if (config.backend === "none" || config.backend === "self") return;
 
   processTemplatesFromPrefix(vfs, templates, "backend/server/base", "apps/server", config);
   processTemplatesFromPrefix(

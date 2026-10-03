@@ -51,7 +51,7 @@ Let your AI assistant build the stack for you. Install the Better-T-Stack plugin
 /plugin install better-t-stack@better-t-stack
 ```
 
-Then ask: _"create a fullstack app with Next, Hono, Postgres and Better Auth"_. Also works in Codex, opencode, and any MCP-capable agent — see [Use it inside your AI agent](/docs/cli/agent-workflows#use-it-inside-your-ai-agent).
+Then ask: _"create a fullstack app with TanStack Start, Postgres and Better Auth"_. Also works in Codex, opencode, and any MCP-capable agent — see [Use it inside your AI agent](/docs/cli/agent-workflows#use-it-inside-your-ai-agent).
 
 ## Common Setups
 
@@ -67,13 +67,15 @@ npm create better-t-stack@latest my-webapp \
   --addons turborepo
 ```
 
-### Convex + React + Clerk
+### TanStack Start Fullstack
 
 ```npm
 npm create better-t-stack@latest my-api \
-  --frontend tanstack-router \
-  --backend convex \
-  --auth clerk
+  --frontend tanstack-start \
+  --backend self \
+  --database postgres \
+  --orm drizzle \
+  --auth better-auth
 ```
 
 ### Mobile App (Expo)
@@ -99,15 +101,15 @@ npm create better-t-stack@latest my-workspace \
 
 See the full list in the [CLI Reference](/docs/cli). Key flags:
 
-- `--frontend`: tanstack-router, react-router, tanstack-start, next, nuxt, svelte, solid, astro, native-bare, native-uniwind, native-unistyles, none
-- `--backend`: hono, express, fastify, elysia, convex, self, none
+- `--frontend`: tanstack-router, tanstack-start, native-bare, native-uniwind, native-unistyles, none
+- `--backend`: hono, elysia, self, none
 - `--runtime`: bun, node, workers, none
-- `--database`: sqlite, postgres, mysql, mongodb, none
-- `--orm`: drizzle, prisma, mongoose, none
+- `--database`: sqlite, postgres, none
+- `--orm`: drizzle, none
 - `--api`: trpc, orpc, none
 - `--auth`: better-auth, clerk, none
 - `--payments`: polar, none
-- `--addons`: turborepo, nx, vite-plus, pwa, tauri, electrobun, biome, lefthook, husky, starlight, fumadocs, ultracite, oxlint, mcp, opentui, wxt, skills, evlog, axiom, none
+- `--addons`: turborepo, vite-plus, pwa, tauri, electrobun, lefthook, fumadocs, oxlint, mcp, opentui, wxt, skills, evlog, axiom, none
 - `--examples`: todo, ai, none
 
 ## Next Steps
@@ -120,7 +122,7 @@ See the full list in the [CLI Reference](/docs/cli). Key flags:
     Scaffold from Claude Code, Codex, opencode, and other MCP agents
   </Card>
   <Card href="/docs/project-structure" title="Project Structure">
-    See how web/server/native and Convex layouts are generated
+    See how TanStack web, server, and Expo layouts are generated
   </Card>
   <Card href="/docs/cli/compatibility" title="Compatibility">
     Valid combinations for backend, runtime, database, ORM, API

@@ -215,7 +215,7 @@ export function stackSnapshot(stack: StackState): StackSnapshot {
   const isDefault = Object.keys(DEFAULT_STACK).every(
     (key) =>
       key === "projectName" ||
-      isStackDefault(stack, key as keyof StackState, stack[key as keyof StackState]),
+      isStackDefault(key as keyof StackState, stack[key as keyof StackState]),
   );
 
   return {

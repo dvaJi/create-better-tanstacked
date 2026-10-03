@@ -8,32 +8,22 @@ export async function processExampleTemplates(
   templates: TemplateData,
   config: ProjectConfig,
 ): Promise<void> {
-  if (!config.examples || config.examples.length === 0 || config.examples[0] === "none") return;
+  if (!config.examples.length || config.examples[0] === "none") return;
 
-  const hasReactWeb = config.frontend.some((f) =>
-    ["tanstack-router", "react-router", "tanstack-start", "next"].includes(f),
+  const webFrontend = config.frontend.find(
+    (frontend) => frontend === "tanstack-router" || frontend === "tanstack-start",
   );
-  const hasNuxtWeb = config.frontend.includes("nuxt");
-  const hasSvelteWeb = config.frontend.includes("svelte");
-  const hasSolidWeb = config.frontend.includes("solid");
-  const hasAstroWeb = config.frontend.includes("astro");
-  const hasNativeBare = config.frontend.includes("native-bare");
-  const hasUniwind = config.frontend.includes("native-uniwind");
-  const hasUnistyles = config.frontend.includes("native-unistyles");
-  const hasNative = hasNativeBare || hasUniwind || hasUnistyles;
+  const nativeFrontend = config.frontend.find(
+    (frontend) =>
+      frontend === "native-bare" ||
+      frontend === "native-uniwind" ||
+      frontend === "native-unistyles",
+  );
 
   for (const example of config.examples) {
     if (example === "none") continue;
 
-    if (config.backend === "convex") {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `examples/${example}/convex/packages/backend`,
-        "packages/backend",
-        config,
-      );
-    } else if (config.backend !== "none" && config.api !== "none") {
+    if (config.backend !== "none" && config.api !== "none") {
       processTemplatesFromPrefix(
         vfs,
         templates,
@@ -53,99 +43,34 @@ export async function processExampleTemplates(
       }
     }
 
-    if (hasReactWeb) {
-      const reactFramework = config.frontend.find((f) =>
-        ["next", "react-router", "tanstack-router", "tanstack-start"].includes(f),
+    if (webFrontend) {
+      processTemplatesFromPrefix(
+        vfs,
+        templates,
+        `examples/${example}/web/react/${webFrontend}`,
+        "apps/web",
+        config,
       );
-      if (reactFramework) {
-        processTemplatesFromPrefix(
-          vfs,
-          templates,
-          `examples/${example}/web/react/${reactFramework}`,
-          "apps/web",
-          config,
-        );
 
-        if (
-          config.backend === "self" &&
-          (reactFramework === "next" || reactFramework === "tanstack-start")
-        ) {
-          processTemplatesFromPrefix(
-            vfs,
-            templates,
-            `examples/${example}/fullstack/${reactFramework}`,
-            "apps/web",
-            config,
-          );
-        }
-      }
-    } else if (hasNuxtWeb) {
-      if (config.backend === "self") {
+      if (config.backend === "self" && webFrontend === "tanstack-start") {
         processTemplatesFromPrefix(
           vfs,
           templates,
-          `examples/${example}/fullstack/nuxt`,
+          `examples/${example}/fullstack/tanstack-start`,
           "apps/web",
           config,
         );
       }
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `examples/${example}/web/nuxt`,
-        "apps/web",
-        config,
-      );
-    } else if (hasSvelteWeb) {
-      if (config.backend === "self") {
-        processTemplatesFromPrefix(
-          vfs,
-          templates,
-          `examples/${example}/fullstack/svelte`,
-          "apps/web",
-          config,
-        );
-      }
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `examples/${example}/web/svelte`,
-        "apps/web",
-        config,
-      );
-    } else if (hasSolidWeb) {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `examples/${example}/web/solid`,
-        "apps/web",
-        config,
-      );
-    } else if (hasAstroWeb) {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `examples/${example}/web/astro`,
-        "apps/web",
-        config,
-      );
     }
 
-    if (hasNative) {
-      let nativeFramework = "";
-      if (hasNativeBare) nativeFramework = "bare";
-      else if (hasUniwind) nativeFramework = "uniwind";
-      else if (hasUnistyles) nativeFramework = "unistyles";
-
-      if (nativeFramework) {
-        processTemplatesFromPrefix(
-          vfs,
-          templates,
-          `examples/${example}/native/${nativeFramework}`,
-          "apps/native",
-          config,
-        );
-      }
+    if (nativeFrontend) {
+      processTemplatesFromPrefix(
+        vfs,
+        templates,
+        `examples/${example}/native/${nativeFrontend.replace("native-", "")}`,
+        "apps/native",
+        config,
+      );
     }
   }
 }

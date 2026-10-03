@@ -1,12 +1,7 @@
-import {
-  supportsClerkFrontend,
-  supportsClerkBackend,
-  isFrontendAllowedWithBackend,
-} from "@better-t-stack/types";
+import { supportsClerkFrontend, supportsClerkBackend } from "@better-t-stack/types";
 
 import { DEFAULT_CONFIG } from "../constants";
 import type { Auth, Backend, Frontend } from "../types";
-import { supportsConvexBetterAuth } from "../utils/compatibility-rules";
 import { UserCancelledError } from "../utils/errors";
 import { isCancel, navigableSelect, preferValidInitial } from "./navigable";
 
@@ -20,16 +15,7 @@ export function getAvailableAuthProviders(
 
   const options: Auth[] = [];
 
-  if (backend === "convex") {
-    if (
-      supportsConvexBetterAuth(frontend) &&
-      frontend.every((f) => isFrontendAllowedWithBackend(f, backend, "better-auth"))
-    ) {
-      options.push("better-auth");
-    }
-  } else {
-    options.push("better-auth");
-  }
+  options.push("better-auth");
 
   if (supportsClerkFrontend(frontend) && supportsClerkBackend(backend, frontend)) {
     options.push("clerk");

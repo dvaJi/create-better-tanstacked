@@ -25,25 +25,15 @@ function schemaKeys(vfs: VirtualFileSystem, app: string, config: ProjectConfig):
   }
   if (
     config.addons.includes("axiom") &&
-    ((app === "apps/server" && ["hono", "express", "fastify", "elysia"].includes(config.backend)) ||
-      (app === "apps/web" &&
-        config.frontend.some((f) =>
-          ["next", "tanstack-start", "nuxt", "svelte", "astro"].includes(f),
-        )))
+    ((app === "apps/server" && ["hono", "elysia"].includes(config.backend)) ||
+      (app === "apps/web" && config.frontend.includes("tanstack-start")))
   ) {
     for (const key of ["AXIOM_API_KEY", "AXIOM_DATASET", "AXIOM_EDGE_URL"]) keys.add(key);
   }
   const server = app === (config.backend === "self" ? "apps/web" : "apps/server");
   if (server) {
     if (config.database !== "none" && config.dbSetup !== "d1") {
-      if (
-        config.database === "mysql" &&
-        config.orm === "drizzle" &&
-        config.dbSetup === "planetscale"
-      ) {
-        for (const key of ["DATABASE_HOST", "DATABASE_USERNAME", "DATABASE_PASSWORD"])
-          keys.add(key);
-      } else keys.add("DATABASE_URL");
+      keys.add("DATABASE_URL");
       if (config.dbSetup === "turso") keys.add("DATABASE_AUTH_TOKEN");
     }
   }
@@ -87,7 +77,7 @@ function schema(keys: Set<string>, config: ProjectConfig, envFile: string, app: 
       );
       continue;
     }
-    const isPublic = /^(VITE_|NEXT_PUBLIC_|NUXT_PUBLIC_|PUBLIC_|EXPO_PUBLIC_)/.test(key);
+    const isPublic = /^(VITE_|EXPO_PUBLIC_)/.test(key);
     let type = "string(minLength=1)";
     if (key === "BETTER_AUTH_SECRET") type = "string(minLength=32)";
     else if ((key.endsWith("URL") && key !== "DATABASE_URL") || key === "CORS_ORIGIN") type = "url";
@@ -110,8 +100,6 @@ function schema(keys: Set<string>, config: ProjectConfig, envFile: string, app: 
         value = 'if($VERCEL_ORIGIN, "${VERCEL_ORIGIN}/api/auth", undefined)';
       }
     }
-    if (key.includes("CONVEX_") && key.endsWith("URL"))
-      type = 'url(matches="^(?!https?://example[.]convex[.])")';
     lines.push(`# ${isPublic ? "@public " : ""}@type=${type}`, `${key}=${value}`, "");
   }
   return lines.join("\n");
@@ -161,31 +149,14 @@ function processCloudflarePublicEnv(vfs: VirtualFileSystem, config: ProjectConfi
       )
   )
     return;
-  const keys = [...schemaKeys(vfs, "apps/web", config)].filter((key) =>
-    /^(VITE_|NEXT_PUBLIC_|NUXT_PUBLIC_|PUBLIC_)/.test(key),
-  );
-  const svelte = config.frontend.includes("svelte");
-  const next = config.frontend.includes("next");
-  const nuxt = config.frontend.includes("nuxt");
+  const keys = [...schemaKeys(vfs, "apps/web", config)].filter((key) => key.startsWith("VITE_"));
   const lines = [
     "// Alchemy validates deployment inputs with Varlock; Workers use native env bindings.",
-    `import type { PublicCoercedEnvSchema } from "./env${svelte ? ".generated" : ""}";`,
+    'import type { PublicCoercedEnvSchema } from "./env";',
   ];
-  if (svelte && keys.length) lines.push(`import { ${keys.join(", ")} } from "$env/static/public";`);
-  if (nuxt && keys.length) lines.push('import { useRuntimeConfig } from "#imports";');
   lines.push("", "export const ENV = {");
   for (const key of keys) {
-    if (nuxt) {
-      const name = key
-        .replace(/^NUXT_PUBLIC_/, "")
-        .toLowerCase()
-        .replace(/_([a-z])/g, (_, c) => c.toUpperCase());
-      lines.push(`  get ${key}() { return useRuntimeConfig().public.${name}; },`);
-    } else {
-      lines.push(
-        `  ${key}: ${svelte ? key : next ? `process.env.${key}!` : `import.meta.env.${key}!`},`,
-      );
-    }
+    lines.push(`  ${key}: import.meta.env.${key}!,`);
   }
   lines.push(
     `} satisfies Pick<PublicCoercedEnvSchema, ${keys.map((key) => JSON.stringify(key)).join(" | ") || "never"}>;`,
@@ -215,8 +186,7 @@ export function processVarlock(
     if (!vfs.exists(`${app}/package.json`)) continue;
     const keys = schemaKeys(vfs, app, config);
     for (const key of keys) allKeys.add(key);
-    const envFile =
-      app === "apps/web" && config.frontend.includes("svelte") ? "env.generated.ts" : "env.ts";
+    const envFile = "env.ts";
     vfs.writeFile(`${app}/.env.schema`, schema(keys, config, envFile, app));
     vfs.writeFile(`${app}/bunfig.toml`, `env = false\n${vfs.readFile(`${app}/bunfig.toml`) ?? ""}`);
     const pkg = vfs.readJson<Package>(`${app}/package.json`)!;
@@ -252,9 +222,8 @@ export function processVarlock(
   }
   if (
     config.auth === "better-auth" &&
-    config.backend !== "convex" &&
     vfs.exists("packages/db/package.json") &&
-    (config.orm === "drizzle" || config.orm === "prisma") &&
+    config.orm === "drizzle" &&
     config.runtime !== "workers" &&
     config.serverDeploy !== "cloudflare" &&
     !(config.backend === "self" && config.webDeploy === "cloudflare")
@@ -265,7 +234,7 @@ export function processVarlock(
         : config.packageManager === "pnpm"
           ? "pnpm dlx"
           : "npx --yes";
-    const output = config.orm === "prisma" ? "prisma/schema/auth.prisma" : "src/schema/auth.ts";
+    const output = "src/schema/auth.ts";
     const app = vfs.readJson<Package>(`${server}/package.json`)!;
     app.scripts ??= {};
     app.scripts["auth:generate"] =
@@ -274,14 +243,7 @@ export function processVarlock(
     root.scripts["auth:generate"] = `cd ${server} && ${config.packageManager} run auth:generate`;
   }
   vfs.writeJson("package.json", root);
-  if (["express", "fastify"].includes(config.backend) && config.auth === "better-auth") {
-    addPackageDependency({
-      vfs,
-      packagePath: `${server}/package.json`,
-      dependencies: ["better-auth"],
-    });
-  }
-  if (config.backend !== "none" && config.backend !== "convex") {
+  if (config.backend !== "none") {
     processSingleTemplate(
       vfs,
       templates,
@@ -295,7 +257,7 @@ export function processVarlock(
   }
   // Imports of app-owned modules are relative, so packages never depend on application source.
   for (const file of vfs.getAllFiles()) {
-    if (!file.startsWith("apps/") || !/\.(ts|tsx|vue|svelte|astro)$/.test(file)) continue;
+    if (!file.startsWith("apps/") || !/\.(ts|tsx)$/.test(file)) continue;
     const app = file.split("/").slice(0, 2).join("/");
     let content = vfs.readFile(file)!;
     content = content.replaceAll(

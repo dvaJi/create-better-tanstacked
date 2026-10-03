@@ -31,10 +31,6 @@ const desktopAddonNames = {
 
 const staticDesktopFrontendNames = {
   "tanstack-start": "TanStack Start",
-  next: "Next.js",
-  nuxt: "Nuxt",
-  svelte: "SvelteKit",
-  astro: "Astro",
 } as const;
 
 export function formatProjectName(name: string | null | undefined) {
@@ -152,7 +148,7 @@ export function generateStackCommand(stack: StackState) {
   const isStackDefaultExceptProjectName = Object.entries(DEFAULT_STACK).every(
     ([key]) =>
       key === "projectName" ||
-      isStackDefault(stack, key as keyof StackState, stack[key as keyof StackState]),
+      isStackDefault(key as keyof StackState, stack[key as keyof StackState]),
   );
 
   if (isStackDefaultExceptProjectName) {

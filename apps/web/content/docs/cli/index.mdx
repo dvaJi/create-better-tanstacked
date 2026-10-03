@@ -30,18 +30,18 @@ create-better-t-stack [project-directory] [options]
 - `--open <target>`: Open the project in an installed editor, IDE, or coding agent
 - `--git / --no-git`: Initialize Git repository
 - `--frontend <types...>`: Web and/or native frameworks (see [Options](/docs/cli/options#frontend))
-- `--backend <framework>`: `hono`, `express`, `fastify`, `elysia`, `convex`, `self`, `none`
-- `--runtime <runtime>`: `bun`, `node`, `workers` (`none` only with `--backend convex`, `--backend none`, or `--backend self`)
-- `--database <type>`: `none`, `sqlite`, `postgres`, `mysql`, `mongodb`
-- `--orm <type>`: `none`, `drizzle`, `prisma`, `mongoose`
+- `--backend <framework>`: `hono`, `elysia`, `self`, `none`
+- `--runtime <runtime>`: `bun`, `node`, `workers` (`none` only with `--backend none` or `--backend self`)
+- `--database <type>`: `none`, `sqlite`, `postgres`
+- `--orm <type>`: `none`, `drizzle`
 - `--api <type>`: `none`, `trpc`, `orpc`
 - `--auth <provider>`: `better-auth`, `clerk`, `none` (see [Options](/docs/cli/options#authentication))
 - `--payments <provider>`: `polar`, `none`
-- `--db-setup <setup>`: `none`, `turso`, `d1`, `neon`, `supabase`, `prisma-postgres`, `planetscale`, `mongodb-atlas`, `docker`
+- `--db-setup <setup>`: `none`, `turso`, `d1`, `neon`, `supabase`, `prisma-postgres`, `planetscale`, `docker`
 - `--examples <types...>`: `none`, `todo`, `ai`
-- `--web-deploy <setup>`: `none`, `cloudflare`
-- `--server-deploy <setup>`: `none`, `cloudflare`
-- `--template <type>`: `none`, `mern`, `pern`, `t3`, `uniwind`
+- `--web-deploy <setup>`: `none`, `cloudflare`, `prisma`, `docker`, `vercel`
+- `--server-deploy <setup>`: `none`, `cloudflare`, `prisma`, `docker`, `vercel`
+- `--template <type>`: `none`, `uniwind`
 - `--directory-conflict <strategy>`: `merge`, `overwrite`, `increment`, `error`
 - `--render-title / --no-render-title`: Show/hide ASCII art title
 - `--disable-analytics / --no-disable-analytics`: Control analytics collection
@@ -220,7 +220,7 @@ create-better-t-stack \
   --backend hono \
   --frontend tanstack-router \
   --auth better-auth \
-  --addons pwa biome
+  --addons pwa oxlint
 ```
 
 ### Create a Backend-Only Project
@@ -238,7 +238,7 @@ create-better-t-stack api-server \
 
 ```bash
 cd my-existing-project
-create-better-t-stack add --addons tauri starlight --install
+create-better-t-stack add --addons tauri fumadocs --install
 ```
 
 ### Show Local History

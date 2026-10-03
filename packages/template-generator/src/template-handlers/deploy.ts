@@ -40,25 +40,6 @@ export async function processDeployTemplates(
     processTemplatesFromPrefix(vfs, templates, "deploy/vercel", "", config);
   }
 
-  if (config.webDeploy === "prisma") {
-    const templateMap = {
-      "react-router": "react/react-router",
-    } satisfies Partial<Record<ProjectConfig["frontend"][number], string>>;
-
-    for (const frontend of config.frontend) {
-      if (hasOwnKey(templateMap, frontend)) {
-        const templatePath = templateMap[frontend];
-        processTemplatesFromPrefix(
-          vfs,
-          templates,
-          `deploy/prisma/web/${templatePath}`,
-          "apps/web",
-          config,
-        );
-      }
-    }
-  }
-
   if (
     config.webDeploy !== "none" &&
     config.webDeploy !== "cloudflare" &&
@@ -68,13 +49,7 @@ export async function processDeployTemplates(
     const templateMap = {
       "tanstack-router": "react/tanstack-router",
       "tanstack-start": "react/tanstack-start",
-      "react-router": "react/react-router",
-      solid: "solid",
-      next: "react/next",
-      nuxt: "nuxt",
-      svelte: "svelte",
-      astro: "astro",
-    } satisfies Record<string, string>;
+    } satisfies Partial<Record<ProjectConfig["frontend"][number], string>>;
 
     for (const f of config.frontend) {
       if (hasOwnKey(templateMap, f)) {

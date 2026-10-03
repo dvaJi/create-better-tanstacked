@@ -1,51 +1,6 @@
 import type { CreateInput, Template } from "../types";
 
 export const TEMPLATE_PRESETS = {
-  mern: {
-    database: "mongodb",
-    orm: "mongoose",
-    backend: "express",
-    runtime: "node",
-    frontend: ["react-router"],
-    api: "orpc",
-    auth: "better-auth",
-    payments: "none",
-    addons: ["turborepo"],
-    examples: ["todo"],
-    dbSetup: "mongodb-atlas",
-    webDeploy: "none",
-    serverDeploy: "none",
-  },
-  pern: {
-    database: "postgres",
-    orm: "drizzle",
-    backend: "express",
-    runtime: "node",
-    frontend: ["tanstack-router"],
-    api: "trpc",
-    auth: "better-auth",
-    payments: "none",
-    addons: ["turborepo"],
-    examples: ["todo"],
-    dbSetup: "none",
-    webDeploy: "none",
-    serverDeploy: "none",
-  },
-  t3: {
-    database: "postgres",
-    orm: "prisma",
-    backend: "self",
-    runtime: "none",
-    frontend: ["next"],
-    api: "trpc",
-    auth: "better-auth",
-    payments: "none",
-    addons: ["biome", "turborepo"],
-    examples: ["none"],
-    dbSetup: "none",
-    webDeploy: "none",
-    serverDeploy: "none",
-  },
   uniwind: {
     database: "none",
     orm: "none",
@@ -79,9 +34,6 @@ export function getTemplateConfig(template: Template) {
 
 export function getTemplateDescription(template: Template) {
   const descriptions = {
-    mern: "MongoDB + Express + React + Node.js - Classic MERN stack",
-    pern: "PostgreSQL + Express + React + Node.js - Popular PERN stack",
-    t3: "T3 Stack - Next.js + tRPC + Prisma + PostgreSQL + Better Auth",
     uniwind: "Expo + Uniwind native app with no backend services",
     none: "No template - Full customization",
   } satisfies Record<Template, string>;

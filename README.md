@@ -45,20 +45,20 @@ Want your AI assistant to scaffold and extend projects with Better-T-Stack? Inst
 /plugin install better-t-stack@better-t-stack
 ```
 
-Then ask: _"create a fullstack app with Next, Hono, Postgres and Better Auth"_, or run `/better-t-stack:new <description>`. See [`plugin/`](plugin) and the [Agent Workflows docs](https://better-t-stack.dev/docs/cli/agent-workflows#claude-code-plugin).
+Then ask: _"create a fullstack app with TanStack Start, Postgres and Better Auth"_, or run `/better-t-stack:new <description>`. See [`plugin/`](plugin) and the [Agent Workflows docs](https://better-t-stack.dev/docs/cli/agent-workflows#claude-code-plugin).
 
 ## Features
 
-- Frontend: React (TanStack Router, React Router, TanStack Start), Next.js, Nuxt, Svelte, Solid, Astro, React Native (Bare, NativeWind, Unistyles), or none
-- Backend: Hono, Express, Fastify, Elysia, Self (fullstack web app), Convex, or none
+- Frontend: TanStack Router, TanStack Start, Expo (Bare, Uniwind, Unistyles), or none
+- Backend: Hono, Elysia, TanStack Start fullstack, or none
 - API: tRPC or oRPC (or none)
 - Runtime: Bun, Node.js, or Cloudflare Workers
-- Databases: SQLite, PostgreSQL, MySQL, MongoDB (or none)
-- ORMs: Drizzle, Prisma, Mongoose (or none)
+- Databases: SQLite, PostgreSQL (or none)
+- ORM: Drizzle (or none)
 - Auth: Better Auth or Clerk (optional)
-- Addons: Turborepo, Nx, PWA, Tauri, Electrobun, Biome, Lefthook, Husky, Starlight, Fumadocs, Ultracite, Oxlint, MCP, OpenTUI, WXT, Skills
+- Addons: Turborepo, Vite+, PWA, Tauri, Electrobun, Lefthook, Fumadocs, Oxlint, MCP, OpenTUI, WXT, Skills
 - Examples: Todo, AI
-- DB Setup: Turso, Neon, Supabase, Prisma PostgreSQL, MongoDB Atlas, Cloudflare D1, Docker
+- DB Setup: Turso, Neon, Supabase, Prisma PostgreSQL, PlanetScale, Cloudflare D1, Docker
 - Web Deploy: Cloudflare Workers
 
 Type safety end-to-end, clean monorepo layout, and zero lock-in: you choose only what you need.

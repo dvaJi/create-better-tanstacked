@@ -1,10 +1,8 @@
 import {
   supportsRuntimeBackend,
-  supportsRuntimeDatabase,
   supportsPaymentsAuth,
   supportsServerDeployRuntime,
   SERVER_BACKENDS,
-  CONVEX_AI_INCOMPATIBLE_FRONTENDS,
 } from "@better-t-stack/types";
 import {
   TASK_RUNNER_ADDONS,
@@ -12,21 +10,14 @@ import {
   FULLSTACK_FRONTENDS,
   validateAddonCompatibility,
   supportsPrismaWebDeploy,
-  allowedApisForFrontends,
-  hasCloudflareNextPostgresConflict,
   getDesktopDeployConflict,
-  TRPC_INCOMPATIBLE_FRONTENDS,
-  isExampleAIAllowed,
   isExampleTodoAllowed,
 } from "@better-t-stack/types";
 export {
   TASK_RUNNER_ADDONS,
   OBSERVABILITY_ADDONS,
-  CONVEX_BETTER_AUTH_INCOMPATIBLE_FRONTENDS,
-  CONVEX_BETTER_AUTH_SUPPORTED_FRONTENDS,
   supportsEvlogAddon,
   isFrontendAllowedWithBackend,
-  supportsConvexBetterAuth,
   allowedApisForFrontends,
   isExampleTodoAllowed,
   isExampleAIAllowed,
@@ -83,7 +74,7 @@ export function ensureSingleWebAndNative(frontends: Frontend[]): ValidationResul
   const { web, native } = splitFrontends(frontends);
   if (web.length > 1) {
     return validationErr(
-      "Cannot select multiple web frameworks. Choose only one of: tanstack-router, tanstack-start, react-router, next, nuxt, svelte, solid, astro",
+      "Cannot select multiple web frameworks. Choose only one of: tanstack-router, tanstack-start",
     );
   }
   if (native.length > 1) {
@@ -109,7 +100,7 @@ export function validateSelfBackendCompatibility(
 
     if (!hasSupportedWeb) {
       return validationErr(
-        "Backend 'self' (fullstack) currently only supports Next.js, TanStack Start, Nuxt, SvelteKit, Solid, and Astro frontends. Please use --frontend next, --frontend tanstack-start, --frontend nuxt, --frontend svelte, --frontend solid, or --frontend astro.",
+        "Backend 'self' (fullstack) requires the TanStack Start frontend. Please use --frontend tanstack-start.",
       );
     }
 
@@ -150,33 +141,13 @@ export function validateWorkersCompatibility(
     );
   }
 
-  if (providedFlags.has("runtime") && !supportsRuntimeDatabase(options.runtime, config.database)) {
-    return validationErr(
-      "Cloudflare Workers runtime (--runtime workers) is not compatible with MongoDB database. MongoDB requires Prisma or Mongoose ORM, but Workers runtime only supports Drizzle or Prisma ORM. Please use a different database or runtime.",
-    );
-  }
-
-  if (providedFlags.has("database") && !supportsRuntimeDatabase(config.runtime, config.database)) {
-    return validationErr(
-      "MongoDB database is not compatible with Cloudflare Workers runtime. MongoDB requires Prisma or Mongoose ORM, but Workers runtime only supports Drizzle or Prisma ORM. Please use a different database or runtime.",
-    );
-  }
-
   return Result.ok(undefined);
 }
 
 export function validateApiFrontendCompatibility(
-  api: API | undefined,
-  frontends: Frontend[] = [],
+  _api: API | undefined,
+  _frontends: Frontend[] = [],
 ): ValidationResult {
-  if (api === "trpc" && !allowedApisForFrontends(frontends).includes(api)) {
-    const frontend = frontends.find((f) =>
-      TRPC_INCOMPATIBLE_FRONTENDS.some((value) => value === f),
-    );
-    return validationErr(
-      `tRPC API is not supported with '${frontend}' frontend. Please use --api orpc or --api none or remove '${frontend}' from --frontend.`,
-    );
-  }
   return Result.ok(undefined);
 }
 
@@ -213,7 +184,7 @@ export function validateDockerServerDeploy(
 
   if (backend && backend !== "none" && !SERVER_BACKENDS.includes(backend)) {
     return validationErr(
-      "'--server-deploy docker' requires a separate server backend (hono, express, fastify, elysia). For a fullstack 'self' backend, use '--web-deploy docker' instead.",
+      "'--server-deploy docker' requires a separate Hono or Elysia backend. For a fullstack 'self' backend, use '--web-deploy docker' instead.",
     );
   }
 
@@ -235,7 +206,7 @@ export function validateVercelServerDeploy(
 
   if (backend && backend !== "none" && !SERVER_BACKENDS.includes(backend)) {
     return validationErr(
-      "'--server-deploy vercel' requires a separate server backend (hono, express, fastify, elysia). For a fullstack 'self' backend, use '--web-deploy vercel' instead.",
+      "'--server-deploy vercel' requires a separate Hono or Elysia backend. For a fullstack 'self' backend, use '--web-deploy vercel' instead.",
     );
   }
 
@@ -257,7 +228,7 @@ export function validatePrismaServerDeploy(
 
   if (backend && backend !== "none" && !SERVER_BACKENDS.includes(backend)) {
     return validationErr(
-      "'--server-deploy prisma' requires a separate server backend (hono, express, fastify, elysia). For a fullstack 'self' backend, use '--web-deploy prisma' instead.",
+      "'--server-deploy prisma' requires a separate Hono or Elysia backend. For a fullstack 'self' backend, use '--web-deploy prisma' instead.",
     );
   }
 
@@ -277,21 +248,7 @@ export function validatePrismaWebDeploy(
   if (webDeploy !== "prisma" || !frontend) return Result.ok(undefined);
 
   if (!supportsPrismaWebDeploy(frontend)) {
-    return validationErr(
-      "'--web-deploy prisma' requires a supported web frontend. Choose TanStack Router, Next.js, Nuxt, Astro, React Router, TanStack Start, SvelteKit, or Solid.",
-    );
-  }
-
-  return Result.ok(undefined);
-}
-
-export function validateCloudflareWebDeployKnownIssues(
-  config: Partial<Pick<ProjectConfig, "database" | "dbSetup" | "frontend" | "orm" | "webDeploy">>,
-): ValidationResult {
-  if (hasCloudflareNextPostgresConflict(config)) {
-    return validationErr(
-      "This Prisma PostgreSQL setup with Next.js on Cloudflare is temporarily unavailable because OpenNext does not preserve pg-cloudflare's workerd files. Use Neon or Prisma Postgres, choose another Cloudflare frontend, or choose Prisma, Docker, or Vercel deployment.",
-    );
+    return validationErr("'--web-deploy prisma' requires TanStack Router or TanStack Start.");
   }
 
   return Result.ok(undefined);
@@ -371,7 +328,7 @@ export function validateAddonsAgainstFrontends(
   );
   if (selectedTaskRunners.length > 1) {
     return validationErr(
-      "Cannot combine 'turborepo', 'nx', and 'vite-plus' addons. Choose one task runner.",
+      "Cannot combine 'turborepo' and 'vite-plus' addons. Choose one task runner.",
     );
   }
 
@@ -397,9 +354,6 @@ export function validateAddonsAgainstConfig(
     config.runtime,
   );
   if (addonResult.isErr()) return addonResult;
-
-  const cloudflareResult = validateCloudflareWebDeployKnownIssues(config);
-  if (cloudflareResult.isErr()) return cloudflareResult;
 
   const dockerResult = validateDockerWebDeployDesktopAddons(
     config.webDeploy,
@@ -455,34 +409,8 @@ export function validateExamplesCompatibility(
     }
   }
 
-  if (
-    examplesArr.includes("ai") &&
-    !isExampleAIAllowed(backend, frontend) &&
-    frontend?.includes("solid")
-  ) {
-    return validationErr("The 'ai' example is not compatible with the Solid frontend.");
-  }
-
-  if (
-    examplesArr.includes("ai") &&
-    !isExampleAIAllowed(backend, frontend) &&
-    frontend?.includes("astro")
-  ) {
-    return validationErr("The 'ai' example is not compatible with the Astro frontend.");
-  }
-
   if (examplesArr.includes("ai") && backend === "none") {
     return validationErr("The 'ai' example requires a backend.");
-  }
-
-  // Convex AI example only supports React-based frontends
-  if (examplesArr.includes("ai") && backend === "convex") {
-    const frontendArr = frontend ?? [];
-    if (frontendArr.some((f) => CONVEX_AI_INCOMPATIBLE_FRONTENDS.some((value) => value === f))) {
-      return validationErr(
-        "The 'ai' example with Convex backend only supports React-based frontends (Next.js, TanStack Router, TanStack Start, React Router). Svelte and Nuxt are not supported with Convex AI.",
-      );
-    }
   }
 
   return Result.ok(undefined);

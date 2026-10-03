@@ -52,10 +52,6 @@ function getDatabaseUrl(database: Database, projectName: string) {
   switch (database) {
     case "postgres":
       return `postgresql://postgres:password@localhost:5432/${projectName}`;
-    case "mysql":
-      return `mysql://user:password@localhost:3306/${projectName}`;
-    case "mongodb":
-      return `mongodb://root:password@localhost:27017/${projectName}?authSource=admin`;
     default:
       return "";
   }

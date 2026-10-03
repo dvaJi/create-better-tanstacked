@@ -39,7 +39,7 @@ Choosing `docker` as a deploy target generates:
 
 - **`docker-compose.yml`** at the repo root defines the `web`, `server`, and (optionally) database services with health checks and startup ordering.
 - **`apps/*/Dockerfile`** are multi-stage builds that install the whole monorepo workspace, build one app, and ship a minimal runtime image.
-- **`nginx.conf`** is generated for the static TanStack Router SPA, which is served by nginx. Solid runs as a Node SSR server from its Nitro `.output` build.
+- **`nginx.conf`** is generated for the static TanStack Router SPA, which is served by nginx. TanStack Start runs as a server-rendered application.
 
 ## Enabling Docker Deployment
 
@@ -56,11 +56,11 @@ npm create better-t-stack@latest my-app \
   --server-deploy docker
 ```
 
-**Web-only (fullstack `self` backend):**
+**Web-only (TanStack Start fullstack app):**
 
 ```npm
 npm create better-t-stack@latest my-app \
-  --frontend next \
+  --frontend tanstack-start \
   --backend self \
   --web-deploy docker
 ```
@@ -70,12 +70,12 @@ npm create better-t-stack@latest my-app \
 ```npm
 npm create better-t-stack@latest my-app \
   --frontend none \
-  --backend fastify \
+  --backend hono \
   --runtime node \
   --server-deploy docker
 ```
 
-Server deployment requires the `bun` or `node` runtime. Adding `--db-setup docker` puts a Postgres, MySQL, or MongoDB container in the same compose file with a named volume and health check.
+Server deployment requires the `bun` or `node` runtime. Adding `--db-setup docker` puts a Postgres container in the same compose file with a named volume and health check.
 
 ## Running the Stack
 
@@ -88,11 +88,11 @@ bun docker:down    # docker compose down
 
 After `docker:up`:
 
-| Service  | URL                                 | Notes                                              |
-| -------- | ----------------------------------- | -------------------------------------------------- |
-| web      | `http://localhost:3001`             | nginx (SPA frontends) or the framework's server    |
-| server   | `http://localhost:3000`             | health-checked; web waits for it to become healthy |
-| database | `localhost:5432` / `3306` / `27017` | only with `--db-setup docker`                      |
+| Service  | URL                     | Notes                                              |
+| -------- | ----------------------- | -------------------------------------------------- |
+| web      | `http://localhost:3001` | nginx (TanStack Router) or TanStack Start server   |
+| server   | `http://localhost:3000` | health-checked; web waits for it to become healthy |
+| database | `localhost:5432`        | only with `--db-setup docker`                      |
 
 Startup ordering is handled with `depends_on` + `condition: service_healthy`: the database must pass its health check before the server starts, and the server must pass its `fetch('http://localhost:3000/')` health check before the web container starts.
 
@@ -108,8 +108,8 @@ bun db:watch   # docker compose up postgres      (with logs in the foreground)
 Each Dockerfile is a multi-stage build with the monorepo root as build context:
 
 1. A base stage installs the workspace with your package manager (with a mounted dependency cache, so rebuilds are fast).
-2. Compose supplies the generated app env files as BuildKit secrets during installation and builds. Varlock validates the app schema, including database configuration needed by Prisma tooling. Public web variables also use build arguments. Fill required configuration before building; validation is not bypassed.
-3. Runtime images retain the built output and the schema/Varlock CLI dependencies needed for startup. Next standalone preloads `varlock/auto-load` with Node. SPA frontends use nginx; SSR frontends and servers use Bun or Node images.
+2. Compose supplies the generated app env files as BuildKit secrets during installation and builds. Varlock validates the app schema, and public web variables use build arguments. Fill required configuration before building; validation is not bypassed.
+3. Runtime images retain the built output and the schema/Varlock CLI dependencies needed for startup. TanStack Router uses nginx; TanStack Start and backend services use Bun or Node images.
 
 ## Environment Variables
 
@@ -119,9 +119,9 @@ Three rules cover everything:
 2. **Runtime variables come from each app's `.env` file.** Compose loads app values through `env_file`. The same files are required as build-secret sources when building images; Varlock rejects missing required values.
 3. **Compose overrides handle container networking.** Inside the Docker network, containers reach each other by service name, not `localhost` — so compose sets values like `DATABASE_URL: postgresql://postgres:...@postgres:5432/my-app` and `CORS_ORIGIN: http://localhost:3001` in the `environment:` block, which wins over `env_file`. Your local `.env` files stay pointed at localhost for non-Docker development.
 
-BuildKit keeps the mounted env files out of normal `COPY` layers. Frameworks that embed resolved server configuration, including Next, can still put those values in server build artifacts. See [Varlock encrypted deployments](https://varlock.dev/guides/encrypted-deployments/) for encrypting that configuration with a key supplied at both build and runtime.
+BuildKit keeps the mounted env files out of normal `COPY` layers. Server builds can still include resolved configuration in their output. See [Varlock encrypted deployments](https://varlock.dev/guides/encrypted-deployments/) for encrypting that configuration with a key supplied at both build and runtime.
 
-Database passwords default to `password` and can be overridden with compose variables (`POSTGRES_PASSWORD`, `MYSQL_PASSWORD`, `MONGO_PASSWORD`) — set them in a root `.env` file or export them before `docker:up`.
+The Postgres password defaults to `password` and can be overridden with `POSTGRES_PASSWORD` — set it in a root `.env` file or export it before `docker:up`.
 
 ## Moving to a Real Host
 
@@ -130,7 +130,7 @@ The generated compose file is production-shaped (multi-stage images, health chec
 - **Put a reverse proxy in front.** Terminate TLS with Caddy, Traefik, or nginx and route your domain to the web container; stop publishing the server and database ports publicly once the proxy handles routing.
 - **Update baked URLs for your domain.** Rebuild the web image with the public server URL build arg set to your real API origin, and set `CORS_ORIGIN` / `BETTER_AUTH_URL` on the server to your real web origin.
 - **Set real secrets.** Replace the default database password and put production values in the server's environment (compose `environment:`, an `.env` file on the host, or your orchestrator's secret store).
-- **Back up the database volume.** Data lives in a named Docker volume (`<project>_postgres_data` etc.); `docker compose down -v` deletes it.
+- **Back up the database volume.** Data lives in the named Docker volume (`<project>_postgres_data`); `docker compose down -v` deletes it.
 
 ## Troubleshooting
 
@@ -144,7 +144,7 @@ Public variables are build args baked into the client bundle. Rebuild the image:
 
 ### Server can't reach the database with a localhost URL
 
-Inside compose, the database host is the service name (`postgres`, `mysql`, `mongodb`), not `localhost`. Use the compose-provided `DATABASE_URL` (already set in the `environment:` block) instead of the one in `apps/server/.env`.
+Inside compose, the database host is the service name (`postgres`), not `localhost`. Use the compose-provided `DATABASE_URL` (already set in the `environment:` block) instead of the one in `apps/server/.env`.
 
 ### Web container never starts
 

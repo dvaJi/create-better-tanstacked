@@ -14,19 +14,10 @@ export async function processAddonTemplates(
     if (addon === "none") continue;
 
     // Task runners are handled programmatically by generators.
-    if (addon === "turborepo" || addon === "nx" || addon === "vite-plus") continue;
+    if (addon === "turborepo" || addon === "vite-plus") continue;
 
     if (addon === "pwa") {
-      if (
-        config.frontend.some((frontend) => ["solid", "react-router", "next"].includes(frontend))
-      ) {
-        processTemplatesFromPrefix(vfs, templates, "addons/pwa/apps/web/ssr", "apps/web", config);
-      }
-      if (config.frontend.includes("next")) {
-        processTemplatesFromPrefix(vfs, templates, "addons/pwa/apps/web/next", "apps/web", config);
-      } else if (
-        config.frontend.some((f) => ["tanstack-router", "react-router", "solid"].includes(f))
-      ) {
+      if (config.frontend.includes("tanstack-router")) {
         processTemplatesFromPrefix(vfs, templates, "addons/pwa/apps/web/vite", "apps/web", config);
       }
       continue;

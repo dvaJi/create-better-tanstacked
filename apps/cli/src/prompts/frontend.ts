@@ -1,6 +1,5 @@
 import { DEFAULT_CONFIG } from "../constants";
 import type { Backend, Frontend, Auth } from "../types";
-import { isFrontendAllowedWithBackend } from "../utils/compatibility-rules";
 import { isFirstPrompt } from "../utils/context";
 import { UserCancelledError } from "../utils/errors";
 import {
@@ -13,21 +12,12 @@ import {
   setIsFirstPrompt,
 } from "./navigable";
 
-const WEB_FRONTEND_VALUES: readonly Frontend[] = [
-  "tanstack-router",
-  "react-router",
-  "next",
-  "nuxt",
-  "svelte",
-  "solid",
-  "astro",
-  "tanstack-start",
-];
+const WEB_FRONTEND_VALUES: readonly Frontend[] = ["tanstack-router", "tanstack-start"];
 
 export async function getFrontendChoice(
   frontendOptions?: Frontend[],
-  backend?: Backend,
-  auth?: Auth,
+  _backend?: Backend,
+  _auth?: Auth,
   previousValue?: Frontend[],
 ): Promise<Frontend[] | symbol> {
   if (frontendOptions !== undefined) return frontendOptions;
@@ -44,7 +34,7 @@ export async function getFrontendChoice(
         {
           value: "web",
           label: "Web",
-          hint: "React, Vue or Svelte Web Application",
+          hint: "TanStack web application",
         },
         {
           value: "native",
@@ -67,41 +57,11 @@ export async function getFrontendChoice(
     let shouldRestart = false;
 
     if (frontendTypes.includes("web")) {
-      const allWebOptions = [
+      const webOptions = [
         {
           value: "tanstack-router" as const,
           label: "TanStack Router",
           hint: "Modern and scalable routing for React Applications",
-        },
-        {
-          value: "react-router" as const,
-          label: "React Router",
-          hint: "A user‑obsessed, standards‑focused, multi‑strategy router",
-        },
-        {
-          value: "next" as const,
-          label: "Next.js",
-          hint: "The React Framework for the Web",
-        },
-        {
-          value: "nuxt" as const,
-          label: "Nuxt",
-          hint: "The Progressive Web Framework for Vue.js",
-        },
-        {
-          value: "svelte" as const,
-          label: "Svelte",
-          hint: "web development for the rest of us",
-        },
-        {
-          value: "solid" as const,
-          label: "Solid",
-          hint: "Simple and performant reactivity for building user interfaces",
-        },
-        {
-          value: "astro" as const,
-          label: "Astro",
-          hint: "The web framework for content-driven websites",
         },
         {
           value: "tanstack-start" as const,
@@ -109,11 +69,6 @@ export async function getFrontendChoice(
           hint: "SSR, Server Functions, API Routes and more with TanStack Router",
         },
       ];
-
-      const webOptions = allWebOptions.filter((option) =>
-        isFrontendAllowedWithBackend(option.value, backend, auth),
-      );
-
       const webFramework = await navigableSelect<Frontend>({
         message: "Choose a web framework",
         options: webOptions,

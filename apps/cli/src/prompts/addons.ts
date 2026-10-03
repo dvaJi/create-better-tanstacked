@@ -1,7 +1,7 @@
 import { DEFAULT_CONFIG } from "../constants";
 import {
   type Addons,
-  AddonsSchema,
+  ADDONS_VALUES,
   type Auth,
   type Backend,
   type Frontend,
@@ -42,10 +42,6 @@ function getAddonDisplay(addon: Addons): AddonDisplay {
       label = "Turborepo";
       hint = "High-performance build system";
       break;
-    case "nx":
-      label = "Nx";
-      hint = "Smart monorepo orchestration and task graph";
-      break;
     case "vite-plus":
       label = "Vite+";
       hint = "Unified Vite toolchain and workspace task runner";
@@ -62,29 +58,13 @@ function getAddonDisplay(addon: Addons): AddonDisplay {
       label = "Electrobun";
       hint = "Wrap web frontends in a lightweight desktop shell";
       break;
-    case "biome":
-      label = "Biome";
-      hint = "Format, lint, and more";
-      break;
     case "oxlint":
       label = "Oxlint";
       hint = "Oxlint + Oxfmt (linting & formatting)";
       break;
-    case "ultracite":
-      label = "Ultracite";
-      hint = "Zero-config preset for Biome or Oxlint with AI integration";
-      break;
     case "lefthook":
       label = "Lefthook";
       hint = "Fast and powerful Git hooks manager";
-      break;
-    case "husky":
-      label = "Husky";
-      hint = "Modern native Git hooks made easy";
-      break;
-    case "starlight":
-      label = "Starlight";
-      hint = "Build stellar docs with astro";
       break;
     case "fumadocs":
       label = "Fumadocs";
@@ -123,9 +103,9 @@ function getAddonDisplay(addon: Addons): AddonDisplay {
 }
 
 const ADDON_GROUPS = {
-  "Monorepo & Tasks": ["turborepo", "nx", "vite-plus"],
-  "Code Quality": ["biome", "oxlint", "ultracite", "husky", "lefthook"],
-  Documentation: ["starlight", "fumadocs"],
+  "Monorepo & Tasks": ["turborepo", "vite-plus"],
+  "Code Quality": ["oxlint", "lefthook"],
+  Documentation: ["fumadocs"],
   "Platform Extensions": ["pwa", "tauri", "electrobun", "opentui", "wxt"],
   Observability: ["evlog", "axiom"],
   "AI & Agent Tools": ["skills", "mcp"],
@@ -163,7 +143,7 @@ function sortAndPruneGroupedOptions(groupedOptions: Record<string, AddonOption[]
 function validateAddonSelection(selected: Addons[] | undefined) {
   const selectedTaskRunners = selected?.filter((addon) => TASK_RUNNER_ADDONS.includes(addon)) ?? [];
   if (selectedTaskRunners.length > 1) {
-    return "Choose Turborepo, Nx, or Vite+ as your task runner, not more than one.";
+    return "Choose Turborepo or Vite+ as your task runner, not more than one.";
   }
 
   const selectedObservabilityAddons =
@@ -183,7 +163,7 @@ export async function getAddonsChoice(
 ) {
   if (addons !== undefined) return addons;
 
-  const allAddons = AddonsSchema.options.filter((addon) => addon !== "none");
+  const allAddons = ADDONS_VALUES.filter((addon) => addon !== "none");
   const groupedOptions = createGroupedOptions();
 
   const frontendsArray = frontends || [];
@@ -231,7 +211,7 @@ export async function getAddonsToAdd(config: AddonProjectConfig) {
   const frontendArray = config.frontend || [];
 
   const compatibleAddons = getCompatibleAddons(
-    AddonsSchema.options.filter((addon) => addon !== "none" && addon !== "axiom"),
+    ADDONS_VALUES.filter((addon) => addon !== "none" && addon !== "axiom"),
     frontendArray,
     config.addons,
     config.auth,

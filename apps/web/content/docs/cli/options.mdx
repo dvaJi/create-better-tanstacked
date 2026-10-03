@@ -18,13 +18,10 @@ create-better-t-stack --yes
 Use a predefined project template:
 
 - `none`: No template (default)
-- `mern`: MongoDB, Express, React, Node.js stack
-- `pern`: PostgreSQL, Express, React, Node.js stack
-- `t3`: T3 stack configuration
 - `uniwind`: UniWind React Native template
 
 ```bash
-create-better-t-stack --template t3
+create-better-t-stack --template uniwind
 ```
 
 ### `--manual-db`
@@ -156,8 +153,6 @@ Database type to use:
 - `none`: No database
 - `sqlite`: SQLite database
 - `postgres`: PostgreSQL database
-- `mysql`: MySQL database
-- `mongodb`: MongoDB database
 
 ```bash
 create-better-t-stack --database postgres
@@ -169,8 +164,6 @@ ORM to use with your database:
 
 - `none`: No ORM
 - `drizzle`: Drizzle ORM (TypeScript-first)
-- `prisma`: Prisma ORM (feature-rich)
-- `mongoose`: Mongoose ODM (for MongoDB)
 
 ```bash
 create-better-t-stack --database postgres --orm drizzle
@@ -186,8 +179,7 @@ Database hosting/setup provider:
 - `neon`: Neon (PostgreSQL)
 - `supabase`: Supabase (PostgreSQL)
 - `prisma-postgres`: Prisma Postgres
-- `planetscale`: PlanetScale (MySQL/PostgreSQL)
-- `mongodb-atlas`: MongoDB Atlas
+- `planetscale`: PlanetScale (PostgreSQL)
 - `docker`: Local Docker containers
 
 ```bash
@@ -204,11 +196,8 @@ Backend framework to use:
 
 - `none`: No backend
 - `hono`: Hono (fast, lightweight)
-- `express`: Express.js (popular, mature)
-- `fastify`: Fastify (fast, plugin-based)
 - `elysia`: Elysia (Bun-native)
-- `convex`: Convex backend
-- `self`: Self-hosted/custom backend
+- `self`: TanStack Start fullstack backend
 
 ```bash
 create-better-t-stack --backend hono
@@ -218,7 +207,7 @@ create-better-t-stack --backend hono
 
 Runtime environment:
 
-- `none`: No specific runtime (only with `convex`, `none`, or `self` backend)
+- `none`: No specific runtime (only with `none` or TanStack Start `self` backend)
 - `bun`: Bun runtime
 - `node`: Node.js runtime
 - `workers`: Cloudflare Workers
@@ -248,13 +237,7 @@ Frontend frameworks (can specify multiple):
 **Web Frameworks:**
 
 - `tanstack-router`: React with TanStack Router
-- `react-router`: React with React Router
 - `tanstack-start`: React with TanStack Start (SSR)
-- `next`: Next.js
-- `nuxt`: Nuxt (Vue)
-- `svelte`: SvelteKit
-- `solid`: Solid (SSR)
-- `astro`: Astro
 
 **Native Frameworks:**
 
@@ -270,8 +253,8 @@ Frontend frameworks (can specify multiple):
 # Single web frontend
 create-better-t-stack --frontend tanstack-router
 
-# Web + native frontend
-create-better-t-stack --frontend next native-uniwind
+# TanStack web + Expo native
+create-better-t-stack --frontend tanstack-start native-uniwind
 
 # Backend-only
 create-better-t-stack --frontend none
@@ -297,9 +280,8 @@ create-better-t-stack --auth none
 
 - `better-auth` requires a backend framework (cannot be `none`)
 - if you choose a database, you should also choose an ORM
-- with `--backend convex`, `better-auth` supports `react-router`, `tanstack-router`, `tanstack-start`, `next`, and native Expo frontends
 - `clerk` requires a compatible frontend
-- Supported Clerk backends: `convex`, `hono`, `express`, `fastify`, `elysia`, and `self` with Next.js or TanStack Start
+- Supported Clerk backends: `hono`, `elysia`, and `self` with TanStack Start
 - Authentication is automatically set to `none` when using `--backend none`
 
 ## Payments
@@ -327,25 +309,20 @@ Additional features to include:
 - `pwa`: Progressive Web App support
 - `tauri`: Desktop app support for static web output (not compatible with `--backend self`)
 - `electrobun`: Lightweight desktop shell for static web output (not compatible with `--backend self`)
-- `starlight`: Starlight documentation site
 - `fumadocs`: Fumadocs documentation site
-- `biome`: Biome linting and formatting
 - `lefthook`: Git hooks with Lefthook
-- `husky`: Git hooks with Husky
 - `turborepo`: Turborepo monorepo setup
-- `nx`: Nx monorepo setup
 - `vite-plus`: Vite+ unified toolchain, workspace task runner, linting, formatting, and optional native Git hooks
-- `ultracite`: Ultracite configuration
 - `oxlint`: Oxlint + Oxfmt (linting & formatting)
 - `mcp`: Install MCP servers, including Better T Stack itself, with add-mcp
 - `opentui`: OpenTUI components
 - `wxt`: WXT browser extension framework
 - `skills`: Install AI agent skills for coding assistants (Cursor, Claude Code, GitHub Copilot, etc.)
-- `evlog`: Structured request logging for Hono, Express, Fastify, Elysia, or fullstack web backends
+- `evlog`: Structured request logging for Hono, Elysia, or TanStack Start fullstack backends
 - `axiom`: Managed Axiom observability through Evlog and Alchemy (select during project creation)
 
 ```bash
-create-better-t-stack --addons pwa biome husky
+create-better-t-stack --addons pwa oxlint lefthook
 ```
 
 ## Examples
@@ -370,7 +347,7 @@ Web deployment configuration:
 
 - `none`: No deployment setup
 - `cloudflare`: Cloudflare Workers deployment (via Alchemy infrastructure as code)
-- `prisma`: Prisma deployment via Alchemy (all generated web frameworks)
+- `prisma`: Prisma deployment via Alchemy (TanStack web frontends)
 - `docker`: Self-hosted deployment with a Dockerfile and a root `docker-compose.yml`
 - `vercel`: Vercel Services deployment with a root `vercel.json`
 
@@ -456,7 +433,7 @@ create-better-t-stack \
   --frontend tanstack-router \
   --api trpc \
   --auth better-auth \
-  --addons pwa biome \
+  --addons pwa oxlint \
   --examples todo \
   --package-manager bun \
   --web-deploy cloudflare \

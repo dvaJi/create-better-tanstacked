@@ -195,7 +195,7 @@ export const router = os.router({
         projectName,
         ...options,
       };
-      const result = await createProjectHandler(combinedInput);
+      const result = await createProjectHandler(combinedInput as CreateInput);
 
       if (options.verbose) {
         return result;
@@ -208,7 +208,10 @@ export const router = os.router({
     })
     .input(CreateInputSchema)
     .handler(async ({ input }) => {
-      const result = await createProjectHandler(input, { silent: true, mode: "json" });
+      const result = await createProjectHandler(input as CreateInput, {
+        silent: true,
+        mode: "json",
+      });
       if (!result) {
         throw new UserCancelledError({ message: "Operation cancelled" });
       }
@@ -260,7 +263,7 @@ export const router = os.router({
       }),
     )
     .handler(async ({ input }) => {
-      await addHandler(input);
+      await addHandler(input as AddInput);
     }),
   addJson: command
     .meta({
@@ -269,7 +272,7 @@ export const router = os.router({
     })
     .input(AddInputSchema)
     .handler(async ({ input }) => {
-      const result = await addHandler(input, { silent: true, mode: "json" });
+      const result = await addHandler(input as AddInput, { silent: true, mode: "json" });
       if (!result) {
         throw new UserCancelledError({ message: "Operation cancelled" });
       }
@@ -561,7 +564,7 @@ export type AddOptions = Pick<
  * import { add } from "create-better-t-stack";
  *
  * const result = await add({
- *   addons: ["biome", "husky"],
+ *   addons: ["oxlint", "lefthook"],
  *   install: true,
  * });
  *
@@ -581,7 +584,7 @@ export async function add(options: AddOptions = {}): Promise<AddResult> {
     };
   }
 
-  const result = await addHandler(parsedInput.data, {
+  const result = await addHandler(parsedInput.data as AddInput, {
     silent: true,
     mode: getProcessMode() ?? "api",
   });

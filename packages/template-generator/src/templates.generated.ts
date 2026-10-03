@@ -2,104 +2,6 @@
 // Run 'bun run generate-templates' to regenerate
 
 export const EMBEDDED_TEMPLATES: Map<string, string> = new Map([
-  ["addons/biome/biome.json.hbs", `{
-    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-	"vcs": {
-		"enabled": false,
-		"clientKind": "git",
-		"useIgnoreFile": false
-	},
-	"files": {
-		"ignoreUnknown": false,
-		"includes": [
-			"**",
-			"!**/.next",
-			"!**/dist",
-			"!**/.turbo",
-			"!**/.nx",
-			"!**/dev-dist",
-			"!**/.zed",
-			"!**/.vscode",
-			"!**/routeTree.gen.ts",
-			"!**/src-tauri",
-			"!**/.nuxt",
-			"!bts.jsonc",
-			"!**/.expo",
-			"!**/.wrangler",
-			"!**/.alchemy",
-			"!**/.svelte-kit",
-			"!**/wrangler.jsonc",
-			"!**/.source",
-			"!**/convex/_generated"
-		]
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
-	"assist": { "actions": { "source": { "organizeImports": "on" } } },
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"preset": "recommended",
-			"correctness": {
-				"useExhaustiveDependencies": "info"
-			},
-			"nursery": {
-				"useSortedClasses": {
-					"level": "warn",
-					"fix": "safe",
-					"options": {
-						"functions": ["clsx", "cva", "cn"]
-					}
-				}
-			},
-			"style": {
-				"noParameterAssign": "error",
-				"useAsConstAssertion": "error",
-				"useDefaultParameterLast": "error",
-				"useEnumInitializers": "error",
-				"useSelfClosingElements": "error",
-				"useSingleVarDeclarator": "error",
-				"noUnusedTemplateLiteral": "error",
-				"useNumberNamespace": "error",
-				"noInferrableTypes": "error",
-				"noUselessElse": "error"
-			}
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	},
-	"css": {
-		"parser": {
-			"tailwindDirectives": true
-		}
-	}
-	{{#if (or (includes frontend "svelte") (includes frontend "nuxt"))}}
-	,
-	"overrides": [
-		{
-			"includes": ["**/*.svelte", "**/*.vue"],
-			"linter": {
-				"rules": {
-					"style": {
-						"useConst": "off",
-						"useImportType": "off"
-					},
-					"correctness": {
-						"noUnusedVariables": "off",
-						"noUnusedImports": "off"
-					}
-				}
-			}
-		}
-	]
-	{{/if}}
-}
-`],
   ["addons/electrobun/apps/desktop/.gitignore", `.hutch/
 /artifacts/
 /build/
@@ -207,20 +109,13 @@ console.log("Electrobun desktop shell started.");
   "include": ["src/**/*.ts", "electrobun.config.ts"]
 }
 `],
-  ["addons/husky/.husky/pre-commit", `lint-staged
-`],
   ["addons/lefthook/lefthook.yml.hbs", `# Lefthook configuration
 # https://github.com/evilmartians/lefthook
 
 pre-commit:
   parallel: true
   jobs:
-{{#if (includes addons "biome")}}
-    - name: biome
-      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
-      run: {{packageManager}} biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
-      stage_fixed: true
-{{else if (includes addons "oxlint")}}
+{{#if (includes addons "oxlint")}}
     - name: oxlint
       run: {{packageManager}} oxlint --fix {staged_files}
       stage_fixed: true
@@ -17232,80 +17127,6 @@ export const authClient: AuthClient = createClient({{#unless (eq backend "self")
 // For Cloudflare Workers, env is accessed via cloudflare:workers module
 // Types are defined in env.d.ts based on your alchemy.run.ts bindings
 export { env as ENV } from "cloudflare:workers";
-{{else if (and (eq backend "self") (eq webDeploy "cloudflare") (includes frontend "next"))}}
-/// <reference path="../cloudflare-env.d.ts" />
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-
-function getNodeEnvValue(key: string) {
-	if (key === "DB") {
-		return undefined;
-	}
-
-	return process.env[key];
-}
-
-function getCloudflareEnvSync() {
-	try {
-		return getCloudflareContext().env as Env;
-	} catch {
-		return undefined;
-	}
-}
-
-function createEnvProxy(getValue: (key: keyof Env & string) => unknown) {
-	return new Proxy({} as Env, {
-		get(_target, prop) {
-			if (typeof prop !== "string") {
-				return undefined;
-			}
-
-			return getValue(prop as keyof Env & string);
-		},
-	});
-}
-
-function resolveEnvValue(key: keyof Env & string) {
-	const nodeValue = getNodeEnvValue(key);
-	if (nodeValue !== undefined) {
-		return nodeValue;
-	}
-
-	return getCloudflareEnvSync()?.[key as keyof Env];
-}
-
-// Next.js local dev runs in Node.js, where env vars are exposed on process.env.
-// In the Cloudflare runtime, fall back to OpenNext's Cloudflare context bindings.
-// For static routes (ISR/SSG), use getEnvAsync() so OpenNext can resolve bindings
-// with the async Cloudflare context API.
-export async function getEnvAsync() {
-	const cloudflareEnv = (await getCloudflareContext({ async: true })).env as Env;
-
-	return createEnvProxy((key) => {
-		const nodeValue = getNodeEnvValue(key);
-		if (nodeValue !== undefined) {
-			return nodeValue;
-		}
-
-		return cloudflareEnv[key as keyof Env];
-	});
-}
-
-export const ENV = createEnvProxy(resolveEnvValue);
-{{else if (usesRequestScopedCloudflareEnv backend webDeploy frontend)}}
-import type { CloudflareEnv } from "../cloudflare-env.d.ts";
-export type { CloudflareEnv } from "../cloudflare-env.d.ts";
-
-const runtimeEnv = typeof process === "undefined" ? {} : process.env;
-
-export const ENV = new Proxy({} as CloudflareEnv, {
-	get(_target, prop) {
-		if (typeof prop !== "string") {
-			return undefined;
-		}
-
-		return runtimeEnv[prop];
-	},
-});
 {{else if (and (eq backend "self") (eq webDeploy "cloudflare"))}}
 /// <reference types="@cloudflare/workers-types" />
 /// <reference path="../cloudflare-env.d.ts" />
@@ -17316,7 +17137,7 @@ export { env as ENV } from "cloudflare:workers";
 {{#if (ne backend "self")}}
 import "varlock/auto-load";
 {{/if}}
-export { ENV } from "./env{{#if (and (eq backend "self") (includes frontend "svelte"))}}.generated{{/if}}";
+export { ENV } from "./env";
 {{/if}}
 {{#if (and (ne backend "self") (or (includes addons "electrobun") (includes addons "tauri")))}}
 
@@ -17333,11 +17154,8 @@ export const desktopOrigins = [
 {{/if}}
 `],
   ["env/services.ts.hbs", `import { ENV{{#if (and (ne backend "self") (or (includes addons "electrobun") (includes addons "tauri")))}}, desktopOrigins{{/if}} } from "./env.server";
-{{#if (usesRequestScopedCloudflareEnv backend webDeploy frontend)}}
-import type { CloudflareEnv } from "../cloudflare-env.d.ts";
-{{/if}}
 {{#if (ne database "none")}}
-import { {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}type Database, {{/if}}{{#if (eq orm "prisma")}}createPrismaClient{{else}}createDb{{/if}} } from "@{{projectName}}/db";
+import { {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}type Database, {{/if}}createDb } from "@{{projectName}}/db";
 {{/if}}
 {{#if (eq auth "better-auth")}}
 import { createAuth{{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}} as createConfiguredAuth{{/if}} } from "@{{projectName}}/auth";
@@ -17345,18 +17163,18 @@ import { createAuth{{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare
 
 {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}
 {{#if (ne database "none")}}
-export function getDb({{#if (usesRequestScopedCloudflareEnv backend webDeploy frontend)}}bindings: CloudflareEnv{{/if}}): {{#if (eq orm "mongoose")}}Promise<Database>{{else}}Database{{/if}} {
-  return {{#if (eq orm "prisma")}}createPrismaClient{{else}}createDb{{/if}}({{#if (usesRequestScopedCloudflareEnv backend webDeploy frontend)}}bindings{{else}}ENV{{/if}});
+export function getDb(): Database {
+  return createDb(ENV);
 }
 {{/if}}
 {{#if (eq auth "better-auth")}}
-export async function createAuth({{#if (usesRequestScopedCloudflareEnv backend webDeploy frontend)}}bindings: CloudflareEnv, {{/if}}{{#if (ne database "none")}}database?: Database{{/if}}) {
-  return createConfiguredAuth({{#if (usesRequestScopedCloudflareEnv backend webDeploy frontend)}}bindings{{else}}ENV{{/if}}{{#if (ne database "none")}}, database ?? await getDb({{#if (usesRequestScopedCloudflareEnv backend webDeploy frontend)}}bindings{{/if}}){{/if}}{{#if (and (ne backend "self") (or (includes addons "electrobun") (includes addons "tauri")))}}, desktopOrigins{{/if}});
+export async function createAuth({{#if (ne database "none")}}database?: Database{{/if}}) {
+  return createConfiguredAuth(ENV{{#if (ne database "none")}}, database ?? getDb(){{/if}}{{#if (and (ne backend "self") (or (includes addons "electrobun") (includes addons "tauri")))}}, desktopOrigins{{/if}});
 }
 {{/if}}
 {{else}}
 {{#if (ne database "none")}}
-export const db = {{#if (eq orm "mongoose")}}await {{/if}}{{#if (eq orm "prisma")}}createPrismaClient{{else}}createDb{{/if}}(ENV);
+export const db = createDb(ENV);
 {{/if}}
 {{#if (eq auth "better-auth")}}
 export const auth = createAuth(ENV{{#if (ne database "none")}}, db{{/if}}{{#if (and (ne backend "self") (or (includes addons "electrobun") (includes addons "tauri")))}}, desktopOrigins{{/if}});
@@ -35548,4 +35366,4 @@ export default function Success() {
 `]
 ]);
 
-export const TEMPLATE_COUNT = 529;
+export const TEMPLATE_COUNT = 527;

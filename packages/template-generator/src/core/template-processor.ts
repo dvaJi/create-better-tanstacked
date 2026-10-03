@@ -97,14 +97,7 @@ Handlebars.registerHelper(
 Handlebars.registerHelper("apiPrefix", (webDeploy, serverDeploy) =>
   webDeploy === "vercel" && serverDeploy === "vercel" ? "/api" : "",
 );
-Handlebars.registerHelper(
-  "usesRequestScopedCloudflareEnv",
-  (backend, webDeploy, frontend) =>
-    backend === "self" &&
-    webDeploy === "cloudflare" &&
-    Array.isArray(frontend) &&
-    (frontend.includes("nuxt") || frontend.includes("svelte")),
-);
+Handlebars.registerHelper("usesRequestScopedCloudflareEnv", () => false);
 
 const getServerUrlSource = `{{#if (and (eq webDeploy serverDeploy) (or (eq webDeploy "vercel") (eq webDeploy "docker")))}}
 function getServerUrl(url: string) {

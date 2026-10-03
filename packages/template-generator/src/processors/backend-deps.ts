@@ -5,53 +5,31 @@ import { addPackageDependency, type AvailableDependencies } from "../utils/add-d
 
 export function processBackendDeps(vfs: VirtualFileSystem, config: ProjectConfig): void {
   const { backend, runtime, api, auth } = config;
-
-  if (backend === "convex") {
-    const convexPath = "packages/backend/package.json";
-    if (vfs.exists(convexPath)) {
-      addPackageDependency({ vfs, packagePath: convexPath, dependencies: ["convex"] });
-    }
-    return;
-  }
-
   const serverPath = "apps/server/package.json";
-  if (!vfs.exists(serverPath) || backend === "self" || backend === "none") return;
+  if (!vfs.exists(serverPath) || (backend !== "hono" && backend !== "elysia")) return;
 
-  const deps: AvailableDependencies[] = [];
-  const devDeps: AvailableDependencies[] = [];
+  const dependencies: AvailableDependencies[] = [];
+  const devDependencies: AvailableDependencies[] = [];
 
   if (backend === "hono") {
-    deps.push("hono");
-    if (runtime === "node") deps.push("@hono/node-server");
-  } else if (backend === "elysia") {
-    deps.push("elysia", "@elysiajs/cors", "@sinclair/typebox");
-    if (runtime === "node") deps.push("@elysiajs/node");
-  } else if (backend === "express") {
-    deps.push("express", "cors");
-    devDeps.push("@types/express", "@types/cors");
-  } else if (backend === "fastify") {
-    deps.push("fastify", "@fastify/cors");
+    dependencies.push("hono");
+    if (runtime === "node") dependencies.push("@hono/node-server");
+  } else {
+    dependencies.push("elysia", "@elysiajs/cors", "@sinclair/typebox");
+    if (runtime === "node") dependencies.push("@elysiajs/node");
   }
 
   if (api === "trpc") {
-    deps.push("@trpc/server");
-    if (backend === "hono") deps.push("@hono/trpc-server");
-    else if (backend === "elysia") deps.push("@elysiajs/trpc");
+    dependencies.push("@trpc/server");
+    if (backend === "hono") dependencies.push("@hono/trpc-server");
+    else dependencies.push("@elysiajs/trpc");
   } else if (api === "orpc") {
-    deps.push("@orpc/server", "@orpc/openapi", "@orpc/zod");
+    dependencies.push("@orpc/server", "@orpc/openapi", "@orpc/zod");
   }
 
-  if (auth === "better-auth") deps.push("better-auth");
+  if (auth === "better-auth") dependencies.push("better-auth");
+  if (runtime === "node") devDependencies.push("tsx", "@types/node");
+  else if (runtime === "bun") devDependencies.push("@types/bun");
 
-  if (runtime === "node") devDeps.push("tsx", "@types/node");
-  else if (runtime === "bun") devDeps.push("@types/bun");
-
-  if (deps.length > 0 || devDeps.length > 0) {
-    addPackageDependency({
-      vfs,
-      packagePath: serverPath,
-      dependencies: deps,
-      devDependencies: devDeps,
-    });
-  }
+  addPackageDependency({ vfs, packagePath: serverPath, dependencies, devDependencies });
 }

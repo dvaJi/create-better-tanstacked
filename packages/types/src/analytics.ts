@@ -4,14 +4,8 @@ import {
   ADDONS_VALUES,
   APISchema,
   AuthSchema,
-  BackendSchema,
-  DatabaseSchema,
-  DatabaseSetupSchema,
   EXAMPLES_VALUES,
   ExamplesSchema,
-  FRONTEND_VALUES,
-  FrontendSchema,
-  ORMSchema,
   PackageManagerSchema,
   PaymentsSchema,
   RuntimeSchema,
@@ -20,7 +14,53 @@ import {
 } from "./schemas";
 
 /** Values emitted by supported CLIs plus retired values kept for historical ingestion. */
-export const ANALYTICS_ADDON_VALUES = [...ADDONS_VALUES, "ruler"] as const;
+export const ANALYTICS_ADDON_VALUES = [
+  ...ADDONS_VALUES,
+  "starlight",
+  "biome",
+  "husky",
+  "nx",
+  "ultracite",
+  "ruler",
+] as const;
+
+const ANALYTICS_DATABASE_SCHEMA = z.enum(["none", "sqlite", "postgres", "mysql", "mongodb"]);
+const ANALYTICS_ORM_SCHEMA = z.enum(["drizzle", "prisma", "mongoose", "none"]);
+const ANALYTICS_BACKEND_SCHEMA = z.enum([
+  "hono",
+  "express",
+  "fastify",
+  "elysia",
+  "convex",
+  "self",
+  "none",
+]);
+const ANALYTICS_FRONTEND_VALUES = [
+  "tanstack-router",
+  "react-router",
+  "tanstack-start",
+  "next",
+  "nuxt",
+  "native-bare",
+  "native-uniwind",
+  "native-unistyles",
+  "svelte",
+  "solid",
+  "astro",
+  "none",
+] as const;
+const ANALYTICS_FRONTEND_SCHEMA = z.enum(ANALYTICS_FRONTEND_VALUES);
+const ANALYTICS_DATABASE_SETUP_SCHEMA = z.enum([
+  "turso",
+  "neon",
+  "prisma-postgres",
+  "planetscale",
+  "mongodb-atlas",
+  "supabase",
+  "d1",
+  "docker",
+  "none",
+]);
 
 export const ANALYTICS_PLATFORM_VALUES = [
   "aix",
@@ -79,8 +119,8 @@ export function normalizeAnalyticsSelection<T extends string>(values: T[] | unde
 }
 
 const AnalyticsFrontendListSchema = z
-  .array(FrontendSchema)
-  .max(FRONTEND_VALUES.length)
+  .array(ANALYTICS_FRONTEND_SCHEMA)
+  .max(ANALYTICS_FRONTEND_VALUES.length)
   .refine(hasUniqueValues)
   .refine(hasNoMixedNone)
   .transform(normalizeAnalyticsSelection);
@@ -135,9 +175,9 @@ export function normalizeAnalyticsNodeVersion(version: string): string {
  * cardinality. Unknown properties are intentionally stripped before storage.
  */
 export const AnalyticsEventSchema = z.object({
-  database: DatabaseSchema.optional(),
-  orm: ORMSchema.optional(),
-  backend: BackendSchema.optional(),
+  database: ANALYTICS_DATABASE_SCHEMA.optional(),
+  orm: ANALYTICS_ORM_SCHEMA.optional(),
+  backend: ANALYTICS_BACKEND_SCHEMA.optional(),
   runtime: RuntimeSchema.optional(),
   frontend: AnalyticsFrontendListSchema.optional(),
   addons: AnalyticsAddonListSchema.optional(),
@@ -147,7 +187,7 @@ export const AnalyticsEventSchema = z.object({
   git: z.boolean().optional(),
   packageManager: PackageManagerSchema.optional(),
   install: z.boolean().optional(),
-  dbSetup: DatabaseSetupSchema.optional(),
+  dbSetup: ANALYTICS_DATABASE_SETUP_SCHEMA.optional(),
   api: APISchema.optional(),
   webDeploy: WebDeploySchema.optional(),
   serverDeploy: ServerDeploySchema.optional(),

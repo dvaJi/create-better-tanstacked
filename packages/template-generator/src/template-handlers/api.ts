@@ -9,10 +9,8 @@ export async function processApiTemplates(
   config: ProjectConfig,
 ): Promise<void> {
   if (config.api === "none") return;
-  if (config.backend === "convex") return;
 
   processTemplatesFromPrefix(vfs, templates, `api/${config.api}/server`, "packages/api", config);
-
   processSingleTemplate(
     vfs,
     templates,
@@ -21,15 +19,10 @@ export async function processApiTemplates(
     config,
   );
 
-  const hasReactWeb = config.frontend.some((f) =>
-    ["tanstack-router", "react-router", "tanstack-start", "next"].includes(f),
+  const webFrontend = config.frontend.find(
+    (frontend) => frontend === "tanstack-router" || frontend === "tanstack-start",
   );
-  const hasNuxtWeb = config.frontend.includes("nuxt");
-  const hasSvelteWeb = config.frontend.includes("svelte");
-  const hasSolidWeb = config.frontend.includes("solid");
-  const hasAstroWeb = config.frontend.includes("astro");
-
-  if (hasReactWeb) {
+  if (webFrontend) {
     processTemplatesFromPrefix(
       vfs,
       templates,
@@ -38,78 +31,24 @@ export async function processApiTemplates(
       config,
     );
 
-    const reactFramework = config.frontend.find((f) =>
-      ["tanstack-router", "react-router", "tanstack-start", "next"].includes(f),
-    );
-    if (
-      config.backend === "self" &&
-      (reactFramework === "next" || reactFramework === "tanstack-start")
-    ) {
+    if (config.backend === "self" && webFrontend === "tanstack-start") {
       processTemplatesFromPrefix(
         vfs,
         templates,
-        `api/${config.api}/fullstack/${reactFramework}`,
+        `api/${config.api}/fullstack/tanstack-start`,
         "apps/web",
         config,
       );
     }
-  } else if (hasNuxtWeb && config.api === "orpc") {
-    if (config.backend === "self") {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `api/${config.api}/fullstack/nuxt`,
-        "apps/web",
-        config,
-      );
-      // Only include vue-query from web templates, skip generic orpc.ts
-      processSingleTemplate(
-        vfs,
-        templates,
-        `api/${config.api}/web/nuxt/app/plugins/vue-query.ts`,
-        "apps/web/app/plugins/vue-query.ts",
-        config,
-      );
-    } else {
-      processTemplatesFromPrefix(vfs, templates, `api/${config.api}/web/nuxt`, "apps/web", config);
-    }
-  } else if (hasSvelteWeb && config.api === "orpc") {
-    processTemplatesFromPrefix(vfs, templates, `api/${config.api}/web/svelte`, "apps/web", config);
-    if (config.backend === "self") {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `api/${config.api}/fullstack/svelte`,
-        "apps/web",
-        config,
-      );
-      if (config.auth !== "better-auth") {
-        vfs.writeFile("apps/web/src/hooks.server.ts", 'import "./lib/orpc.server";\n');
-      }
-    }
-  } else if (hasSolidWeb && config.api === "orpc") {
-    processTemplatesFromPrefix(vfs, templates, `api/${config.api}/web/solid`, "apps/web", config);
-    if (config.backend === "self") {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `api/${config.api}/fullstack/solid`,
-        "apps/web",
-        config,
-      );
-    }
-  } else if (hasAstroWeb && config.api === "orpc") {
-    // Always include the orpc client (handles both self and external backend)
-    processTemplatesFromPrefix(vfs, templates, `api/${config.api}/web/astro`, "apps/web", config);
-    // Add fullstack API routes when backend=self
-    if (config.backend === "self") {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `api/${config.api}/fullstack/astro`,
-        "apps/web",
-        config,
-      );
-    }
+  }
+
+  const hasNative = config.frontend.some(
+    (frontend) =>
+      frontend === "native-bare" ||
+      frontend === "native-uniwind" ||
+      frontend === "native-unistyles",
+  );
+  if (hasNative) {
+    processTemplatesFromPrefix(vfs, templates, `api/${config.api}/native`, "apps/native", config);
   }
 }

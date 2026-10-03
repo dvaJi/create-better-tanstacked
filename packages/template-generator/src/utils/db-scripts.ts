@@ -15,11 +15,7 @@ export function getDbScriptSupport(config: ProjectConfig): DbScriptSupport {
     (config.serverDeploy === "cloudflare" ||
       (config.backend === "self" && config.webDeploy === "cloudflare"));
   const hasDbScripts =
-    config.backend !== "convex" &&
-    config.backend !== "none" &&
-    config.database !== "none" &&
-    config.orm !== "none" &&
-    config.orm !== "mongoose";
+    config.backend !== "none" && config.database !== "none" && config.orm === "drizzle";
 
   if (!hasDbScripts) {
     return {
@@ -33,7 +29,7 @@ export function getDbScriptSupport(config: ProjectConfig): DbScriptSupport {
   }
 
   const hasDbPush = !isD1Alchemy;
-  const hasDbMigrate = config.orm === "prisma" || (config.orm === "drizzle" && !isD1Alchemy);
+  const hasDbMigrate = !isD1Alchemy;
   const hasDbStudio = !isD1Alchemy;
 
   return {

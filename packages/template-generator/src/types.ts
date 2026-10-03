@@ -1,4 +1,4 @@
-import type { ProjectConfig } from "@better-t-stack/types";
+import type { SupportedProjectConfig } from "@better-t-stack/types";
 import { TaggedError } from "better-result";
 
 export interface VirtualFile {
@@ -23,11 +23,11 @@ export interface VirtualFileTree {
   root: VirtualDirectory;
   fileCount: number;
   directoryCount: number;
-  config: ProjectConfig;
+  config: SupportedProjectConfig;
 }
 
 export interface GeneratorOptions {
-  config: ProjectConfig;
+  config: SupportedProjectConfig;
   templateBasePath?: string;
   templates?: Map<string, string>;
   /** CLI version string for bts.jsonc */

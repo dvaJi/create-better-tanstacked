@@ -9,7 +9,6 @@ export async function processDbTemplates(
   config: ProjectConfig,
 ): Promise<void> {
   if (config.database === "none" || config.orm === "none") return;
-  if (config.backend === "convex") return;
 
   processTemplatesFromPrefix(vfs, templates, "db/base", "packages/db", config);
   processTemplatesFromPrefix(vfs, templates, `db/${config.orm}/base`, "packages/db", config);

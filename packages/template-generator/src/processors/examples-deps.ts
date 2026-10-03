@@ -4,13 +4,9 @@ import type { VirtualFileSystem } from "../core/virtual-fs";
 import { addPackageDependency, type AvailableDependencies } from "../utils/add-deps";
 
 export function processExamplesDeps(vfs: VirtualFileSystem, config: ProjectConfig): void {
-  if (!config.examples || config.examples.length === 0 || config.examples[0] === "none") return;
+  if (!config.examples.length || config.examples[0] === "none") return;
 
-  if (
-    config.examples.includes("todo") &&
-    config.backend !== "convex" &&
-    config.backend !== "none"
-  ) {
+  if (config.examples.includes("todo") && config.backend !== "none") {
     setupTodoDependencies(vfs, config);
   }
 
@@ -20,92 +16,54 @@ export function processExamplesDeps(vfs: VirtualFileSystem, config: ProjectConfi
 }
 
 function setupTodoDependencies(vfs: VirtualFileSystem, config: ProjectConfig): void {
-  const { orm, database, backend } = config;
-  const apiPkgPath = "packages/api/package.json";
-  if (!vfs.exists(apiPkgPath) || backend === "none") return;
+  if (!vfs.exists("packages/api/package.json") || config.orm !== "drizzle") return;
 
-  if (orm === "drizzle") {
-    const deps: AvailableDependencies[] = ["drizzle-orm"];
-    if (database === "postgres") deps.push("@types/pg");
-    addPackageDependency({ vfs, packagePath: apiPkgPath, dependencies: deps });
-  } else if (orm === "prisma") {
-    addPackageDependency({ vfs, packagePath: apiPkgPath, dependencies: ["@prisma/client"] });
-  } else if (orm === "mongoose") {
-    addPackageDependency({ vfs, packagePath: apiPkgPath, dependencies: ["mongoose"] });
-  }
+  const dependencies: AvailableDependencies[] = ["drizzle-orm"];
+  if (config.database === "postgres") dependencies.push("@types/pg");
+  addPackageDependency({ vfs, packagePath: "packages/api/package.json", dependencies });
 }
 
 function setupAIDependencies(vfs: VirtualFileSystem, config: ProjectConfig): void {
   const { frontend, backend } = config;
+  const webPackagePath = "apps/web/package.json";
+  const nativePackagePath = "apps/native/package.json";
+  const serverPackagePath = "apps/server/package.json";
 
-  const webPkgPath = "apps/web/package.json";
-  const nativePkgPath = "apps/native/package.json";
-  const serverPkgPath = "apps/server/package.json";
-  const convexBackendPkgPath = "packages/backend/package.json";
-
-  const webExists = vfs.exists(webPkgPath);
-  const nativeExists = vfs.exists(nativePkgPath);
-  const serverExists = vfs.exists(serverPkgPath);
-  const convexBackendExists = vfs.exists(convexBackendPkgPath);
-
-  const hasReactWeb = frontend.some((f) =>
-    ["react-router", "tanstack-router", "next", "tanstack-start"].includes(f),
+  const hasWeb = frontend.some(
+    (value) => value === "tanstack-router" || value === "tanstack-start",
   );
-  const hasNuxt = frontend.includes("nuxt");
-  const hasSvelte = frontend.includes("svelte");
-  const hasReactNative = frontend.some((f) =>
-    ["native-bare", "native-uniwind", "native-unistyles"].includes(f),
+  const hasNative = frontend.some(
+    (value) =>
+      value === "native-bare" || value === "native-uniwind" || value === "native-unistyles",
   );
 
-  if (backend === "convex" && convexBackendExists) {
+  if (backend === "self" && vfs.exists(webPackagePath)) {
     addPackageDependency({
       vfs,
-      packagePath: convexBackendPkgPath,
-      dependencies: ["@convex-dev/agent"],
-      customDependencies: { ai: "^6.0.237", "@ai-sdk/google": "^3.0.102" },
-    });
-  } else if (backend === "self" && webExists) {
-    addPackageDependency({
-      vfs,
-      packagePath: webPkgPath,
+      packagePath: webPackagePath,
       dependencies: ["ai", "@ai-sdk/google", "@ai-sdk/devtools"],
     });
-  } else if (serverExists && backend !== "none") {
+  } else if (backend !== "none" && vfs.exists(serverPackagePath)) {
     addPackageDependency({
       vfs,
-      packagePath: serverPkgPath,
+      packagePath: serverPackagePath,
       dependencies: ["ai", "@ai-sdk/google", "@ai-sdk/devtools"],
     });
   }
 
-  if (webExists) {
-    const deps: AvailableDependencies[] = [];
-    if (backend === "convex") {
-      if (hasReactWeb) deps.push("@convex-dev/agent", "streamdown");
-    } else {
-      deps.push("ai");
-      if (hasNuxt) deps.push("@ai-sdk/vue");
-      else if (hasSvelte) deps.push("@ai-sdk/svelte");
-      else if (hasReactWeb) deps.push("@ai-sdk/react", "streamdown");
-    }
-    if (deps.length > 0) {
-      addPackageDependency({ vfs, packagePath: webPkgPath, dependencies: deps });
-    }
+  if (hasWeb && vfs.exists(webPackagePath)) {
+    addPackageDependency({
+      vfs,
+      packagePath: webPackagePath,
+      dependencies: ["ai", "@ai-sdk/react", "streamdown"],
+    });
   }
 
-  if (nativeExists && hasReactNative) {
-    if (backend === "convex") {
-      addPackageDependency({
-        vfs,
-        packagePath: nativePkgPath,
-        dependencies: ["@convex-dev/agent"],
-      });
-    } else {
-      addPackageDependency({
-        vfs,
-        packagePath: nativePkgPath,
-        dependencies: ["ai", "@ai-sdk/react"],
-      });
-    }
+  if (hasNative && vfs.exists(nativePackagePath)) {
+    addPackageDependency({
+      vfs,
+      packagePath: nativePackagePath,
+      dependencies: ["ai", "@ai-sdk/react"],
+    });
   }
 }

@@ -4,7 +4,6 @@ import {
   EMBEDDED_TEMPLATES,
   processAddonTemplates,
   processAddonsDeps,
-  processNxConfig,
   processPackageConfigs,
   processPnpmWorkspaceConfig,
   processNpmScriptApprovals,
@@ -59,7 +58,6 @@ const ADD_PACKAGE_JSON_PATHS = [
   "apps/native/package.json",
   "apps/desktop/package.json",
   "apps/fumadocs/package.json",
-  "apps/docs/package.json",
   "packages/api/package.json",
   "packages/db/package.json",
   "packages/auth/package.json",
@@ -70,18 +68,10 @@ const ADD_PACKAGE_JSON_PATHS = [
   "packages/ui/package.json",
 ];
 
-const ADD_TEXT_FILE_PATHS = [
-  "pnpm-workspace.yaml",
-  "apps/web/vite.config.ts",
-  "apps/web/next.config.ts",
-  "apps/web/src/Document.tsx",
-  "apps/web/src/root.tsx",
-  "apps/web/src/app/layout.tsx",
-  "lefthook.yml",
-];
+const ADD_TEXT_FILE_PATHS = ["pnpm-workspace.yaml", "apps/web/vite.config.ts", "lefthook.yml"];
 
-const HOOK_ADDONS = ["husky", "lefthook"] as const satisfies readonly Addons[];
-const HOOK_LINTER_ADDONS = ["biome", "oxlint", "vite-plus"] as const satisfies readonly Addons[];
+const HOOK_ADDONS = ["lefthook"] as const satisfies readonly Addons[];
+const HOOK_LINTER_ADDONS = ["oxlint", "vite-plus"] as const satisfies readonly Addons[];
 const fileExistsErrorSchema = z.object({ code: z.literal("EEXIST") });
 const configPackageScopeSchema = z
   .object({
@@ -228,7 +218,6 @@ function mergeAddonOptions(
     opentui: mergeOption(existingAddonOptions?.opentui, nextAddonOptions?.opentui),
     mcp: mergeOption(existingAddonOptions?.mcp, nextAddonOptions?.mcp),
     skills: mergeOption(existingAddonOptions?.skills, nextAddonOptions?.skills),
-    ultracite: mergeOption(existingAddonOptions?.ultracite, nextAddonOptions?.ultracite),
   };
 
   return Object.values(mergedAddonOptions).some(Boolean) ? mergedAddonOptions : undefined;
@@ -562,10 +551,6 @@ async function addHandlerInternal(
 
     if (addonsToAdd.includes("turborepo")) {
       processTurboConfig(vfs, updatedConfig);
-    }
-
-    if (addonsToAdd.includes("nx")) {
-      processNxConfig(vfs, updatedConfig);
     }
 
     if (addonsToAdd.includes("vite-plus")) {

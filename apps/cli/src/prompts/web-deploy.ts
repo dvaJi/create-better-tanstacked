@@ -5,15 +5,12 @@ import type {
   Database,
   DatabaseSetup,
   Frontend,
-  ProjectConfig,
+  ORM,
   Runtime,
   WebDeploy,
 } from "../types";
 import { WEB_FRAMEWORKS } from "../utils/compatibility";
-import {
-  supportsPrismaWebDeploy,
-  validateCloudflareWebDeployKnownIssues,
-} from "../utils/compatibility-rules";
+import { supportsPrismaWebDeploy } from "../utils/compatibility-rules";
 import { UserCancelledError } from "../utils/errors";
 import { isCancel, navigableSelect, preferValidInitial } from "./navigable";
 
@@ -69,8 +66,8 @@ export async function getDeploymentChoice(
   backend?: Backend,
   frontend: Frontend[] = [],
   dbSetup?: DatabaseSetup,
-  database?: Database,
-  orm?: ProjectConfig["orm"],
+  _database?: Database,
+  _orm?: ORM,
   addons: Addons[] = [],
   previousValue?: WebDeploy,
 ) {
@@ -84,15 +81,8 @@ export async function getDeploymentChoice(
   }
 
   const supportsPrismaCompute = supportsPrismaWebDeploy(frontend);
-  const supportsCloudflare = validateCloudflareWebDeployKnownIssues({
-    webDeploy: "cloudflare",
-    frontend,
-    dbSetup,
-    database,
-    orm,
-  }).isOk();
   const availableDeployments = [
-    ...(supportsCloudflare ? (["cloudflare"] as const) : []),
+    "cloudflare" as const,
     ...(supportsPrismaCompute ? (["prisma"] as const) : []),
     "docker",
     "vercel",

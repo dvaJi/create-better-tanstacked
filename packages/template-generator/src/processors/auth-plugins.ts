@@ -26,15 +26,6 @@ export function processAuthPlugins(vfs: VirtualFileSystem, config: ProjectConfig
     });
   }
 
-  // Next.js Cookies
-  if (config.backend === "self" && config.frontend.includes("next")) {
-    pluginsToAdd.push("nextCookies()");
-    importsToAdd.push({
-      named: "nextCookies",
-      module: "better-auth/next-js",
-    });
-  }
-
   // Expo Plugin
   const hasNative = config.frontend.some((f) =>
     ["native-bare", "native-uniwind", "native-unistyles"].includes(f),

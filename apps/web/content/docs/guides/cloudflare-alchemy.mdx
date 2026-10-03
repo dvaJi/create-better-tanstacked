@@ -12,38 +12,37 @@ description: Deploy Better-T-Stack projects to Cloudflare or Prisma and manage h
 
 ## Supported deployment shapes
 
-Cloudflare supports a separate Hono server on the Workers runtime and supported web frameworks. Full-stack `backend: self` projects deploy as one web application.
+Cloudflare supports TanStack Router and TanStack Start web apps, plus a separate Hono server on the Workers runtime. Full-stack `backend: self` projects deploy as one TanStack Start web application.
 
-Prisma supports:
+The Prisma deployment target supports:
 
-- web: TanStack Router, Next.js, Nuxt, Astro, React Router, TanStack Start, SvelteKit, and Solid
-- server: Hono, Express, Fastify, and Elysia on Bun or Node
+- web: TanStack Router and TanStack Start
+- server: Hono and Elysia on Bun or Node
 - mixed stacks, such as Cloudflare web + Prisma server or Prisma web + Cloudflare server
 
 The CLI rejects unsupported framework/runtime combinations before writing files.
 
-With Next.js on Cloudflare, Prisma ORM supports Neon and Prisma Postgres. Generic PostgreSQL connections, including Supabase and PlanetScale Postgres, are not supported for that combination.
-
 ```bash
-# Full-stack Solid on Prisma with PlanetScale MySQL
+# Full-stack TanStack Start on Prisma with Neon Postgres
 bunx create-better-t-stack@latest my-app \
-  --frontend solid \
+  --frontend tanstack-start \
   --backend self \
-  --database mysql \
-  --orm prisma \
-  --db-setup planetscale \
+  --runtime none \
+  --database postgres \
+  --orm drizzle \
+  --db-setup neon \
   --web-deploy prisma
 
-# Next.js on Cloudflare and a Hono/Bun server on Prisma
+# TanStack Router on Cloudflare with a Hono/Workers server and D1
 bunx create-better-t-stack@latest my-app \
-  --frontend next \
+  --frontend tanstack-router \
   --backend hono \
-  --runtime bun \
-  --database postgres \
-  --orm prisma \
-  --db-setup neon \
+  --runtime workers \
+  --database sqlite \
+  --orm drizzle \
+  --db-setup d1 \
   --web-deploy cloudflare \
-  --server-deploy prisma
+  --server-deploy cloudflare
 ```
 
 ## Provider login
@@ -71,7 +70,6 @@ If the backend deploys elsewhere, configure its database separately.
 | -------------------- | -------------------------------------- |
 | Neon                 | A project and database connection      |
 | PlanetScale Postgres | A database and application credentials |
-| PlanetScale MySQL    | A database and application credentials |
 | Prisma Postgres      | A project, database, and connection    |
 | Cloudflare D1        | A database bound to your Worker        |
 
@@ -86,10 +84,6 @@ After changing your database schema, generate a migration:
 
 ```bash
 # Drizzle: generate SQL from the current schema
-bun run db:generate
-
-# Prisma: create a migration, then regenerate the client
-bun run db:migrate
 bun run db:generate
 ```
 

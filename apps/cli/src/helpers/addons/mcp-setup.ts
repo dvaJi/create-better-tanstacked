@@ -66,12 +66,7 @@ function uniqueValues<T>(values: T[]): T[] {
 }
 
 function hasReactBasedFrontend(frontend: ProjectConfig["frontend"]): boolean {
-  return (
-    frontend.includes("react-router") ||
-    frontend.includes("tanstack-router") ||
-    frontend.includes("tanstack-start") ||
-    frontend.includes("next")
-  );
+  return frontend.includes("tanstack-router") || frontend.includes("tanstack-start");
 }
 
 function hasNativeFrontend(frontend: ProjectConfig["frontend"]): boolean {
@@ -97,58 +92,16 @@ function getAllMcpServers(config: ProjectConfig): McpServerDef[] {
       target: "@upstash/context7-mcp",
     },
     {
-      key: "nx",
-      label: "Nx Workspace",
-      name: "nx",
-      target: "npx nx mcp .",
-    },
-    {
       key: "cloudflare-docs",
       label: "Cloudflare Docs",
       name: "cloudflare-docs",
       target: "https://docs.mcp.cloudflare.com/mcp",
     },
     {
-      key: "convex",
-      label: "Convex",
-      name: "convex",
-      target: "npx -y convex@latest mcp start",
-    },
-    {
       key: "shadcn",
       label: "shadcn/ui",
       name: "shadcn",
       target: "npx -y shadcn@latest mcp",
-    },
-    {
-      key: "next-devtools",
-      label: "Next Devtools",
-      name: "next-devtools",
-      target: "npx -y next-devtools-mcp@latest",
-    },
-    {
-      key: "nuxt-docs",
-      label: "Nuxt Docs",
-      name: "nuxt",
-      target: "https://nuxt.com/mcp",
-    },
-    {
-      key: "nuxt-ui-docs",
-      label: "Nuxt UI Docs",
-      name: "nuxt-ui",
-      target: "https://ui.nuxt.com/mcp",
-    },
-    {
-      key: "svelte-docs",
-      label: "Svelte Docs",
-      name: "svelte",
-      target: "https://mcp.svelte.dev/mcp",
-    },
-    {
-      key: "astro-docs",
-      label: "Astro Docs",
-      name: "astro-docs",
-      target: "https://mcp.docs.astro.build/mcp",
     },
     {
       key: "planetscale",
@@ -197,14 +150,10 @@ function getAllMcpServers(config: ProjectConfig): McpServerDef[] {
 
 export function getRecommendedMcpServers(
   config: ProjectConfig,
-  scope: InstallScope,
+  _scope: InstallScope,
 ): McpServerDef[] {
   const serversByKey = new Map(getAllMcpServers(config).map((server) => [server.key, server]));
   const recommendedServerKeys: McpServerKey[] = ["better-t-stack", "context7"];
-
-  if (scope === "project" && config.addons.includes("nx")) {
-    recommendedServerKeys.push("nx");
-  }
 
   if (
     config.runtime === "workers" ||
@@ -214,28 +163,8 @@ export function getRecommendedMcpServers(
     recommendedServerKeys.push("cloudflare-docs");
   }
 
-  if (config.backend === "convex") {
-    recommendedServerKeys.push("convex");
-  }
-
   if (hasReactBasedFrontend(config.frontend)) {
     recommendedServerKeys.push("shadcn");
-  }
-
-  if (config.frontend.includes("next")) {
-    recommendedServerKeys.push("next-devtools");
-  }
-
-  if (config.frontend.includes("nuxt")) {
-    recommendedServerKeys.push("nuxt-docs", "nuxt-ui-docs");
-  }
-
-  if (config.frontend.includes("svelte")) {
-    recommendedServerKeys.push("svelte-docs");
-  }
-
-  if (config.frontend.includes("astro")) {
-    recommendedServerKeys.push("astro-docs");
   }
 
   if (config.dbSetup === "planetscale") {

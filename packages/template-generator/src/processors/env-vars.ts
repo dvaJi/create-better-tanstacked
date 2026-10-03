@@ -1,4 +1,4 @@
-import type { ProjectConfig } from "@better-t-stack/types";
+import type { SupportedProjectConfig } from "@better-t-stack/types";
 
 import type { VirtualFileSystem } from "../core/virtual-fs";
 import { isDatabaseConsumedByDocker } from "../utils/docker-database";
@@ -14,56 +14,19 @@ type AddEnvVariablesOptions = {
   commentOutEmptyValues?: boolean;
 };
 
-const CONVEX_URL_PLACEHOLDER = "https://example.convex.cloud";
-const CONVEX_SITE_URL_PLACEHOLDER = "https://example.convex.site";
-
 function generateRandomString(length: number, charset: string) {
   let result = "";
   const values = new Uint8Array(length);
   globalThis.crypto.getRandomValues(values);
   for (let i = 0; i < length; i++) {
     const value = values[i];
-    if (value !== undefined) {
-      result += charset[value % charset.length];
-    }
+    if (value !== undefined) result += charset[value % charset.length];
   }
   return result;
 }
 
 function generateAuthSecret() {
   return generateRandomString(32, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-}
-
-function getClientServerVar(frontend: string[], backend: ProjectConfig["backend"]) {
-  const hasNextJs = frontend.includes("next");
-  const hasNuxt = frontend.includes("nuxt");
-  const hasSvelte = frontend.includes("svelte");
-  const hasAstro = frontend.includes("astro");
-  const hasTanstackStart = frontend.includes("tanstack-start");
-
-  if (backend === "self" || backend === "none") {
-    return { key: "", value: "", write: false } as const;
-  }
-
-  let key = "VITE_SERVER_URL";
-  if (hasNextJs) key = "NEXT_PUBLIC_SERVER_URL";
-  else if (hasNuxt) key = "NUXT_PUBLIC_SERVER_URL";
-  else if (hasSvelte || hasAstro) key = "PUBLIC_SERVER_URL";
-  else if (hasTanstackStart) key = "VITE_SERVER_URL";
-
-  return { key, value: "http://localhost:3000", write: true } as const;
-}
-
-function getConvexVar(frontend: string[]) {
-  const hasNextJs = frontend.includes("next");
-  const hasNuxt = frontend.includes("nuxt");
-  const hasSvelte = frontend.includes("svelte");
-  const hasTanstackStart = frontend.includes("tanstack-start");
-  if (hasNextJs) return "NEXT_PUBLIC_CONVEX_URL";
-  if (hasNuxt) return "NUXT_PUBLIC_CONVEX_URL";
-  if (hasSvelte) return "PUBLIC_CONVEX_URL";
-  if (hasTanstackStart) return "VITE_CONVEX_URL";
-  return "VITE_CONVEX_URL";
 }
 
 function escapeRegExp(value: string): string {
@@ -79,33 +42,27 @@ function addEnvVariablesToContent(
   let contentToAdd = "";
 
   for (const { key, value, condition, comment } of variables) {
-    if (condition) {
-      const valueToWrite = value ?? "";
-      const shouldComment = options.commentOutEmptyValues === true && valueToWrite.trim() === "";
-      const lineToWrite = shouldComment ? `# ${key}=${valueToWrite}` : `${key}=${valueToWrite}`;
-      const lineRegex = new RegExp(`^\\s*#?\\s*${escapeRegExp(key)}=.*$`, "m");
+    if (!condition) continue;
+    const valueToWrite = value ?? "";
+    const shouldComment = options.commentOutEmptyValues === true && valueToWrite.trim() === "";
+    const lineToWrite = shouldComment ? `# ${key}=${valueToWrite}` : `${key}=${valueToWrite}`;
+    const lineRegex = new RegExp(`^\\s*#?\\s*${escapeRegExp(key)}=.*$`, "m");
 
-      if (lineRegex.test(envContent)) {
-        const existingMatch = envContent.match(lineRegex);
-        if (existingMatch && existingMatch[0] !== lineToWrite) {
-          envContent = envContent.replace(lineRegex, lineToWrite);
-        }
-      } else {
-        if (comment) {
-          contentToAdd += `# ${comment}\n`;
-        }
-        contentToAdd += `${lineToWrite}\n`;
+    if (lineRegex.test(envContent)) {
+      const existingMatch = envContent.match(lineRegex);
+      if (existingMatch && existingMatch[0] !== lineToWrite) {
+        envContent = envContent.replace(lineRegex, lineToWrite);
       }
+    } else {
+      if (comment) contentToAdd += `# ${comment}\n`;
+      contentToAdd += `${lineToWrite}\n`;
     }
   }
 
   if (contentToAdd) {
-    if (envContent.length > 0 && !envContent.endsWith("\n")) {
-      envContent += "\n";
-    }
+    if (envContent.length > 0 && !envContent.endsWith("\n")) envContent += "\n";
     envContent += contentToAdd;
   }
-
   return `${envContent.trimEnd()}\n`;
 }
 
@@ -115,354 +72,69 @@ function writeEnvFile(
   variables: EnvVariable[],
   options: AddEnvVariablesOptions = {},
 ): void {
-  let currentContent = "";
-  if (vfs.exists(envPath)) {
-    currentContent = vfs.readFile(envPath) || "";
-  }
-  const newContent = addEnvVariablesToContent(currentContent, variables, options);
-  vfs.writeFile(envPath, newContent);
+  const currentContent = vfs.exists(envPath) ? vfs.readFile(envPath) || "" : "";
+  vfs.writeFile(envPath, addEnvVariablesToContent(currentContent, variables, options));
 }
 
 function buildClientVars(
-  frontend: string[],
-  backend: ProjectConfig["backend"],
-  auth: ProjectConfig["auth"],
+  frontend: SupportedProjectConfig["frontend"],
+  backend: SupportedProjectConfig["backend"],
+  auth: SupportedProjectConfig["auth"],
   apiPrefix: string,
 ): EnvVariable[] {
-  const hasNextJs = frontend.includes("next");
-  const hasReactRouter = frontend.includes("react-router");
-  const hasTanStackRouter = frontend.includes("tanstack-router");
-  const hasTanStackStart = frontend.includes("tanstack-start");
-
-  const baseVar = getClientServerVar(frontend, backend);
-  const envVarName = backend === "convex" ? getConvexVar(frontend) : baseVar.key;
-  const serverUrl = backend === "convex" ? CONVEX_URL_PLACEHOLDER : `${baseVar.value}${apiPrefix}`;
-
   const vars: EnvVariable[] = [
     {
-      key: envVarName,
-      value: serverUrl,
-      condition: backend === "convex" ? true : baseVar.write,
+      key: "VITE_SERVER_URL",
+      value: `http://localhost:3000${apiPrefix}`,
+      condition: backend !== "none" && backend !== "self",
     },
   ];
 
   if (auth === "clerk") {
-    if (hasNextJs) {
-      vars.push(
-        {
-          key: "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-          value: "",
-          condition: true,
-        },
-        {
-          key: "CLERK_SECRET_KEY",
-          value: "",
-          condition: true,
-        },
-      );
-    } else if (hasReactRouter || hasTanStackRouter || hasTanStackStart) {
-      vars.push({
-        key: "VITE_CLERK_PUBLISHABLE_KEY",
-        value: "",
-        condition: true,
-      });
-      if (hasReactRouter || hasTanStackStart) {
-        vars.push({
-          key: "CLERK_SECRET_KEY",
-          value: "",
-          condition: true,
-        });
-      }
+    vars.push({ key: "VITE_CLERK_PUBLISHABLE_KEY", value: "", condition: true });
+    if (frontend.includes("tanstack-start")) {
+      vars.push({ key: "CLERK_SECRET_KEY", value: "", condition: true });
     }
   }
-
-  if (backend === "convex" && auth === "better-auth") {
-    if (hasNextJs) {
-      vars.push({
-        key: "NEXT_PUBLIC_CONVEX_SITE_URL",
-        value: CONVEX_SITE_URL_PLACEHOLDER,
-        condition: true,
-      });
-    } else if (hasReactRouter || hasTanStackRouter || hasTanStackStart) {
-      vars.push({
-        key: "VITE_CONVEX_SITE_URL",
-        value: CONVEX_SITE_URL_PLACEHOLDER,
-        condition: true,
-      });
-    }
-  }
-
   return vars;
 }
 
 function buildNativeVars(
-  frontend: string[],
-  backend: ProjectConfig["backend"],
-  auth: ProjectConfig["auth"],
+  frontend: SupportedProjectConfig["frontend"],
+  backend: SupportedProjectConfig["backend"],
+  auth: SupportedProjectConfig["auth"],
 ): EnvVariable[] {
-  const hasAstro = frontend.includes("astro");
-  const hasSvelte = frontend.includes("svelte");
-
-  let envVarName = "EXPO_PUBLIC_SERVER_URL";
-  let serverUrl = "http://localhost:3000";
-
-  if (backend === "self") {
-    // SvelteKit uses Vite's default port, Astro uses 4321, others use 3001.
-    serverUrl = hasSvelte
-      ? "http://localhost:5173"
-      : hasAstro
-        ? "http://localhost:4321"
-        : "http://localhost:3001";
-  }
-
-  if (backend === "convex") {
-    envVarName = "EXPO_PUBLIC_CONVEX_URL";
-    serverUrl = CONVEX_URL_PLACEHOLDER;
-  }
-
   const vars: EnvVariable[] = [
     {
-      key: envVarName,
-      value: serverUrl,
+      key: "EXPO_PUBLIC_SERVER_URL",
+      value: backend === "self" ? "http://localhost:3001" : "http://localhost:3000",
       condition: true,
     },
   ];
-
-  if (auth === "clerk") {
-    vars.push({
-      key: "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY",
-      value: "",
-      condition: true,
-    });
+  if (auth === "clerk" && frontend.some((value) => value.startsWith("native-"))) {
+    vars.push({ key: "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY", value: "", condition: true });
   }
-
-  if (backend === "convex" && auth === "better-auth") {
-    vars.push({
-      key: "EXPO_PUBLIC_CONVEX_SITE_URL",
-      value: CONVEX_SITE_URL_PLACEHOLDER,
-      condition: true,
-    });
-  }
-
   return vars;
 }
 
-function buildConvexBackendVars(
-  frontend: string[],
-  auth: ProjectConfig["auth"],
-  payments: ProjectConfig["payments"],
-  examples: ProjectConfig["examples"],
-): EnvVariable[] {
-  const hasReactRouter = frontend.includes("react-router");
-  const hasTanStackRouter = frontend.includes("tanstack-router");
-  const hasNextJs = frontend.includes("next");
-  const hasNative =
-    frontend.includes("native-bare") ||
-    frontend.includes("native-uniwind") ||
-    frontend.includes("native-unistyles");
-  const hasWeb =
-    frontend.includes("react-router") ||
-    frontend.includes("tanstack-router") ||
-    frontend.includes("tanstack-start") ||
-    hasNextJs ||
-    frontend.includes("nuxt") ||
-    frontend.includes("solid") ||
-    frontend.includes("svelte") ||
-    frontend.includes("astro");
-  const defaultSiteUrl =
-    hasNative && !hasWeb
-      ? "http://localhost:8081"
-      : frontend.includes("react-router") || frontend.includes("svelte")
-        ? "http://localhost:5173"
-        : frontend.includes("astro")
-          ? "http://localhost:4321"
-          : "http://localhost:3001";
-
-  const vars: EnvVariable[] = [];
-
-  if (examples?.includes("ai")) {
-    vars.push({
-      key: "GOOGLE_GENERATIVE_AI_API_KEY",
-      value: "",
-      condition: true,
-      comment: "Google AI API key for AI agent",
-    });
-  }
-
-  if (auth === "better-auth") {
-    if (hasReactRouter || hasTanStackRouter) {
-      vars.push({
-        key: "CONVEX_SITE_URL",
-        value: "",
-        condition: true,
-        comment: "Same as CONVEX_URL but ends in .site",
-      });
-    }
-
-    if (hasNative) {
-      vars.push({
-        key: "EXPO_PUBLIC_CONVEX_SITE_URL",
-        value: "",
-        condition: true,
-        comment: "Same as CONVEX_URL but ends in .site",
-      });
-    }
-
-    if (hasWeb) {
-      vars.push(
-        {
-          key: hasNextJs ? "NEXT_PUBLIC_CONVEX_SITE_URL" : "VITE_CONVEX_SITE_URL",
-          value: "",
-          condition: true,
-          comment: "Same as CONVEX_URL but ends in .site",
-        },
-        {
-          key: "SITE_URL",
-          value: defaultSiteUrl,
-          condition: true,
-          comment: "Web app URL for authentication",
-        },
-      );
-    } else if (hasNative) {
-      vars.push({
-        key: "SITE_URL",
-        value: defaultSiteUrl,
-        condition: true,
-        comment: "Web app URL for authentication (for Expo web support)",
-      });
-    }
-  }
-
-  if (payments === "polar") {
-    vars.push(
-      {
-        key: "POLAR_ORGANIZATION_TOKEN",
-        value: "",
-        condition: true,
-        comment: "Polar organization token",
-      },
-      {
-        key: "POLAR_WEBHOOK_SECRET",
-        value: "",
-        condition: true,
-        comment: "Polar webhook secret",
-      },
-      {
-        key: "POLAR_SERVER",
-        value: "sandbox",
-        condition: true,
-        comment: "Polar environment: sandbox or production",
-      },
-    );
-  }
-
-  return vars;
-}
-
-function buildConvexCommentBlocks(
-  frontend: string[],
-  auth: ProjectConfig["auth"],
-  payments: ProjectConfig["payments"],
-  examples: ProjectConfig["examples"],
-): string {
-  const needsConvexSiteUrl =
-    frontend.includes("react-router") || frontend.includes("tanstack-router");
-  const hasNative =
-    frontend.includes("native-bare") ||
-    frontend.includes("native-uniwind") ||
-    frontend.includes("native-unistyles");
-  const hasWeb =
-    frontend.includes("react-router") ||
-    frontend.includes("tanstack-router") ||
-    frontend.includes("tanstack-start") ||
-    frontend.includes("next") ||
-    frontend.includes("nuxt") ||
-    frontend.includes("solid") ||
-    frontend.includes("svelte") ||
-    frontend.includes("astro");
-  const defaultSiteUrl =
-    hasNative && !hasWeb
-      ? "http://localhost:8081"
-      : frontend.includes("react-router") || frontend.includes("svelte")
-        ? "http://localhost:5173"
-        : frontend.includes("astro")
-          ? "http://localhost:4321"
-          : "http://localhost:3001";
-
-  let commentBlocks = "";
-
-  if (examples?.includes("ai")) {
-    commentBlocks += `# Set Google AI API key for AI agent
-# npx convex env set GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key
-
-`;
-  }
-
-  if (auth === "better-auth") {
-    commentBlocks += `# Set Convex environment variables
-# npx convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32)
-${needsConvexSiteUrl ? `# npx convex env set CONVEX_SITE_URL ${CONVEX_SITE_URL_PLACEHOLDER}\n` : ""}${hasWeb || hasNative ? `# npx convex env set SITE_URL ${defaultSiteUrl}\n` : ""}`;
-  }
-
-  if (payments === "polar") {
-    commentBlocks += `# Set Polar environment variables
-# npx convex env set POLAR_ORGANIZATION_TOKEN your_polar_token
-# npx convex env set POLAR_WEBHOOK_SECRET your_polar_webhook_secret
-# Optional: npx convex env set POLAR_SERVER production
-# Create a Polar webhook at https://<your-convex-site-url>/polar/events
-# Enable: product.created, product.updated, subscription.created, subscription.updated
-
-`;
-  }
-
-  return commentBlocks;
-}
-
-function buildServerVars(
-  backend: ProjectConfig["backend"],
-  frontend: string[],
-  projectName: string,
-  auth: ProjectConfig["auth"],
-  api: ProjectConfig["api"],
-  database: ProjectConfig["database"],
-  dbSetup: ProjectConfig["dbSetup"],
-  runtime: ProjectConfig["runtime"],
-  webDeploy: ProjectConfig["webDeploy"],
-  serverDeploy: ProjectConfig["serverDeploy"],
-  payments: ProjectConfig["payments"],
-  examples: ProjectConfig["examples"],
-): EnvVariable[] {
-  const hasReactRouter = frontend.includes("react-router");
-  const hasSvelte = frontend.includes("svelte");
-  const hasAstro = frontend.includes("astro");
-  const hasNative =
-    frontend.includes("native-bare") ||
-    frontend.includes("native-uniwind") ||
-    frontend.includes("native-unistyles");
-  const hasWeb =
-    hasReactRouter ||
-    hasSvelte ||
-    hasAstro ||
-    frontend.includes("tanstack-router") ||
-    frontend.includes("tanstack-start") ||
-    frontend.includes("next") ||
-    frontend.includes("nuxt") ||
-    frontend.includes("solid");
-
-  let corsOrigin = "http://localhost:3001";
-  if (hasAstro) {
-    corsOrigin = "http://localhost:4321";
-  } else if (hasReactRouter || hasSvelte) {
-    corsOrigin = "http://localhost:5173";
-  }
-  const betterAuthUrl =
-    backend === "self"
-      ? hasSvelte
-        ? "http://localhost:5173"
-        : hasAstro
-          ? "http://localhost:4321"
-          : "http://localhost:3001"
-      : "http://localhost:3000";
+function buildServerVars(config: SupportedProjectConfig): EnvVariable[] {
+  const {
+    backend,
+    frontend,
+    auth,
+    api,
+    database,
+    dbSetup,
+    runtime,
+    webDeploy,
+    serverDeploy,
+    payments,
+    examples,
+  } = config;
+  const hasNative = frontend.some((value) => value.startsWith("native-"));
+  const hasWeb = frontend.some((value) => ["tanstack-router", "tanstack-start"].includes(value));
+  const corsOrigin = "http://localhost:3001";
+  const betterAuthUrl = backend === "self" ? "http://localhost:3001" : "http://localhost:3000";
   const polarSuccessUrl =
     hasNative && !hasWeb
       ? `${betterAuthUrl}/polar/success`
@@ -470,82 +142,36 @@ function buildServerVars(
 
   let databaseUrl: string | null = null;
   if (database !== "none" && dbSetup === "none") {
-    switch (database) {
-      case "postgres":
-        databaseUrl = "postgresql://postgres:password@localhost:5432/postgres";
-        break;
-      case "mysql":
-        databaseUrl = "mysql://root:password@localhost:3306/mydb";
-        break;
-      case "mongodb":
-        databaseUrl = "mongodb://localhost:27017/mydatabase";
-        break;
-      case "sqlite":
-        if (
-          isDatabaseConsumedByDocker({ backend, serverDeploy, webDeploy }) &&
-          dbSetup === "none"
-        ) {
-          databaseUrl = "file:../../.data/local.db";
-        } else if (
-          runtime === "workers" ||
-          webDeploy === "cloudflare" ||
-          serverDeploy === "cloudflare"
-        ) {
-          databaseUrl = "http://127.0.0.1:8080";
-        } else {
-          databaseUrl = "file:../../local.db";
-        }
-        break;
+    if (database === "postgres") {
+      databaseUrl = "postgresql://postgres:password@localhost:5432/postgres";
+    } else if (
+      runtime === "workers" ||
+      webDeploy === "cloudflare" ||
+      serverDeploy === "cloudflare"
+    ) {
+      databaseUrl = "http://127.0.0.1:8080";
+    } else if (isDatabaseConsumedByDocker({ backend, serverDeploy, webDeploy })) {
+      databaseUrl = "file:../../.data/local.db";
+    } else {
+      databaseUrl = "file:../../local.db";
     }
   }
 
   const hasBetterAuth = auth === "better-auth";
   const hasClerk = auth === "clerk";
-  const needsClerkPublishableKey =
-    hasClerk &&
-    (["express", "fastify"].includes(backend) ||
-      (api !== "none" && ["self", "hono", "elysia"].includes(backend)));
-
+  const needsClerkPublishableKey = hasClerk && api !== "none" && backend !== "none";
   return [
-    {
-      key: "BETTER_AUTH_SECRET",
-      value: generateAuthSecret(),
-      condition: hasBetterAuth,
-    },
-    {
-      key: "BETTER_AUTH_URL",
-      value: betterAuthUrl,
-      condition: hasBetterAuth,
-    },
-    {
-      key: "CLERK_SECRET_KEY",
-      value: "",
-      condition: hasClerk,
-    },
-    {
-      key: "CLERK_PUBLISHABLE_KEY",
-      value: "",
-      condition: needsClerkPublishableKey,
-    },
-    {
-      key: "POLAR_ACCESS_TOKEN",
-      value: "",
-      condition: payments === "polar",
-    },
-    {
-      key: "POLAR_SUCCESS_URL",
-      value: polarSuccessUrl,
-      condition: payments === "polar",
-    },
-    {
-      key: "CORS_ORIGIN",
-      value: corsOrigin,
-      condition: backend !== "self" || auth === "clerk",
-    },
+    { key: "BETTER_AUTH_SECRET", value: generateAuthSecret(), condition: hasBetterAuth },
+    { key: "BETTER_AUTH_URL", value: betterAuthUrl, condition: hasBetterAuth },
+    { key: "CLERK_SECRET_KEY", value: "", condition: hasClerk },
+    { key: "CLERK_PUBLISHABLE_KEY", value: "", condition: needsClerkPublishableKey },
+    { key: "POLAR_ACCESS_TOKEN", value: "", condition: payments === "polar" },
+    { key: "POLAR_SUCCESS_URL", value: polarSuccessUrl, condition: payments === "polar" },
+    { key: "CORS_ORIGIN", value: corsOrigin, condition: backend !== "self" || hasClerk },
     {
       key: "GOOGLE_GENERATIVE_AI_API_KEY",
       value: "",
-      condition: examples?.includes("ai") || false,
+      condition: examples.includes("ai"),
     },
     {
       key: "DATABASE_URL",
@@ -555,155 +181,36 @@ function buildServerVars(
   ];
 }
 
-export function processEnvVariables(vfs: VirtualFileSystem, config: ProjectConfig): void {
-  const {
-    backend,
-    frontend,
-    projectName,
-    database,
-    auth,
-    api,
-    examples,
-    dbSetup,
-    webDeploy,
-    serverDeploy,
-    runtime,
-    payments,
-  } = config;
-
-  const hasReactRouter = frontend.includes("react-router");
-  const hasTanStackRouter = frontend.includes("tanstack-router");
-  const hasTanStackStart = frontend.includes("tanstack-start");
-  const hasNextJs = frontend.includes("next");
-  const hasNuxt = frontend.includes("nuxt");
-  const hasSvelte = frontend.includes("svelte");
-  const hasSolid = frontend.includes("solid");
-  const hasAstro = frontend.includes("astro");
-  const hasWebFrontend =
-    hasReactRouter ||
-    hasTanStackRouter ||
-    hasTanStackStart ||
-    hasNextJs ||
-    hasNuxt ||
-    hasSolid ||
-    hasSvelte ||
-    hasAstro;
-
-  // --- Client App .env ---
-  if (hasWebFrontend) {
-    const clientDir = "apps/web";
-    if (vfs.directoryExists(clientDir)) {
-      const envPath = `${clientDir}/.env`;
-      // Matches the /api base the Vercel build uses when web and server deploy together
-      const apiPrefix = webDeploy === "vercel" && serverDeploy === "vercel" ? "/api" : "";
-      const clientVars = buildClientVars(frontend, backend, auth, apiPrefix);
-      writeEnvFile(vfs, envPath, clientVars);
-    }
-  }
-
-  // --- Root .env for docker compose build args ---
-  // compose ${VAR} interpolation only reads the root .env, not the per-app env_file,
-  // so mirror the same variable names users fill in apps/web/.env
-  if (webDeploy === "docker" && hasWebFrontend) {
-    const hasClerkBuildArgFrontend =
-      hasNextJs || hasReactRouter || hasTanStackRouter || hasTanStackStart;
-    const convexBuildArg = hasNextJs
-      ? "NEXT_PUBLIC_CONVEX_URL"
-      : hasSvelte || hasAstro
-        ? "PUBLIC_CONVEX_URL"
-        : "VITE_CONVEX_URL";
-    const clerkBuildArg = hasNextJs
-      ? "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
-      : "VITE_CLERK_PUBLISHABLE_KEY";
-    const rootComposeVars: EnvVariable[] = [
-      {
-        key: convexBuildArg,
-        value: CONVEX_URL_PLACEHOLDER,
-        condition: backend === "convex" && !hasNuxt,
-        comment: "Baked into the web image at docker compose build time",
-      },
-      {
-        key: clerkBuildArg,
-        value: "",
-        condition: auth === "clerk" && hasClerkBuildArgFrontend,
-        comment: "Baked into the web image at docker compose build time",
-      },
-    ];
-    if (rootComposeVars.some((v) => v.condition)) {
-      writeEnvFile(vfs, ".env", rootComposeVars);
-    }
-  }
-
-  // --- Native App .env ---
-  if (
-    frontend.includes("native-bare") ||
-    frontend.includes("native-uniwind") ||
-    frontend.includes("native-unistyles")
-  ) {
-    const nativeDir = "apps/native";
-    if (vfs.directoryExists(nativeDir)) {
-      const envPath = `${nativeDir}/.env`;
-      const nativeVars = buildNativeVars(frontend, backend, auth);
-      writeEnvFile(vfs, envPath, nativeVars);
-    }
-  }
-
-  // --- Convex Backend .env.local ---
-  if (backend === "convex") {
-    const convexBackendDir = "packages/backend";
-    if (vfs.directoryExists(convexBackendDir)) {
-      const envLocalPath = `${convexBackendDir}/.env.local`;
-
-      // Write comment blocks first
-      const commentBlocks = buildConvexCommentBlocks(frontend, auth, payments, examples);
-      if (commentBlocks) {
-        let currentContent = "";
-        if (vfs.exists(envLocalPath)) {
-          currentContent = vfs.readFile(envLocalPath) || "";
-        }
-        vfs.writeFile(envLocalPath, commentBlocks + currentContent);
-      }
-
-      // Then add variables
-      const convexBackendVars = buildConvexBackendVars(frontend, auth, payments, examples);
-      if (convexBackendVars.length > 0) {
-        let existingContent = "";
-        if (vfs.exists(envLocalPath)) {
-          existingContent = vfs.readFile(envLocalPath) || "";
-        }
-        const contentWithVars = addEnvVariablesToContent(existingContent, convexBackendVars, {
-          commentOutEmptyValues: true,
-        });
-        vfs.writeFile(envLocalPath, contentWithVars);
-      }
-    }
-    return;
-  }
-
-  // --- Server App .env ---
-  const serverVars = buildServerVars(
-    backend,
-    frontend,
-    projectName,
-    auth,
-    api,
-    database,
-    dbSetup,
-    runtime,
-    webDeploy,
-    serverDeploy,
-    payments,
-    examples,
+export function processEnvVariables(vfs: VirtualFileSystem, config: SupportedProjectConfig): void {
+  const { backend, frontend, auth, webDeploy, serverDeploy } = config;
+  const hasWebFrontend = frontend.some((value) =>
+    ["tanstack-router", "tanstack-start"].includes(value),
   );
 
+  if (hasWebFrontend && vfs.directoryExists("apps/web")) {
+    const apiPrefix = webDeploy === "vercel" && serverDeploy === "vercel" ? "/api" : "";
+    writeEnvFile(vfs, "apps/web/.env", buildClientVars(frontend, backend, auth, apiPrefix));
+  }
+
+  if (webDeploy === "docker" && hasWebFrontend && auth === "clerk") {
+    writeEnvFile(vfs, ".env", [
+      {
+        key: "VITE_CLERK_PUBLISHABLE_KEY",
+        value: "",
+        condition: true,
+        comment: "Baked into the web image at docker compose build time",
+      },
+    ]);
+  }
+
+  if (frontend.some((value) => value.startsWith("native-")) && vfs.directoryExists("apps/native")) {
+    writeEnvFile(vfs, "apps/native/.env", buildNativeVars(frontend, backend, auth));
+  }
+
+  const serverVars = buildServerVars(config);
   if (backend === "self") {
-    const webDir = "apps/web";
-    if (vfs.directoryExists(webDir)) {
-      const envPath = `${webDir}/.env`;
-      writeEnvFile(vfs, envPath, serverVars);
-    }
+    if (vfs.directoryExists("apps/web")) writeEnvFile(vfs, "apps/web/.env", serverVars);
   } else if (vfs.directoryExists("apps/server")) {
-    const envPath = "apps/server/.env";
-    writeEnvFile(vfs, envPath, serverVars);
+    writeEnvFile(vfs, "apps/server/.env", serverVars);
   }
 }

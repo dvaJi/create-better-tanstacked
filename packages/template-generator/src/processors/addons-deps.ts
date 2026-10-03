@@ -9,27 +9,17 @@ type PackageJson = {
   scripts?: Record<string, string>;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
-  "lint-staged"?: Record<string, string | string[]>;
   [key: string]: JsonValue | undefined;
 };
 
 export function processAddonsDeps(vfs: VirtualFileSystem, config: ProjectConfig): void {
   if (!config.addons || config.addons.length === 0) return;
 
-  const hasViteReactFrontend =
-    config.frontend.includes("react-router") || config.frontend.includes("tanstack-router");
-  const hasSolidFrontend = config.frontend.includes("solid");
-  const hasPwaCompatibleFrontend = hasViteReactFrontend || hasSolidFrontend;
-  const hasEvlogWebServer = config.frontend.some((frontend) =>
-    ["next", "nuxt", "svelte", "tanstack-start", "astro"].includes(frontend),
-  );
+  const hasPwaCompatibleFrontend = config.frontend.includes("tanstack-router");
+  const hasEvlogWebServer = config.frontend.includes("tanstack-start");
 
   if (config.addons.includes("turborepo")) {
     addPackageDependency({ vfs, packagePath: "package.json", devDependencies: ["turbo"] });
-  }
-
-  if (config.addons.includes("nx")) {
-    addPackageDependency({ vfs, packagePath: "package.json", devDependencies: ["nx"] });
   }
 
   if (config.addons.includes("vite-plus")) {

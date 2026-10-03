@@ -40,21 +40,21 @@ generated commands.
 
 ## Features
 
-| Category                 | Options                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **TypeScript**           | End-to-end type safety across all parts of your application                                                                                                                                                                                                                                                                                                                                                                               |
-| **Frontend**             | • React with TanStack Router<br>• React with React Router<br>• React with TanStack Start (SSR)<br>• Next.js<br>• SvelteKit<br>• Nuxt (Vue)<br>• Solid (SSR)<br>• Astro<br>• React Native bare Expo<br>• React Native with NativeWind (via Expo)<br>• React Native with Unistyles (via Expo)<br>• None                                                                                                                                     |
-| **Backend**              | • Hono<br>• Express<br>• Elysia<br>• Fastify<br>• Self (fullstack inside the web app)<br>• Convex<br>• None                                                                                                                                                                                                                                                                                                                               |
-| **API Layer**            | • tRPC (type-safe APIs)<br>• oRPC (OpenAPI-compatible type-safe APIs)<br>• None                                                                                                                                                                                                                                                                                                                                                           |
-| **Runtime**              | • Bun<br>• Node.js<br>• Cloudflare Workers<br>• None                                                                                                                                                                                                                                                                                                                                                                                      |
-| **Database**             | • SQLite<br>• PostgreSQL<br>• MySQL<br>• MongoDB<br>• None                                                                                                                                                                                                                                                                                                                                                                                |
-| **ORM**                  | • Drizzle (TypeScript-first)<br>• Prisma (feature-rich)<br>• Mongoose (for MongoDB)<br>• None                                                                                                                                                                                                                                                                                                                                             |
-| **Database Setup**       | • Turso (SQLite)<br>• Cloudflare D1 (SQLite)<br>• Neon (PostgreSQL)<br>• Supabase (PostgreSQL)<br>• Prisma Postgres<br>• MongoDB Atlas<br>• None (manual setup)                                                                                                                                                                                                                                                                           |
-| **Authentication**       | • Better Auth<br>• Clerk                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **Styling**              | Tailwind CSS with a shared shadcn/ui package for React web apps                                                                                                                                                                                                                                                                                                                                                                           |
-| **Addons**               | • PWA support<br>• Tauri (desktop applications)<br>• Electrobun (lightweight desktop shell)<br>• Starlight and Fumadocs (documentation sites)<br>• Biome, Oxlint, Ultracite, or Vite+ (linting and formatting)<br>• Lefthook, Husky (Git hooks)<br>• evlog (request logging for server/fullstack backends)<br>• MCP, Skills (agent tooling)<br>• OpenTUI, WXT (platform extensions)<br>• Turborepo, Nx, or Vite+ (monorepo orchestration) |
-| **Examples**             | • Todo app<br>• AI Chat interface (using Vercel AI SDK)                                                                                                                                                                                                                                                                                                                                                                                   |
-| **Developer Experience** | • Automatic Git initialization<br>• Package manager choice (npm, pnpm, bun)<br>• Automatic dependency installation                                                                                                                                                                                                                                                                                                                        |
+| Category                 | Options                                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- |
+| **TypeScript**           | End-to-end type safety across the generated application                                                   |
+| **Frontend**             | TanStack Router, TanStack Start, Expo Bare, Expo Uniwind, Expo Unistyles, or none                         |
+| **Backend**              | Hono, Elysia, TanStack Start fullstack, or none                                                           |
+| **API Layer**            | tRPC, oRPC, or none                                                                                       |
+| **Runtime**              | Bun, Node.js, Cloudflare Workers, or none                                                                 |
+| **Database**             | SQLite, PostgreSQL, or none                                                                               |
+| **ORM**                  | Drizzle or none                                                                                           |
+| **Database Setup**       | Turso, Cloudflare D1, Neon, Supabase, Prisma Postgres, PlanetScale, Docker, or none                       |
+| **Authentication**       | Better Auth, Clerk, or none                                                                               |
+| **Styling**              | Tailwind CSS with a shared shadcn/ui package for React web apps                                           |
+| **Addons**               | PWA, Tauri, Electrobun, Fumadocs, Oxlint, Lefthook, Turborepo, Vite+, evlog, MCP, Skills, OpenTUI, or WXT |
+| **Examples**             | Todo app or AI chat interface (Vercel AI SDK)                                                             |
+| **Developer Experience** | Git initialization, package manager choice (npm, pnpm, bun), and automatic dependency installation        |
 
 ## Usage
 
@@ -64,14 +64,14 @@ Usage: create-better-t-stack [project-directory] [options]
 Options:
   -V, --version                   Output the version number
   -y, --yes                       Use default configuration
-  --template <type>               Use a template (mern, pern, t3, uniwind, none)
-  --database <type>               Database type (none, sqlite, postgres, mysql, mongodb)
-  --orm <type>                    ORM type (none, drizzle, prisma, mongoose)
+  --template <type>               Use a template (uniwind, none)
+  --database <type>               Database type (none, sqlite, postgres)
+  --orm <type>                    ORM type (none, drizzle)
   --dry-run                       Validate configuration without writing files
   --auth <provider>               Authentication (better-auth, clerk, none)
   --payments <provider>           Payments provider (polar, none)
-  --frontend <types...>           Frontend types (tanstack-router, react-router, tanstack-start, next, nuxt, svelte, solid, astro, native-bare, native-uniwind, native-unistyles, none)
-  --addons <types...>             Additional addons (pwa, tauri, electrobun, starlight, biome, lefthook, husky, mcp, turborepo, nx, vite-plus, fumadocs, ultracite, oxlint, opentui, wxt, skills, evlog, none)
+  --frontend <types...>           Frontend types (tanstack-router, tanstack-start, native-bare, native-uniwind, native-unistyles, none)
+  --addons <types...>             Additional addons (pwa, tauri, electrobun, lefthook, mcp, turborepo, vite-plus, fumadocs, oxlint, opentui, wxt, skills, evlog, none)
   --examples <types...>           Examples to include (todo, ai, none)
   --git                           Initialize git repository
   --no-git                        Skip git initialization
@@ -79,10 +79,10 @@ Options:
   --install                       Install dependencies
   --no-install                    Skip installing dependencies
   --open <target>                 Open in an editor, IDE, or coding agent after creation
-  --db-setup <setup>              Database setup (turso, d1, neon, supabase, prisma-postgres, planetscale, mongodb-atlas, docker, none)
+  --db-setup <setup>              Database setup (turso, d1, neon, supabase, prisma-postgres, planetscale, docker, none)
   --web-deploy <setup>            Web deployment (cloudflare, docker, vercel, none)
   --server-deploy <setup>         Server deployment (cloudflare, docker, vercel, none)
-  --backend <framework>           Backend framework (hono, express, fastify, elysia, convex, self, none)
+  --backend <framework>           Backend framework (hono, elysia, self, none)
   --runtime <runtime>             Runtime (bun, node, workers, none)
   --api <type>                    API type (trpc, orpc, none)
   --directory-conflict <strategy> Directory strategy (merge, overwrite, increment, error)
@@ -165,7 +165,7 @@ npx create-better-t-stack --yes --dry-run
 Create a project with specific options:
 
 ```bash
-npx create-better-t-stack --database postgres --orm drizzle --auth better-auth --addons pwa biome
+npx create-better-t-stack --database postgres --orm drizzle --auth better-auth --addons pwa oxlint
 ```
 
 Create a project with Elysia backend and Node.js runtime:
@@ -198,16 +198,16 @@ Create a project with Supabase PostgreSQL setup:
 npx create-better-t-stack --database postgres --orm drizzle --db-setup supabase --auth better-auth
 ```
 
-Create a project with Convex backend:
+Create a fullstack project with TanStack Start:
 
 ```bash
-npx create-better-t-stack --backend convex --frontend tanstack-router
+npx create-better-t-stack --backend self --frontend tanstack-start
 ```
 
-Create a project with documentation site:
+Create a project with a Fumadocs site:
 
 ```bash
-npx create-better-t-stack --addons starlight
+npx create-better-t-stack --addons fumadocs
 ```
 
 Create a minimal TypeScript project with no backend:
@@ -225,7 +225,7 @@ npx create-better-t-stack --frontend none --backend hono --database postgres --o
 Create a simple frontend-only project:
 
 ```bash
-npx create-better-t-stack --backend none --frontend next --addons none --examples none
+npx create-better-t-stack --backend none --frontend tanstack-router --addons none --examples none
 ```
 
 Create a Cloudflare Workers project:
@@ -237,7 +237,7 @@ npx create-better-t-stack --backend hono --runtime workers --database sqlite --o
 Create a self-hosted fullstack project on Cloudflare with D1:
 
 ```bash
-npx create-better-t-stack --backend self --frontend next --api trpc --database sqlite --orm drizzle --db-setup d1 --web-deploy cloudflare
+npx create-better-t-stack --backend self --frontend tanstack-start --runtime none --api trpc --database sqlite --orm drizzle --db-setup d1 --web-deploy cloudflare
 ```
 
 Create a self-hosted project that ships as Docker containers (web + server + database via Docker Compose):
@@ -254,22 +254,16 @@ npx create-better-t-stack --frontend none --backend hono --api trpc --database n
 
 ## Compatibility Notes
 
-- **Convex backend**: Requires `database`, `orm`, `api`, `runtime`, and `server-deploy` to be `none`; auth can be `better-auth`, `clerk`, or `none` depending frontend compatibility
-- **Backend 'none'**: If selected, this option will force related options like API, ORM, database, authentication, and runtime to 'none'. Examples will also be disabled (set to none/empty).
-- **Frontend 'none'**: Creates a backend-only project. When selected, PWA, Tauri, Electrobun, and certain examples may be disabled.
-- **API 'none'**: Disables tRPC/oRPC setup. Can be used with backend frameworks for REST APIs or custom API implementations.
-- **Database 'none'**: Disables database setup and requires ORM to be `none`.
-- **ORM 'none'**: Can be used when you want to handle database operations manually or use a different ORM.
-- **Runtime 'none'**: Only available with Convex backend, backend `none`, or backend `self`.
-- **Cloudflare Workers runtime**: Only compatible with Hono backend. If a database is used, MongoDB is not supported.
-- **Cloudflare D1 setup**: Requires `sqlite` and either `--runtime workers --server-deploy cloudflare` or `--backend self --web-deploy cloudflare`. For `backend self`, D1 is supported on `next`, `tanstack-start`, `nuxt`, `svelte`, `solid`, and `astro`.
-- **Addons 'none'**: Skips all addons.
-- **Examples 'none'**: Skips all example implementations (todo, AI chat).
-- **Nuxt, Svelte, Solid, and Astro** frontends are only compatible with the oRPC API layer
-- **PWA support** requires TanStack Router, React Router, Next.js, or Solid
-- **Tauri desktop app** requires TanStack Router, React Router, TanStack Start, Next.js, Nuxt, SvelteKit, or Astro
-- **Electrobun desktop app** requires TanStack Router, React Router, TanStack Start, Next.js, Nuxt, SvelteKit, or Astro. Desktop packaging uses static web assets, so SSR-first frontends need a static/export build before desktop builds will work.
-- **AI example** is not compatible with Solid or Astro. With Convex backend, it also excludes Nuxt and Svelte.
+- **Backend `self`** uses TanStack Start server routes and requires the TanStack Start frontend.
+- **Backend `none`** disables API, ORM, database, authentication, and runtime setup.
+- **Frontend `none`** creates a backend-only project. Expo can be selected alongside a TanStack web frontend.
+- **API `none`** disables tRPC and oRPC setup.
+- **Database `none`** disables database setup and requires ORM `none`.
+- **Runtime `none`** is available with backend `none` or `self`.
+- **Cloudflare Workers** supports the Hono backend and SQLite databases.
+- **Cloudflare D1** requires SQLite and either Workers with Cloudflare server deployment or TanStack Start fullstack with Cloudflare web deployment.
+- **PWA** requires TanStack Router. Tauri and Electrobun support TanStack Router and TanStack Start.
+- **Addons `none`** skips all addons. **Examples `none`** skips all example implementations.
 
 ## Project Structure
 

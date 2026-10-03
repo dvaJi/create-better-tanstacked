@@ -53,8 +53,8 @@ function splitCommandArgs(commandWithArgs: string): string[] {
  * based on the selected package manager.
  *
  * @param packageManager - The selected package manager (e.g., 'npm', 'yarn', 'pnpm', 'bun').
- * @param commandWithArgs - The command to run, including arguments (e.g., "prisma generate --schema=./prisma/schema.prisma").
- * @returns The full command string (e.g., "npx prisma generate --schema=./prisma/schema.prisma").
+ * @param commandWithArgs - The command to run, including its arguments (e.g., "oxfmt --version").
+ * @returns The full command string (e.g., "npx oxfmt --version").
  */
 export function getPackageExecutionCommand(
   packageManager: PackageManager | null | undefined,
@@ -75,8 +75,8 @@ export function getPackageExecutionCommand(
  * This avoids the need for shell: true and provides better escaping.
  *
  * @param packageManager - The selected package manager (e.g., 'npm', 'yarn', 'pnpm', 'bun').
- * @param commandWithArgs - The command to run, including arguments (e.g., "prisma generate").
- * @returns An array of [command, ...args] (e.g., ["npx", "prisma", "generate"]).
+ * @param commandWithArgs - The command to run, including its arguments (e.g., "oxfmt --version").
+ * @returns An array of [command, ...args] (e.g., ["npx", "oxfmt", "--version"]).
  */
 export function getPackageExecutionArgs(
   packageManager: PackageManager | null | undefined,

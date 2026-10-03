@@ -41,12 +41,6 @@ const SKILL_SOURCES = {
   "honojs/skills": {
     label: "Hono Backend",
   },
-  "vercel/next.js": {
-    label: "Next.js",
-  },
-  "nuxt/ui": {
-    label: "Nuxt UI",
-  },
   "heroui-inc/heroui": {
     label: "HeroUI Native",
   },
@@ -71,20 +65,11 @@ const SKILL_SOURCES = {
   "expo/skills": {
     label: "Expo",
   },
-  "prisma/skills": {
-    label: "Prisma",
-  },
   "elysiajs/skills": {
     label: "ElysiaJS",
   },
-  "waynesutton/convexskills": {
-    label: "Convex",
-  },
   "msmps/opentui-skill": {
     label: "OpenTUI Platform",
-  },
-  "haydenbleasel/ultracite": {
-    label: "Ultracite",
   },
   "https://www.evlog.dev": {
     label: "evlog",
@@ -225,12 +210,7 @@ const DEFAULT_SCOPE: InstallScope = "project";
 const DEFAULT_AGENTS: SkillAgent[] = ["universal", "claude-code"];
 
 function hasReactBasedFrontend(frontend: ProjectConfig["frontend"]): boolean {
-  return (
-    frontend.includes("react-router") ||
-    frontend.includes("tanstack-router") ||
-    frontend.includes("tanstack-start") ||
-    frontend.includes("next")
-  );
+  return frontend.includes("tanstack-router") || frontend.includes("tanstack-start");
 }
 
 function hasNativeFrontend(frontend: ProjectConfig["frontend"]): boolean {
@@ -243,8 +223,7 @@ function hasNativeFrontend(frontend: ProjectConfig["frontend"]): boolean {
 
 function getRecommendedSourceKeys(config: ProjectConfig): SourceKey[] {
   const sources: SourceKey[] = [];
-  const { frontend, backend, dbSetup, auth, examples, addons, orm, webDeploy, serverDeploy } =
-    config;
+  const { frontend, backend, dbSetup, auth, examples, addons, webDeploy, serverDeploy } = config;
 
   if (hasReactBasedFrontend(frontend)) {
     sources.push("vercel-labs/agent-skills");
@@ -256,14 +235,6 @@ function getRecommendedSourceKeys(config: ProjectConfig): SourceKey[] {
     !sources.includes("vercel-labs/agent-skills")
   ) {
     sources.push("vercel-labs/agent-skills");
-  }
-
-  if (frontend.includes("next")) {
-    sources.push("vercel/next.js");
-  }
-
-  if (frontend.includes("nuxt")) {
-    sources.push("nuxt/ui");
   }
 
   if (frontend.includes("native-uniwind")) {
@@ -294,10 +265,6 @@ function getRecommendedSourceKeys(config: ProjectConfig): SourceKey[] {
     sources.push("planetscale/database-skills");
   }
 
-  if (orm === "prisma" || dbSetup === "prisma-postgres") {
-    sources.push("prisma/skills");
-  }
-
   if (examples.includes("ai")) {
     sources.push("vercel/ai");
   }
@@ -314,16 +281,8 @@ function getRecommendedSourceKeys(config: ProjectConfig): SourceKey[] {
     sources.push("elysiajs/skills");
   }
 
-  if (backend === "convex") {
-    sources.push("waynesutton/convexskills");
-  }
-
   if (addons.includes("opentui")) {
     sources.push("msmps/opentui-skill");
-  }
-
-  if (addons.includes("ultracite")) {
-    sources.push("haydenbleasel/ultracite");
   }
 
   if (addons.includes("evlog") || addons.includes("axiom")) {
@@ -354,13 +313,6 @@ const CURATED_SKILLS_BY_SOURCE = {
   "vercel/ai": () => ["ai-sdk"],
   "vercel/turborepo": () => ["turborepo"],
   "honojs/skills": () => ["hono"],
-  "vercel/next.js": () => [
-    "next-dev-loop",
-    "next-cache-components-adoption",
-    "next-cache-components-optimizer",
-    "next-partial-prefetching-adoption",
-  ],
-  "nuxt/ui": () => ["nuxt-ui"],
   "heroui-inc/heroui": () => ["heroui-native"],
   "shadcn/ui": () => ["shadcn"],
   "better-auth/skills": () => [
@@ -378,12 +330,8 @@ const CURATED_SKILLS_BY_SOURCE = {
       "clerk-orgs",
     ];
 
-    if (config.frontend.includes("next")) skills.push("clerk-nextjs-patterns");
-    if (config.frontend.includes("react-router")) skills.push("clerk-react-router-patterns");
     if (config.frontend.includes("tanstack-start")) skills.push("clerk-tanstack-patterns");
     if (config.frontend.includes("tanstack-router")) skills.push("clerk-react-patterns");
-    if (config.frontend.includes("nuxt")) skills.push("clerk-nuxt-patterns");
-    if (config.frontend.includes("astro")) skills.push("clerk-astro-patterns");
     if (hasNativeFrontend(config.frontend)) skills.push("clerk-expo");
 
     return skills;
@@ -399,11 +347,7 @@ const CURATED_SKILLS_BY_SOURCE = {
       return ["postgres", "neki"];
     }
 
-    if (config.database === "mysql") {
-      return ["mysql", "vitess"];
-    }
-
-    return [];
+    return config.database === "postgres" ? ["postgres", "neki"] : [];
   },
   "expo/skills": (config) => {
     const skills = [
@@ -420,33 +364,8 @@ const CURATED_SKILLS_BY_SOURCE = {
     }
     return skills;
   },
-  "prisma/skills": (config) => {
-    const skills: string[] = [];
-
-    if (config.orm === "prisma") {
-      skills.push("prisma-cli", "prisma-client-api", "prisma-database-setup");
-    }
-
-    if (config.dbSetup === "prisma-postgres") {
-      skills.push("prisma-postgres");
-    }
-
-    return skills;
-  },
   "elysiajs/skills": () => ["elysiajs"],
-  "waynesutton/convexskills": () => [
-    "convex-best-practices",
-    "convex-functions",
-    "convex-schema-validator",
-    "convex-realtime",
-    "convex-http-actions",
-    "convex-cron-jobs",
-    "convex-file-storage",
-    "convex-migrations",
-    "convex-security-check",
-  ],
   "msmps/opentui-skill": () => ["opentui"],
-  "haydenbleasel/ultracite": () => ["ultracite"],
   "https://www.evlog.dev": (config) => [
     "review-logging-patterns",
     "build-audit-logs",

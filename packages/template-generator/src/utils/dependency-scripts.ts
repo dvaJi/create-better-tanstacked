@@ -18,16 +18,9 @@ export function getAllowedDependencyScripts(config: ProjectConfig): AllowedDepen
     config.webDeploy === "vercel" ||
     config.serverDeploy === "vercel" ||
     config.addons.includes("turborepo") ||
-    config.addons.includes("vite-plus") ||
-    config.frontend.includes("react-router") ||
-    config.frontend.includes("nuxt")
+    config.addons.includes("vite-plus")
   ) {
     allowed.esbuild = true;
-  }
-
-  if (config.frontend.includes("nuxt")) {
-    allowed["@parcel/watcher"] = true;
-    allowed["vue-demi"] = true;
   }
 
   if (
@@ -35,8 +28,7 @@ export function getAllowedDependencyScripts(config: ProjectConfig): AllowedDepen
     hasPrismaDeploy ||
     config.webDeploy === "docker" ||
     config.webDeploy === "vercel" ||
-    config.addons.includes("pwa") ||
-    config.frontend.includes("next")
+    config.addons.includes("pwa")
   ) {
     allowed.sharp = true;
   }
@@ -46,18 +38,8 @@ export function getAllowedDependencyScripts(config: ProjectConfig): AllowedDepen
     allowed.workerd = true;
   }
 
-  if (config.orm === "prisma") {
-    if (config.packageManager === "pnpm") allowed["@prisma/client"] = true;
-    allowed["@prisma/engines"] = true;
-    allowed.prisma = true;
-  }
-
   if (config.addons.includes("lefthook")) {
     allowed.lefthook = true;
-  }
-
-  if (config.addons.includes("nx")) {
-    allowed.nx = true;
   }
 
   return allowed;

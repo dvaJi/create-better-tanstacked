@@ -5,7 +5,6 @@ import {
 } from "./env";
 import {
   getPrismaWebsiteFramework,
-  assertNever,
   type AlchemyDeploymentPlan,
   type DeployedWebFramework,
 } from "./plan";
@@ -15,105 +14,10 @@ function writeEnv(writer: AlchemyWriter, entries: readonly string[]): void {
   writeObject(writer, "env: {", () => writeLines(writer, entries), "},");
 }
 
-function webDevPort(framework: DeployedWebFramework): number {
-  if (framework === "react-router" || framework === "svelte") return 5173;
-  if (framework === "astro") return 4321;
-  return 3001;
-}
-
-function writeStaticSite(
-  writer: AlchemyWriter,
-  plan: AlchemyDeploymentPlan,
-  framework: "next" | "svelte",
-  declaration: string,
-  entries: readonly string[],
-): void {
-  if (framework === "svelte") {
-    writer.writeLine(
-      "// _worker.js is a shim importing outside its directory, so it must be bundled",
-    );
-  }
-  writeObject(
-    writer,
-    `${declaration} Cloudflare.Website.StaticSite("web", {`,
-    () => {
-      writer.writeLine('cwd: "../../apps/web",');
-      writer.writeLine(
-        `command: "${plan.config.packageManager} run ${framework === "next" ? "build:cloudflare" : "build"}",`,
-      );
-      writer.writeLine(
-        "// Rebuild shared workspace dependencies until Alchemy has a workspace-aware default memo.",
-      );
-      writer.writeLine("memo: false,");
-      if (framework === "next") {
-        writer.writeLine('outdir: ".open-next/assets",');
-        writer.writeLine('main: "../../apps/web/.open-next/worker.js",');
-        writer.writeLine("bundle: true,");
-        writeObject(
-          writer,
-          "compatibility: {",
-          () => {
-            writer.writeLine('flags: ["nodejs_compat", "global_fetch_strictly_public"],');
-          },
-          "},",
-        );
-      } else {
-        writer.writeLine('outdir: ".svelte-kit/cloudflare",');
-        writer.writeLine('main: "../../apps/web/.svelte-kit/cloudflare/_worker.js",');
-        writeObject(
-          writer,
-          "compatibility: {",
-          () => {
-            writer.writeLine('flags: ["nodejs_compat"],');
-          },
-          "},",
-        );
-      }
-      writeEnv(writer, entries);
-      writeObject(
-        writer,
-        "dev: {",
-        () => {
-          writer.writeLine(`command: "${plan.config.packageManager} run dev:bare",`);
-          writer.writeLine(`url: "http://localhost:${webDevPort(framework)}",`);
-        },
-        "},",
-      );
-    },
-    "});",
-  );
-}
-
-function writeNuxt(writer: AlchemyWriter, declaration: string, entries: readonly string[]): void {
-  writeObject(
-    writer,
-    `${declaration} Cloudflare.Website.Nuxt("web", {`,
-    () => {
-      writer.writeLine('rootDir: "../../apps/web",');
-      writeEnv(writer, entries);
-      writeObject(writer, "dev: {", () => writer.writeLine(`port: ${webDevPort("nuxt")},`), "},");
-    },
-    "});",
-  );
-}
-
-function writeAstro(writer: AlchemyWriter, declaration: string, entries: readonly string[]): void {
-  writeObject(
-    writer,
-    `${declaration} Cloudflare.Website.Astro("web", {`,
-    () => {
-      writer.writeLine('rootDir: "../../apps/web",');
-      writeEnv(writer, entries);
-      writeObject(writer, "dev: {", () => writer.writeLine(`port: ${webDevPort("astro")},`), "},");
-    },
-    "});",
-  );
-}
-
 function writeVite(
   writer: AlchemyWriter,
   declaration: string,
-  framework: "tanstack-router" | "react-router" | "tanstack-start" | "solid",
+  framework: DeployedWebFramework,
   entries: readonly string[],
 ): void {
   writeObject(
@@ -121,13 +25,11 @@ function writeVite(
     `${declaration} Cloudflare.Website.Vite("web", {`,
     () => {
       writer.writeLine('rootDir: "../../apps/web",');
-      if (framework !== "tanstack-router") {
+      if (framework === "tanstack-start") {
         writeObject(
           writer,
           "compatibility: {",
-          () => {
-            writer.writeLine('flags: ["nodejs_compat"],');
-          },
+          () => writer.writeLine('flags: ["nodejs_compat"],'),
           "},",
         );
       }
@@ -143,12 +45,7 @@ function writeVite(
         );
       }
       writeEnv(writer, entries);
-      writeObject(
-        writer,
-        "dev: {",
-        () => writer.writeLine(`port: ${webDevPort(framework)},`),
-        "},",
-      );
+      writeObject(writer, "dev: {", () => writer.writeLine("port: 3001,"), "},");
     },
     "});",
   );
@@ -165,85 +62,11 @@ function writeCloudflareWeb(
     topology === "self"
       ? selfCloudflareWebEnvEntries(plan, framework)
       : splitCloudflareWebEnvEntries(plan, framework);
-
-  switch (framework) {
-    case "next":
-    case "svelte":
-      writeStaticSite(writer, plan, framework, declaration, entries);
-      break;
-    case "nuxt":
-      writeNuxt(writer, declaration, entries);
-      break;
-    case "astro":
-      writeAstro(writer, declaration, entries);
-      break;
-    case "tanstack-router":
-    case "react-router":
-    case "tanstack-start":
-    case "solid":
-      writeVite(writer, declaration, framework, entries);
-      break;
-    default:
-      assertNever(framework);
-  }
+  writeVite(writer, declaration, framework, entries);
 }
 
-function prismaFramework(framework: DeployedWebFramework): string | undefined {
-  switch (framework) {
-    case "next":
-      return "nextjs";
-    case "nuxt":
-      return "nuxt";
-    case "astro":
-      return "astro";
-    case "tanstack-start":
-      return "tanstack-start";
-    case "tanstack-router":
-      return "vite";
-    case "react-router":
-    case "svelte":
-    case "solid":
-      return undefined;
-    default:
-      return assertNever(framework);
-  }
-}
-
-interface PrismaCustomBuild {
-  script: "build";
-  outdir: ".output" | "build";
-  entrypoint: "server/index.mjs" | "server/index.js" | "index.js";
-}
-
-function prismaCustomBuild(framework: DeployedWebFramework): PrismaCustomBuild {
-  switch (framework) {
-    case "solid":
-      return {
-        script: "build",
-        outdir: ".output",
-        entrypoint: "server/index.mjs",
-      };
-    case "react-router":
-      return {
-        script: "build",
-        outdir: "build",
-        entrypoint: "server/index.js",
-      };
-    case "svelte":
-      return {
-        script: "build",
-        outdir: "build",
-        entrypoint: "index.js",
-      };
-    case "tanstack-router":
-    case "next":
-    case "nuxt":
-    case "astro":
-    case "tanstack-start":
-      throw new Error(`${framework} uses Prisma Compute's automatic framework build`);
-    default:
-      return assertNever(framework);
-  }
+function prismaFramework(framework: DeployedWebFramework): string {
+  return framework === "tanstack-start" ? "tanstack-start" : "vite";
 }
 
 function writePrismaWeb(writer: AlchemyWriter, plan: AlchemyDeploymentPlan): void {
@@ -270,13 +93,11 @@ function writePrismaWeb(writer: AlchemyWriter, plan: AlchemyDeploymentPlan): voi
     writeObject(
       writer,
       "const webEnv = {",
-      () => {
-        writeLines(writer, prismaWebEnvEntries(plan, framework));
-      },
+      () => writeLines(writer, prismaWebEnvEntries(plan, framework)),
       "};",
     );
-
     writer.blankLine();
+
     if (websiteFramework) {
       writer.writeLine(`return yield* Prisma.Website.${websiteFramework}("web", {`);
       writer.indent(() => {
@@ -284,7 +105,7 @@ function writePrismaWeb(writer: AlchemyWriter, plan: AlchemyDeploymentPlan): voi
         writer.writeLine('rootDir: "../../apps/web",');
         writer.writeLine("env: webEnv,");
         writer.writeLine('compute: { healthCheck: { path: "/" }, destroyOldDeployment: true },');
-        writer.writeLine(`dev: { port: ${webDevPort(framework)} },`);
+        writer.writeLine("dev: { port: 3001 },");
       });
       writer.writeLine("});");
     } else {
@@ -292,26 +113,9 @@ function writePrismaWeb(writer: AlchemyWriter, plan: AlchemyDeploymentPlan): voi
       writer.indent(() => {
         writer.writeLine("project,");
         writer.writeLine('path: "../../apps/web",');
-        const frameworkName = prismaFramework(framework);
-        if (frameworkName) {
-          writer.writeLine(`build: { type: "auto", framework: "${frameworkName}", env: webEnv },`);
-        } else {
-          const customBuild = prismaCustomBuild(framework);
-          writeObject(
-            writer,
-            "build: {",
-            () => {
-              writer.writeLine(
-                `command: "${plan.config.packageManager} run ${customBuild.script}",`,
-              );
-              writer.writeLine(`outdir: "${customBuild.outdir}",`);
-              writer.writeLine(`entrypoint: "${customBuild.entrypoint}",`);
-              writer.writeLine("env: webEnv,");
-            },
-            "},",
-          );
-          writer.writeLine("port: 3000,");
-        }
+        writer.writeLine(
+          `build: { type: "auto", framework: "${prismaFramework(framework)}", env: webEnv },`,
+        );
         writer.writeLine("env: webEnv,");
         writer.writeLine('healthCheck: { path: "/" },');
         writer.writeLine("destroyOldDeployment: true,");
@@ -320,7 +124,7 @@ function writePrismaWeb(writer: AlchemyWriter, plan: AlchemyDeploymentPlan): voi
           "dev: {",
           () => {
             writer.writeLine(`command: "${plan.config.packageManager} run dev:bare",`);
-            writer.writeLine(`port: ${webDevPort(framework)},`);
+            writer.writeLine("port: 3001,");
             writer.writeLine("env: webEnv,");
           },
           "},",

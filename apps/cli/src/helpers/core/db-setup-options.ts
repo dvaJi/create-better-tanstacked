@@ -32,7 +32,6 @@ const REMOTE_PROVISIONING_DB_SETUPS: DatabaseSetup[] = [
   "neon",
   "prisma-postgres",
   "supabase",
-  "mongodb-atlas",
 ];
 
 export function requiresProvisioningGuardrails(dbSetup: DatabaseSetup): boolean {

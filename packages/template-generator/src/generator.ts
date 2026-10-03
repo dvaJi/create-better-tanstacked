@@ -1,3 +1,4 @@
+import { ProjectConfigSchema } from "@better-t-stack/types";
 import { Result } from "better-result";
 
 import { writeBtsConfigToVfs } from "./bts-config";
@@ -12,7 +13,6 @@ import {
   processDependencies,
   processReadme,
   processAuthPlugins,
-  processAlchemyPlugins,
   processPwaPlugins,
   processEnvVariables,
 } from "./processors";
@@ -57,7 +57,18 @@ export async function generate(
 ): Promise<Result<VirtualFileTree, GeneratorError>> {
   return Result.tryPromise({
     try: async () => {
-      const { config, templates } = options;
+      const parsedConfig = ProjectConfigSchema.safeParse(options.config);
+      if (!parsedConfig.success) {
+        const details = parsedConfig.error.issues
+          .map((issue) => `${issue.path.join(".") || "config"}: ${issue.message}`)
+          .join("; ");
+        throw new GeneratorError({
+          message: `Invalid project configuration: ${details}`,
+          phase: "initialization",
+        });
+      }
+
+      const { templates, config } = options;
 
       if (!templates || templates.size === 0) {
         throw new GeneratorError({
@@ -87,7 +98,6 @@ export async function generate(
       finalizeAlchemyDevScripts(vfs, config);
       processEnvVariables(vfs, config);
       processAuthPlugins(vfs, config);
-      processAlchemyPlugins(vfs, config);
       processPwaPlugins(vfs, config);
       processVarlock(vfs, templates, config);
       processCatalogs(vfs, config);

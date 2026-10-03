@@ -3,15 +3,8 @@ import type { Backend, Frontend } from "../types";
 import { UserCancelledError } from "../utils/errors";
 import { isCancel, navigableSelect, preferValidInitial } from "./navigable";
 
-// Frontends that support backend="self" (fullstack mode with built-in server routes)
-const FULLSTACK_FRONTENDS: readonly Frontend[] = [
-  "next",
-  "tanstack-start",
-  "nuxt",
-  "svelte",
-  "solid",
-  "astro",
-] as const;
+// TanStack Start can use its built-in server routes as the backend.
+const FULLSTACK_FRONTENDS: readonly Frontend[] = ["tanstack-start"];
 
 export async function getBackendFrameworkChoice(
   backendFramework?: Backend,
@@ -20,7 +13,6 @@ export async function getBackendFrameworkChoice(
 ) {
   if (backendFramework !== undefined) return backendFramework;
 
-  const hasIncompatibleFrontend = frontends?.some((f) => f === "solid" || f === "astro");
   const hasFullstackFrontend = frontends?.some((f) => FULLSTACK_FRONTENDS.includes(f));
 
   const backendOptions: Array<{
@@ -44,29 +36,11 @@ export async function getBackendFrameworkChoice(
       hint: "Lightweight, ultrafast web framework",
     },
     {
-      value: "express" as const,
-      label: "Express",
-      hint: "Fast, unopinionated, minimalist web framework for Node.js",
-    },
-    {
-      value: "fastify" as const,
-      label: "Fastify",
-      hint: "Fast, low-overhead web framework for Node.js",
-    },
-    {
       value: "elysia" as const,
       label: "Elysia",
       hint: "Ergonomic web framework for building backend servers",
     },
   );
-
-  if (!hasIncompatibleFrontend) {
-    backendOptions.push({
-      value: "convex" as const,
-      label: "Convex",
-      hint: "Reactive backend-as-a-service platform",
-    });
-  }
 
   backendOptions.push({
     value: "none" as const,

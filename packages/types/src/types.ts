@@ -44,32 +44,23 @@ export type Payments = z.infer<typeof PaymentsSchema>;
 export type WebDeploy = z.infer<typeof WebDeploySchema>;
 export type ServerDeploy = z.infer<typeof ServerDeploySchema>;
 export type DirectoryConflict = z.infer<typeof DirectoryConflictSchema>;
-export type Template = z.infer<typeof TemplateSchema>;
+export type Template = z.input<typeof TemplateSchema>;
 export type AddonOptions = z.infer<typeof AddonOptionsSchema>;
 export type DbSetupOptions = z.infer<typeof DbSetupOptionsSchema>;
 export type ProjectName = z.infer<typeof ProjectNameSchema>;
 
-export type CreateInput = z.infer<typeof CreateInputSchema>;
-export type AddInput = z.infer<typeof AddInputSchema>;
-export type CLIInput = z.infer<typeof CLIInputSchema>;
+export type CreateInput = z.input<typeof CreateInputSchema>;
+export type AddInput = z.input<typeof AddInputSchema>;
+export type CLIInput = z.input<typeof CLIInputSchema>;
+/** Configuration values accepted by current CLI and generation entrypoints. */
+export type SupportedProjectConfig = z.input<typeof ProjectConfigSchema>;
 export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
 export type BetterTStackConfig = z.infer<typeof BetterTStackConfigSchema>;
 export type InitResult = z.infer<typeof InitResultSchema>;
 
-export type WebFrontend = Extract<
-  Frontend,
-  | "tanstack-router"
-  | "react-router"
-  | "tanstack-start"
-  | "next"
-  | "nuxt"
-  | "svelte"
-  | "solid"
-  | "astro"
-  | "none"
->;
+export type WebFrontend = "tanstack-router" | "tanstack-start" | "none";
 
-export type DesktopWebFrontend = Exclude<WebFrontend, "none" | "solid">;
+export type DesktopWebFrontend = Exclude<WebFrontend, "none">;
 
 export type NativeFrontend = Extract<
   Frontend,

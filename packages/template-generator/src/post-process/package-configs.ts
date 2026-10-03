@@ -3,7 +3,7 @@
  * Updates package names, scripts, and workspaces after template generation
  */
 
-import { getLocalD1Owner, webFrontends, type ProjectConfig } from "@better-t-stack/types";
+import { webFrontends, type ProjectConfig } from "@better-t-stack/types";
 
 import type { JsonValue } from "../core/json-types";
 import type { VirtualFileSystem } from "../core/virtual-fs";
@@ -30,7 +30,7 @@ type PackageManagerConfig = {
   filter: (workspace: string, script: string) => string;
 };
 
-type DesktopWebScript = "build" | "dev" | "generate";
+type DesktopWebScript = "build";
 type WorkspacesConfig = NonNullable<PackageJson["workspaces"]>;
 
 const VITE_PLUS_VERSION = dependencyVersionMap["vite-plus"];
@@ -47,9 +47,7 @@ export function processPackageConfigs(vfs: VirtualFileSystem, config: ProjectCon
   updateDesktopPackageJson(vfs, config);
   updateVitePlusPackageScripts(vfs, config);
 
-  if (config.backend === "convex") {
-    updateConvexPackageJson(vfs, config);
-  } else if (config.backend !== "none") {
+  if (config.backend !== "none") {
     updateDbPackageJson(vfs, config);
     updateAuthPackageJson(vfs, config);
     updateApiPackageJson(vfs, config);
@@ -73,19 +71,17 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
     ["native-bare", "native-uniwind", "native-unistyles"].includes(item),
   );
 
-  const backendPackageName = backend === "convex" ? `@${projectName}/backend` : "server";
+  const backendPackageName = "server";
   const dbPackageName = `@${projectName}/db`;
   const hasTurborepo = addons.includes("turborepo");
-  const hasNx = addons.includes("nx");
   const hasVitePlus = addons.includes("vite-plus");
-  const hasVitePlusNativeHooks =
-    hasVitePlus && !addons.includes("husky") && !addons.includes("lefthook");
+  const hasVitePlusNativeHooks = hasVitePlus && !addons.includes("lefthook");
 
   const dbSupport = getDbScriptSupport(config);
   const needsDbScripts = dbSupport.hasDbScripts;
   const isD1Alchemy = dbSupport.isD1Alchemy;
 
-  const pmConfig = getPackageManagerConfig(packageManager, { hasTurborepo, hasNx, hasVitePlus });
+  const pmConfig = getPackageManagerConfig(packageManager, { hasTurborepo, hasVitePlus });
 
   scripts.dev = pmConfig.dev;
   scripts.build = pmConfig.build;
@@ -119,7 +115,6 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
     // serialized so PMs without topological ordering don't run two web builds at once.
     scripts.build = getElectrobunRootBuildCommand(vfs, packageManager, {
       hasTurborepo,
-      hasNx,
       hasVitePlus,
     });
     scripts["dev:desktop"] = pmConfig.filter("desktop", "dev:hmr");
@@ -135,10 +130,6 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
     scripts["dev:server"] = pmConfig.filter(backendPackageName, "dev");
   }
 
-  if (backend === "convex") {
-    scripts["dev:setup"] = pmConfig.filter(backendPackageName, "dev:setup");
-  }
-
   if (needsDbScripts) {
     if (dbSupport.hasDbPush) {
       scripts["db:push"] = pmConfig.filter(dbPackageName, "db:push");
@@ -148,10 +139,7 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
       scripts["db:studio"] = pmConfig.filter(dbPackageName, "db:studio");
     }
 
-    if (orm === "prisma") {
-      scripts["db:generate"] = pmConfig.filter(dbPackageName, "db:generate");
-      scripts["db:migrate"] = pmConfig.filter(dbPackageName, "db:migrate");
-    } else if (orm === "drizzle") {
+    if (orm === "drizzle") {
       scripts["db:generate"] = pmConfig.filter(dbPackageName, "db:generate");
       if (!isD1Alchemy) {
         scripts["db:migrate"] = pmConfig.filter(dbPackageName, "db:migrate");
@@ -200,11 +188,6 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
       : "deploy";
     scripts[alchemyDeployScript] = pmConfig.filter(infraPackageName, "deploy");
     scripts.destroy = pmConfig.filter(infraPackageName, "destroy");
-
-    const hasWranglerLocalD1 = getLocalD1Owner(config) === "wrangler";
-    if (hasWranglerLocalD1) {
-      scripts["db:migrate:local"] = pmConfig.filter("web", "db:migrate:local");
-    }
   }
 
   if (hasAxiom && !hasAlchemyDeploy) {
@@ -245,13 +228,6 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
   // For preview purposes, we just show the configured package manager
   pkgJson.packageManager ||= `${packageManager}@latest`;
 
-  if (config.api === "orpc" && config.frontend.includes("nuxt")) {
-    pkgJson.overrides = {
-      ...pkgJson.overrides,
-      "@vue/devtools-api": "^8.2.1",
-    };
-  }
-
   if (hasVitePlus) {
     pkgJson.overrides = {
       ...pkgJson.overrides,
@@ -260,21 +236,11 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
     };
   }
 
-  if (backend === "convex") {
-    if (!workspaces.includes("packages/*")) {
-      workspaces.push("packages/*");
-    }
-    const needsAppsDir = config.frontend.length > 0 || addons.includes("starlight");
-    if (needsAppsDir && !workspaces.includes("apps/*")) {
-      workspaces.push("apps/*");
-    }
-  } else {
-    if (!workspaces.includes("apps/*")) {
-      workspaces.push("apps/*");
-    }
-    if (!workspaces.includes("packages/*")) {
-      workspaces.push("packages/*");
-    }
+  if (!workspaces.includes("apps/*")) {
+    workspaces.push("apps/*");
+  }
+  if (!workspaces.includes("packages/*")) {
+    workspaces.push("packages/*");
   }
 
   pkgJson.workspaces = getUpdatedWorkspaces(existingWorkspaces, workspaces);
@@ -309,7 +275,7 @@ function getUpdatedWorkspaces(
 
 function getPackageManagerConfig(
   packageManager: ProjectConfig["packageManager"],
-  options: { hasTurborepo: boolean; hasNx: boolean; hasVitePlus: boolean },
+  options: { hasTurborepo: boolean; hasVitePlus: boolean },
 ): PackageManagerConfig {
   if (options.hasTurborepo) {
     return {
@@ -317,15 +283,6 @@ function getPackageManagerConfig(
       build: "turbo run build",
       checkTypes: "turbo run check-types",
       filter: (workspace, script) => `turbo run ${script} -F ${workspace} --`,
-    };
-  }
-
-  if (options.hasNx) {
-    return {
-      dev: "nx run-many -t dev",
-      build: "nx run-many -t build",
-      checkTypes: "nx run-many -t check-types",
-      filter: (workspace, script) => `nx run-many -t ${script} --projects=${workspace}`,
     };
   }
 
@@ -372,14 +329,10 @@ function getPackageManagerConfig(
 function getElectrobunRootBuildCommand(
   vfs: VirtualFileSystem,
   packageManager: ProjectConfig["packageManager"],
-  options: { hasTurborepo: boolean; hasNx: boolean; hasVitePlus: boolean },
+  options: { hasTurborepo: boolean; hasVitePlus: boolean },
 ): string {
   if (options.hasTurborepo) {
     return "turbo run build --filter='!desktop' && turbo run build -F desktop";
-  }
-
-  if (options.hasNx) {
-    return "nx run-many -t build --exclude=desktop && nx run-many -t build --projects=desktop";
   }
 
   if (options.hasVitePlus) {
@@ -432,20 +385,17 @@ function updateDesktopPackageJson(vfs: VirtualFileSystem, config: ProjectConfig)
   const pkgJson = vfs.readJson<PackageJson>("apps/desktop/package.json");
   if (!pkgJson) return;
 
-  const { packageManager, addons, frontend } = config;
+  const { packageManager, addons } = config;
   const hasTurborepo = addons.includes("turborepo");
-  const hasNx = addons.includes("nx");
   const hasVitePlus = addons.includes("vite-plus");
-  // Nuxt emits its static bundle via `generate`; every other frontend via `build`.
-  const desktopBuildScript: DesktopWebScript = frontend.includes("nuxt") ? "generate" : "build";
+  const desktopBuildScript: DesktopWebScript = "build";
   const webBuildCommand = getDesktopWebCommand(
     packageManager,
-    { hasTurborepo, hasNx, hasVitePlus },
+    { hasTurborepo, hasVitePlus },
     desktopBuildScript,
   );
   const rootDevCommand = getDesktopRootDevCommand(packageManager, {
     hasTurborepo,
-    hasNx,
     hasVitePlus,
   });
   const localRunCommand = getLocalRunCommand(packageManager);
@@ -472,15 +422,11 @@ function updateDesktopPackageJson(vfs: VirtualFileSystem, config: ProjectConfig)
 
 function getDesktopWebCommand(
   packageManager: ProjectConfig["packageManager"],
-  options: { hasTurborepo: boolean; hasNx: boolean; hasVitePlus: boolean },
+  options: { hasTurborepo: boolean; hasVitePlus: boolean },
   script: DesktopWebScript,
 ): string {
   if (options.hasTurborepo) {
     return `turbo run ${script} -F web`;
-  }
-
-  if (options.hasNx) {
-    return `nx run-many -t ${script} --projects=web`;
   }
 
   if (options.hasVitePlus) {
@@ -501,10 +447,9 @@ function getDesktopWebCommand(
 /** The desktop shell needs the web app and its API, so HMR runs the root `dev` aggregate. */
 function getDesktopRootDevCommand(
   packageManager: ProjectConfig["packageManager"],
-  options: { hasTurborepo: boolean; hasNx: boolean; hasVitePlus: boolean },
+  options: { hasTurborepo: boolean; hasVitePlus: boolean },
 ): string {
   if (options.hasTurborepo) return "turbo run dev";
-  if (options.hasNx) return "nx run-many -t dev";
   if (options.hasVitePlus) return "vp run -r dev";
 
   switch (packageManager) {
@@ -547,17 +492,7 @@ function updateDbPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): voi
       scripts["db:local"] = "turso dev --db-file local.db";
     }
 
-    if (orm === "prisma") {
-      if (dbSupport.hasDbPush) {
-        scripts["db:push"] = "prisma db push";
-      }
-      scripts["db:generate"] = "prisma generate";
-      scripts["db:migrate"] = "prisma migrate dev";
-      scripts["db:migrate:deploy"] = "prisma migrate deploy";
-      if (!isD1Alchemy) {
-        scripts["db:studio"] = "prisma studio";
-      }
-    } else if (orm === "drizzle") {
+    if (orm === "drizzle") {
       if (dbSupport.hasDbPush) {
         scripts["db:push"] = "drizzle-kit push";
       }
@@ -621,30 +556,15 @@ function updateInfraPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): 
   vfs.writeJson("packages/infra/package.json", pkgJson);
 }
 
-function updateConvexPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): void {
-  const pkgJson = vfs.readJson<PackageJson>("packages/backend/package.json");
-  if (!pkgJson) return;
-
-  pkgJson.name = `@${config.projectName}/backend`;
-  pkgJson.scripts = pkgJson.scripts || {};
-  vfs.writeJson("packages/backend/package.json", pkgJson);
-}
-
 export function finalizeAlchemyDevScripts(vfs: VirtualFileSystem, config: ProjectConfig): void {
   const { serverDeploy, webDeploy, backend } = config;
   const hasAxiom = config.addons.includes("axiom");
-  const hasAxiomServerRuntime =
-    hasAxiom && ["hono", "express", "fastify", "elysia"].includes(backend);
-  const hasAxiomWebRuntime =
-    hasAxiom &&
-    config.frontend.some((frontend) =>
-      ["next", "tanstack-start", "nuxt", "svelte", "astro"].includes(frontend),
-    );
+  const hasAxiomServerRuntime = hasAxiom && (backend === "hono" || backend === "elysia");
+  const hasAxiomWebRuntime = hasAxiom && config.frontend.includes("tanstack-start");
   const rootPkgPath = "package.json";
   const rootPkg = vfs.readJson<PackageJson>(rootPkgPath);
   const pmConfig = getPackageManagerConfig(config.packageManager, {
     hasTurborepo: config.addons.includes("turborepo"),
-    hasNx: config.addons.includes("nx"),
     hasVitePlus: config.addons.includes("vite-plus"),
   });
 

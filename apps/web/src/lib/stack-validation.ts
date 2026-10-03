@@ -1,25 +1,17 @@
 import {
   getBackendDisabledOptions,
   supportsRuntimeBackend,
-  supportsRuntimeDatabase,
   supportsDatabaseSetupRuntime,
   supportsServerDeployRuntime,
   supportsPaymentsAuth,
 } from "@better-t-stack/types";
 import { ProjectNameSchema } from "@better-t-stack/types";
 import {
-  allowedApisForFrontends,
   supportsClerkFrontend,
   supportsClerkBackend,
-  supportsConvexBetterAuth,
-  isFrontendAllowedWithBackend,
   validateAddonCompatibility,
   supportsPrismaWebDeploy,
-  hasCloudflareNextPostgresConflict,
   getDesktopDeployConflict,
-  TRPC_INCOMPATIBLE_FRONTENDS,
-  CONVEX_AI_INCOMPATIBLE_FRONTENDS,
-  isExampleAIAllowed,
   isExampleTodoAllowed,
   supportsOrmDatabase,
   supportsDatabaseSetup,
@@ -43,30 +35,13 @@ export function validateProjectName(name: string): string | undefined {
 }
 
 const clerkBackendRequirementMessage =
-  "Clerk requires Convex, Hono, Express, Fastify, Elysia, or Next.js/TanStack Start fullstack backend";
+  "Clerk requires Hono, Elysia, or a TanStack Start fullstack backend";
 const clerkFrontendRequirementMessage =
-  "Clerk requires React Router, TanStack Router, TanStack Start, Next.js, or React Native";
-const convexBetterAuthFrontendRequirementMessage =
-  "Better-Auth with Convex requires React Router, TanStack Router, TanStack Start, Next.js, or React Native";
-
+  "Clerk requires TanStack Router, TanStack Start, or an Expo app";
 const isClerkFrontendSelectionCompatible = (
   web: StackState["webFrontend"],
   native: StackState["nativeFrontend"],
 ) => supportsClerkFrontend([...web, ...native]);
-
-const isConvexBetterAuthFrontendSelectionCompatible = (
-  web: StackState["webFrontend"],
-  native: StackState["nativeFrontend"],
-) =>
-  supportsConvexBetterAuth([...web, ...native]) &&
-  [...web, ...native].every((frontend) =>
-    isFrontendAllowedWithBackend(frontend, "convex", "better-auth"),
-  );
-
-const getCloudflareNextIssue = (stack: StackState) =>
-  hasCloudflareNextPostgresConflict({ ...stack, frontend: stack.webFrontend })
-    ? "This Prisma PostgreSQL setup with Next.js is temporarily unavailable on Cloudflare"
-    : null;
 
 const getDockerDesktopConflict = (
   addons: StackState["addons"],
@@ -129,35 +104,6 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
     });
   }
 
-  if (nextStack.backend === "convex") {
-    if (
-      !nextStack.webFrontend.every((frontend) => isFrontendAllowedWithBackend(frontend, "convex"))
-    ) {
-      nextStack.webFrontend = nextStack.webFrontend.filter((frontend) =>
-        isFrontendAllowedWithBackend(frontend, "convex"),
-      );
-      if (nextStack.webFrontend.length === 0) nextStack.webFrontend = ["none"];
-      changed = true;
-      changes.push({ category: "backend", message: "Removed incompatible Convex frontends" });
-    }
-
-    if (nextStack.auth === "better-auth") {
-      if (
-        !isConvexBetterAuthFrontendSelectionCompatible(
-          nextStack.webFrontend,
-          nextStack.nativeFrontend,
-        )
-      ) {
-        nextStack.auth = "none";
-        changed = true;
-        changes.push({
-          category: "auth",
-          message: "Auth set to 'None' (Better-Auth with Convex requires compatible frontend)",
-        });
-      }
-    }
-  }
-
   if (nextStack.backend === "none") {
     if (
       nextStack.examples.length > 0 &&
@@ -199,17 +145,6 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
     });
   }
 
-  if (!supportsRuntimeDatabase(nextStack.runtime, nextStack.database)) {
-    nextStack.database = "sqlite";
-    nextStack.orm = "drizzle";
-    nextStack.dbSetup = "d1";
-    changed = true;
-    changes.push({
-      category: "runtime",
-      message: "Database changed to SQLite with D1 (MongoDB incompatible with Workers)",
-    });
-  }
-
   if (
     nextStack.runtime === "none" &&
     !supportsRuntimeBackend(nextStack.runtime, getStackBackend(nextStack.backend))
@@ -222,7 +157,7 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
     });
   }
 
-  if (nextStack.backend !== "convex" && nextStack.backend !== "none") {
+  if (nextStack.backend !== "none") {
     if (nextStack.database === "none") {
       if (nextStack.orm !== "none") {
         nextStack.orm = "none";
@@ -239,25 +174,6 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
       }
     }
 
-    if (nextStack.database === "mongodb") {
-      if (!supportsOrmDatabase(nextStack.orm, nextStack.database)) {
-        nextStack.orm = "prisma";
-        changed = true;
-        changes.push({
-          category: "database",
-          message: "ORM set to 'Prisma' (required for MongoDB)",
-        });
-      }
-      if (!supportsDatabaseSetup(nextStack.dbSetup, nextStack.database)) {
-        nextStack.dbSetup = "none";
-        changed = true;
-        changes.push({
-          category: "database",
-          message: "DB Setup set to 'None' (incompatible with MongoDB)",
-        });
-      }
-    }
-
     if (supportsOrmDatabase("drizzle", nextStack.database)) {
       if (nextStack.orm === "none") {
         nextStack.orm = "drizzle";
@@ -267,29 +183,12 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
           message: "ORM set to 'Drizzle' (required for database)",
         });
       }
-      if (nextStack.orm === "mongoose") {
-        nextStack.orm = "drizzle";
-        changed = true;
-        changes.push({
-          category: "database",
-          message: "ORM set to 'Drizzle' (Mongoose only works with MongoDB)",
-        });
-      }
     }
 
     if (nextStack.orm !== "none" && nextStack.database === "none") {
-      if (nextStack.orm === "mongoose") {
-        nextStack.database = "mongodb";
-        changed = true;
-        changes.push({
-          category: "orm",
-          message: "Database set to 'MongoDB' (required for Mongoose)",
-        });
-      } else {
-        nextStack.database = "sqlite";
-        changed = true;
-        changes.push({ category: "orm", message: "Database set to 'SQLite' (required for ORM)" });
-      }
+      nextStack.database = "sqlite";
+      changed = true;
+      changes.push({ category: "orm", message: "Database set to 'SQLite' (required for ORM)" });
     }
 
     if (
@@ -362,15 +261,6 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
     }
   }
 
-  if (nextStack.backend !== "convex" && nextStack.backend !== "none") {
-    const needsOrpc = !allowedApisForFrontends(nextStack.webFrontend).includes("trpc");
-    if (needsOrpc && nextStack.api === "trpc") {
-      nextStack.api = "orpc";
-      changed = true;
-      changes.push({ category: "api", message: "API set to 'oRPC' (required for this frontend)" });
-    }
-  }
-
   if (nextStack.auth === "clerk") {
     if (!supportsClerkBackend(getStackBackend(nextStack.backend), nextStack.webFrontend)) {
       nextStack.auth = "none";
@@ -420,7 +310,7 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
     );
   }
 
-  if (nextStack.examples.includes("todo") && nextStack.backend !== "convex") {
+  if (nextStack.examples.includes("todo")) {
     const needsRemoval = !isExampleTodoAllowed(
       getStackBackend(nextStack.backend),
       nextStack.database,
@@ -435,31 +325,7 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
     }
   }
 
-  if (nextStack.examples.includes("ai")) {
-    if (!isExampleAIAllowed(undefined, nextStack.webFrontend)) {
-      nextStack.examples = nextStack.examples.filter((e) => e !== "ai");
-      if (nextStack.examples.length === 0) nextStack.examples = ["none"];
-      changed = true;
-      changes.push({
-        category: "examples",
-        message: "AI removed (not compatible with Solid or Astro frontend)",
-      });
-    }
-    if (nextStack.backend === "convex") {
-      const hasIncompatibleFrontend = nextStack.webFrontend.some((f) =>
-        CONVEX_AI_INCOMPATIBLE_FRONTENDS.some((value) => value === f),
-      );
-      if (hasIncompatibleFrontend) {
-        nextStack.examples = nextStack.examples.filter((e) => e !== "ai");
-        if (nextStack.examples.length === 0) nextStack.examples = ["none"];
-        changed = true;
-        changes.push({
-          category: "examples",
-          message: "AI removed (Convex AI only supports React-based frontends)",
-        });
-      }
-    }
-  }
+  // AI examples are supported by TanStack web and Expo frontends.
 
   if (nextStack.webDeploy !== "none" && !nextStack.webFrontend.some((f) => f !== "none")) {
     nextStack.webDeploy = "none";
@@ -506,16 +372,6 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
     }
   }
 
-  const cloudflareNextIssue = getCloudflareNextIssue(nextStack);
-  if (cloudflareNextIssue) {
-    nextStack.webDeploy = "none";
-    changed = true;
-    changes.push({
-      category: "webDeploy",
-      message: `Web deploy set to 'None' (${cloudflareNextIssue})`,
-    });
-  }
-
   if (nextStack.serverDeploy === "cloudflare") {
     if (nextStack.runtime !== "workers" || nextStack.backend !== "hono") {
       nextStack.serverDeploy = "none";
@@ -549,43 +405,6 @@ export const getDisabledReason = (
   category: keyof typeof TECH_OPTIONS,
   optionId: string,
 ): string | null => {
-  if (currentStack.backend === "convex") {
-    if (
-      getBackendDisabledOptions("convex").some((key) => key === category) &&
-      optionId !== "none"
-    ) {
-      return `Convex provides its own ${getCategoryDisplayName(category).toLowerCase()}`;
-    }
-    if (category === "auth" && optionId === "better-auth") {
-      if (
-        !isConvexBetterAuthFrontendSelectionCompatible(
-          currentStack.webFrontend,
-          currentStack.nativeFrontend,
-        )
-      ) {
-        return convexBetterAuthFrontendRequirementMessage;
-      }
-    }
-    if (
-      category === "webFrontend" &&
-      isStackOption("webFrontend", optionId) &&
-      !isFrontendAllowedWithBackend(optionId, "convex")
-    ) {
-      return `${optionId.charAt(0).toUpperCase() + optionId.slice(1)} is not compatible with Convex`;
-    }
-    if (category === "examples" && optionId === "ai") {
-      const hasIncompatibleFrontend = currentStack.webFrontend.some((f) =>
-        CONVEX_AI_INCOMPATIBLE_FRONTENDS.some((value) => value === f),
-      );
-      if (hasIncompatibleFrontend) {
-        const frontendName = currentStack.webFrontend.find((f) =>
-          CONVEX_AI_INCOMPATIBLE_FRONTENDS.some((value) => value === f),
-        );
-        return `Convex AI example only supports React-based frontends (not ${frontendName})`;
-      }
-    }
-  }
-
   if (
     currentStack.backend === "none" &&
     optionId !== "none" &&
@@ -609,12 +428,6 @@ export const getDisabledReason = (
       return `${name} fullstack requires ${name} frontend`;
     if (category === "serverDeploy" && optionId !== "none")
       return "Fullstack uses frontend deployment";
-    if (
-      category === "api" &&
-      optionId === "trpc" &&
-      !allowedApisForFrontends([fullstackFrontend]).includes("trpc")
-    )
-      return `tRPC is not compatible with ${name} (use oRPC)`;
   }
 
   if (category === "backend" && isStackOption("backend", optionId)) {
@@ -624,15 +437,6 @@ export const getDisabledReason = (
         TECH_OPTIONS.webFrontend.find((option) => option.id === requiredFrontend)?.name ??
         requiredFrontend;
       return `Requires ${name} frontend`;
-    }
-    if (
-      optionId === "convex" &&
-      !currentStack.webFrontend.every((frontend) =>
-        isFrontendAllowedWithBackend(frontend, "convex"),
-      )
-    ) {
-      const incompatible = currentStack.webFrontend.includes("solid") ? "Solid" : "Astro";
-      return `Convex is not compatible with ${incompatible}`;
     }
     if (
       currentStack.runtime === "workers" &&
@@ -652,36 +456,22 @@ export const getDisabledReason = (
     }
     if (optionId === "none") {
       if (!supportsRuntimeBackend(optionId, getStackBackend(currentStack.backend))) {
-        return "Runtime 'None' only for Convex or fullstack backends";
+        return "Runtime 'None' only for no backend or a TanStack Start fullstack app";
       }
     }
   }
 
   if (category === "database" && isStackOption("database", optionId)) {
-    if (!supportsRuntimeDatabase(currentStack.runtime, optionId)) {
-      return "MongoDB is not compatible with Workers runtime";
-    }
+    return null;
   }
 
   if (
     category === "orm" &&
     isStackOption("orm", optionId) &&
-    (!supportsOrmDatabase(optionId, currentStack.database) ||
-      (optionId === "mongoose" && !supportsRuntimeDatabase(currentStack.runtime, "mongodb")))
+    !supportsOrmDatabase(optionId, currentStack.database)
   ) {
     if (currentStack.database === "none" && optionId !== "none") {
       return "Select a database first";
-    }
-    if (optionId === "mongoose") {
-      if (currentStack.runtime === "workers") {
-        return "Mongoose requires MongoDB, which is incompatible with Workers";
-      }
-      if (currentStack.database !== "mongodb") {
-        return "Mongoose only works with MongoDB";
-      }
-    }
-    if (optionId === "drizzle" && currentStack.database === "mongodb") {
-      return "Drizzle does not support MongoDB";
     }
     if (optionId === "none" && currentStack.database !== "none") {
       return "Database requires an ORM";
@@ -708,16 +498,6 @@ export const getDisabledReason = (
       return optionId === "d1"
         ? "D1 requires Cloudflare Workers runtime or a self fullstack backend"
         : "Docker is incompatible with Workers";
-    }
-  }
-
-  if (category === "api" && optionId === "trpc") {
-    const needsOrpc = !allowedApisForFrontends(currentStack.webFrontend).includes("trpc");
-    if (needsOrpc) {
-      const frontendName = currentStack.webFrontend.find((f) =>
-        TRPC_INCOMPATIBLE_FRONTENDS.some((value) => value === f),
-      );
-      return `${frontendName} requires oRPC, not tRPC`;
     }
   }
 
@@ -768,20 +548,7 @@ export const getDisabledReason = (
       }
     }
     if (optionId === "ai") {
-      if (!isExampleAIAllowed(undefined, currentStack.webFrontend)) {
-        return "AI example not compatible with Solid or Astro frontend";
-      }
-      if (currentStack.backend === "convex") {
-        const hasIncompatibleFrontend = currentStack.webFrontend.some((f) =>
-          CONVEX_AI_INCOMPATIBLE_FRONTENDS.some((value) => value === f),
-        );
-        if (hasIncompatibleFrontend) {
-          const frontendName = currentStack.webFrontend.find((f) =>
-            CONVEX_AI_INCOMPATIBLE_FRONTENDS.some((value) => value === f),
-          );
-          return `Convex AI example only supports React-based frontends (not ${frontendName})`;
-        }
-      }
+      return currentStack.backend === "none" ? "AI example requires a backend" : null;
     }
   }
 
@@ -801,7 +568,7 @@ export const getDisabledReason = (
       }
     }
     if (optionId === "prisma" && !supportsPrismaWebDeploy(currentStack.webFrontend)) {
-      return "Prisma requires TanStack Router, Next.js, Nuxt, Astro, React Router, TanStack Start, SvelteKit, or Solid";
+      return "Prisma deployment requires TanStack Router or TanStack Start";
     }
     if (optionId === "prisma") {
       const prismaDesktopConflict = getPrismaDesktopConflict(
@@ -811,10 +578,6 @@ export const getDisabledReason = (
       if (prismaDesktopConflict) {
         return `Prisma cannot deploy the static output required by ${prismaDesktopConflict.selectedDesktopAddons.join(" and ")} on ${prismaDesktopConflict.affectedFrontend}`;
       }
-    }
-    if (optionId === "cloudflare") {
-      const issue = getCloudflareNextIssue({ ...currentStack, webDeploy: "cloudflare" });
-      if (issue) return issue;
     }
   }
 

@@ -80,25 +80,9 @@ function getNodeToolingRequirements(config: RequirementConfig): VersionRequireme
 
   for (const frontend of config.frontend) {
     switch (frontend) {
-      case "astro":
-        addNodeRequirement(requirements, ">=22.12.0", "Astro 7");
-        break;
-      case "nuxt":
-        addNodeRequirement(requirements, "^22.19.0 || ^24.11.0 || >=26.0.0", "Nuxt 4");
-        break;
-      case "solid":
-        addNodeRequirement(requirements, ">=24.0.0", "Solid");
-        break;
-      case "react-router":
-        addNodeRequirement(requirements, ">=22.22.0", "React Router 8");
-        break;
-      case "svelte":
       case "tanstack-router":
       case "tanstack-start":
         addNodeRequirement(requirements, "^20.19.0 || >=22.12.0", "Vite 8");
-        break;
-      case "next":
-        addNodeRequirement(requirements, ">=20.9.0", "Next.js 16");
         break;
       case "native-bare":
       case "native-uniwind":
@@ -108,7 +92,7 @@ function getNodeToolingRequirements(config: RequirementConfig): VersionRequireme
     }
   }
 
-  if (!["none", "self", "convex"].includes(config.backend)) {
+  if (config.backend !== "none" && config.backend !== "self") {
     addNodeRequirement(
       requirements,
       "^22.18.0 || >=24.11.0",
@@ -116,35 +100,16 @@ function getNodeToolingRequirements(config: RequirementConfig): VersionRequireme
     );
   }
 
-  if (config.orm === "prisma") {
-    addNodeRequirement(requirements, "^20.19.0 || ^22.12.0 || >=24.0.0", "Prisma 7");
-  }
-
-  if (config.orm === "mongoose") {
-    addNodeRequirement(requirements, ">=20.19.0", "Mongoose 9 and MongoDB 7");
-  }
-
   if (config.examples.includes("ai")) {
     addNodeRequirement(requirements, ">=22.0.0", "AI SDK 7");
   }
 
-  if (
-    config.addons.includes("oxlint") ||
-    (config.addons.includes("ultracite") && config.addonOptions?.ultracite?.linter === "oxlint")
-  ) {
+  if (config.addons.includes("oxlint")) {
     addNodeRequirement(requirements, "^20.19.0 || >=22.12.0", "Oxlint and Oxfmt");
-  }
-
-  if (config.addons.includes("husky")) {
-    addNodeRequirement(requirements, ">=22.22.1", "lint-staged 17");
   }
 
   if (config.addons.includes("vite-plus")) {
     addNodeRequirement(requirements, "^20.19.0 || ^22.18.0 || >=24.11.0", "Vite+");
-  }
-
-  if (config.addons.includes("starlight")) {
-    addNodeRequirement(requirements, ">=22.12.0", "Starlight's Astro toolchain");
   }
 
   if (config.addons.includes("wxt")) {

@@ -4,9 +4,7 @@ import type { VirtualFileSystem } from "../core/virtual-fs";
 import { addPackageDependency, type AvailableDependencies } from "../utils/add-deps";
 
 export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConfig): void {
-  const { projectName, packageManager, runtime, orm, backend, database, auth, api, frontend } =
-    config;
-
+  const { projectName, packageManager, runtime, backend, database, auth, api } = config;
   const workspaceVersion = packageManager === "npm" ? "*" : "workspace:*";
   const packages = {
     config: vfs.exists("packages/config/package.json"),
@@ -15,7 +13,6 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
     auth: vfs.exists("packages/auth/package.json"),
     api: vfs.exists("packages/api/package.json"),
     ui: vfs.exists("packages/ui/package.json"),
-    backend: vfs.exists("packages/backend/package.json"),
     server: vfs.exists("apps/server/package.json"),
     web: vfs.exists("apps/web/package.json"),
     native: vfs.exists("apps/native/package.json"),
@@ -35,20 +32,11 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
     customDevDependencies: configDep,
   });
 
-  if (packages.infra) {
+  for (const packageName of ["infra", "db"] as const) {
+    if (!packages[packageName]) continue;
     addPackageDependency({
       vfs,
-      packagePath: "packages/infra/package.json",
-      dependencies: commonDeps,
-      devDependencies: ["typescript"],
-      customDevDependencies: configDep,
-    });
-  }
-
-  if (packages.db) {
-    addPackageDependency({
-      vfs,
-      packagePath: "packages/db/package.json",
+      packagePath: `packages/${packageName}/package.json`,
       dependencies: commonDeps,
       devDependencies: ["typescript"],
       customDevDependencies: configDep,
@@ -57,9 +45,7 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
 
   if (packages.auth) {
     const authDeps: Record<string, string> = {};
-    if (database !== "none" && packages.db) {
-      authDeps[`@${projectName}/db`] = workspaceVersion;
-    }
+    if (database !== "none" && packages.db) authDeps[`@${projectName}/db`] = workspaceVersion;
     addPackageDependency({
       vfs,
       packagePath: "packages/auth/package.json",
@@ -71,38 +57,20 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
   }
 
   if (packages.api) {
-    const apiPackageDeps: Record<string, string> = {};
-    if (auth !== "none" && packages.auth) {
-      apiPackageDeps[`@${projectName}/auth`] = workspaceVersion;
-    }
-    if (database !== "none" && packages.db) {
-      apiPackageDeps[`@${projectName}/db`] = workspaceVersion;
-    }
+    const apiDeps: Record<string, string> = {};
+    if (auth !== "none" && packages.auth) apiDeps[`@${projectName}/auth`] = workspaceVersion;
+    if (database !== "none" && packages.db) apiDeps[`@${projectName}/db`] = workspaceVersion;
     addPackageDependency({
       vfs,
       packagePath: "packages/api/package.json",
       dependencies: commonDeps,
       devDependencies: ["typescript"],
-      customDependencies: apiPackageDeps,
-      customDevDependencies: configDep,
-    });
-  }
-
-  if (packages.backend) {
-    addPackageDependency({
-      vfs,
-      packagePath: "packages/backend/package.json",
-      dependencies: commonDeps,
-      devDependencies: ["typescript"],
+      customDependencies: apiDeps,
       customDevDependencies: configDep,
     });
   }
 
   if (packages.server) {
-    const serverDevDependencies: AvailableDependencies[] = ["typescript", "tsdown"];
-    if (runtime === "workers" && orm === "prisma") {
-      serverDevDependencies.push("unwasm");
-    }
     const serverDeps: Record<string, string> = {};
     if (api !== "none" && packages.api) serverDeps[`@${projectName}/api`] = workspaceVersion;
     if (auth !== "none" && packages.auth) serverDeps[`@${projectName}/auth`] = workspaceVersion;
@@ -111,33 +79,27 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
       vfs,
       packagePath: "apps/server/package.json",
       dependencies: commonDeps,
-      devDependencies: serverDevDependencies,
+      devDependencies: ["typescript", "tsdown"],
       customDependencies: serverDeps,
       customDevDependencies: configDep,
     });
   }
 
   if (packages.web) {
-    const webPackageDeps = { ...uiDep } satisfies Record<string, string>;
-
-    if (api !== "none" && packages.api) webPackageDeps[`@${projectName}/api`] = workspaceVersion;
-    if (
-      auth !== "none" &&
-      packages.auth &&
-      (backend === "self" || (auth === "better-auth" && frontend.includes("solid")))
-    ) {
-      webPackageDeps[`@${projectName}/auth`] = workspaceVersion;
+    const webDeps = { ...uiDep } satisfies Record<string, string>;
+    if (api !== "none" && packages.api) webDeps[`@${projectName}/api`] = workspaceVersion;
+    if (backend === "self" && auth !== "none" && packages.auth) {
+      webDeps[`@${projectName}/auth`] = workspaceVersion;
     }
-    if (backend === "self" && packages.db) webPackageDeps[`@${projectName}/db`] = workspaceVersion;
-    if (backend === "convex" && packages.backend)
-      webPackageDeps[`@${projectName}/backend`] = workspaceVersion;
-
+    if (backend === "self" && database !== "none" && packages.db) {
+      webDeps[`@${projectName}/db`] = workspaceVersion;
+    }
     addPackageDependency({
       vfs,
       packagePath: "apps/web/package.json",
       dependencies: commonDeps,
       devDependencies: ["typescript"],
-      customDependencies: webPackageDeps,
+      customDependencies: webDeps,
       customDevDependencies: configDep,
     });
   }
@@ -154,8 +116,6 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
   if (packages.native) {
     const nativeDeps: Record<string, string> = {};
     if (api !== "none" && packages.api) nativeDeps[`@${projectName}/api`] = workspaceVersion;
-    if (backend === "convex" && packages.backend)
-      nativeDeps[`@${projectName}/backend`] = workspaceVersion;
     addPackageDependency({
       vfs,
       packagePath: "apps/native/package.json",
@@ -167,8 +127,7 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
 }
 
 function getRuntimeDevDeps(runtime: ProjectConfig["runtime"]): AvailableDependencies[] {
-  if (runtime === "none") return ["@types/node"];
-  if (runtime === "node" || runtime === "workers") return ["@types/node"];
+  if (runtime === "none" || runtime === "node" || runtime === "workers") return ["@types/node"];
   if (runtime === "bun") return ["@types/bun"];
   return [];
 }

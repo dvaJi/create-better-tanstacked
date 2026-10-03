@@ -14,69 +14,34 @@ import { shouldSkipExternalCommands } from "../../utils/external-commands";
 import { getPackageExecutionArgs } from "../../utils/package-runner";
 import { cliLog, createSpinner } from "../../utils/terminal-output";
 
-type FumadocsTemplate =
-  | "next-mdx"
-  | "next-mdx-static"
-  | "waku"
-  | "react-router"
-  | "react-router-spa"
-  | "tanstack-start"
-  | "tanstack-start-spa"
-  | "astro";
+type FumadocsTemplate = "tanstack-start" | "tanstack-start-spa";
 
 type FumadocsSearch = "orama" | "orama-cloud";
-type FumadocsOgImage = "next-og" | "takumi";
+type FumadocsOgImage = "takumi";
 type FumadocsAiChat = "openrouter" | "llmgateway" | "inkeep";
-type FumadocsLinter = "biome" | "oxlint";
+type FumadocsLinter = "oxlint";
 
 const TEMPLATES = {
-  "next-mdx": {
-    label: "Next.js: Fumadocs MDX",
-    hint: "recommended",
-    value: "+next+fuma-docs-mdx",
-  },
-  "next-mdx-static": {
-    label: "Next.js Static: Fumadocs MDX",
-    value: "+next+fuma-docs-mdx+static",
-  },
-  waku: {
-    label: "Waku: Fumadocs MDX",
-    value: "waku",
-  },
-  "react-router": {
-    label: "React Router: Fumadocs MDX (not RSC)",
-    value: "react-router",
-  },
-  "react-router-spa": {
-    label: "React Router SPA: Fumadocs MDX (not RSC)",
-    hint: "SPA mode allows you to host the site statically, compatible with a CDN.",
-    value: "react-router-spa",
-  },
   "tanstack-start": {
-    label: "Tanstack Start: Fumadocs MDX (not RSC)",
+    label: "TanStack Start: Fumadocs MDX",
     value: "tanstack-start",
   },
   "tanstack-start-spa": {
-    label: "Tanstack Start SPA: Fumadocs MDX (not RSC)",
+    label: "TanStack Start SPA: Fumadocs MDX",
     hint: "SPA mode allows you to host the site statically, compatible with a CDN.",
     value: "tanstack-start-spa",
   },
-  astro: {
-    label: "Astro: Fumadocs MDX",
-    value: "astro",
-  },
 } as const;
 
-const DEFAULT_TEMPLATE: FumadocsTemplate = "next-mdx";
+const DEFAULT_TEMPLATE: FumadocsTemplate = "tanstack-start";
 const DEFAULT_DEV_PORT = 4000;
 
 function aiChatDisabledForTemplate(template: FumadocsTemplate): boolean {
-  return template === "next-mdx-static" || template === "astro" || template.endsWith("-spa");
+  return template.endsWith("-spa");
 }
 
 export function getFumadocsLinter(addons: ProjectConfig["addons"]): FumadocsLinter | undefined {
   if (addons.includes("oxlint")) return "oxlint";
-  if (addons.includes("biome") || addons.includes("ultracite")) return "biome";
   if (addons.includes("vite-plus")) return "oxlint";
 }
 
@@ -147,21 +112,19 @@ export async function setupFumadocs(
               initialValue: "orama",
             });
           },
-          ogImage: async ({ results }) => {
+          ogImage: async () => {
             if (ogImage !== undefined) return ogImage;
-            const picked = results.template ?? template ?? DEFAULT_TEMPLATE;
-            if (!picked.startsWith("next-")) return "skip";
-            return navigableSelect<FumadocsOgImage>({
+            return navigableSelect<FumadocsOgImage | "skip">({
               message: "Configure Open Graph Image generation?",
               options: [
-                { value: "next-og", label: "next/og", hint: "Next.js built-in solution" },
+                { value: "skip", label: "No" },
                 {
                   value: "takumi",
                   label: "Takumi",
                   hint: "Output WebP format, framework-agnostic",
                 },
               ],
-              initialValue: "next-og",
+              initialValue: "skip",
             });
           },
           aiChat: async ({ results }) => {
@@ -211,13 +174,7 @@ export async function setupFumadocs(
     return userCancelled("Operation cancelled");
   }
 
-  const isNextTemplate = template.startsWith("next-");
-
-  // Normalize pre-configured flags against the chosen template so we don't emit
-  // upstream-broken combinations (AI chat on a static export, etc.).
-  if (!isNextTemplate) {
-    ogImage = undefined;
-  }
+  // Avoid upstream-broken combinations such as AI chat on a static export.
   if (aiChatDisabledForTemplate(template)) {
     aiChat = undefined;
   }
@@ -226,10 +183,6 @@ export async function setupFumadocs(
   const devPort = configuredOptions?.devPort ?? DEFAULT_DEV_PORT;
 
   const options: string[] = [`--template ${templateArg}`, `--pm ${packageManager}`, "--no-git"];
-
-  if (isNextTemplate) {
-    options.push("--src");
-  }
 
   const persistedConfig = await readBtsConfig(projectDir);
   const linter = getFumadocsLinter(getFumadocsAddonContext(config.addons, persistedConfig?.addons));

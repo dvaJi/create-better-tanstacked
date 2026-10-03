@@ -23,7 +23,7 @@ The plugin bundles:
 /plugin install better-t-stack@better-t-stack
 ```
 
-Then just ask: _"create a fullstack app with Next, Hono, Postgres and Better Auth"_ — the `scaffold-project` skill activates and the assistant plans the stack with the MCP before generating it. Or run `/better-t-stack:new <description>`.
+Then just ask: _"create a fullstack app with TanStack Start, Postgres and Better Auth"_ — the `scaffold-project` skill activates and the assistant plans the stack with the MCP before generating it. Or run `/better-t-stack:new <description>`.
 
 ## Install in Codex
 

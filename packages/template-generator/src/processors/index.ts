@@ -2,7 +2,6 @@ import type { ProjectConfig } from "@better-t-stack/types";
 
 import type { VirtualFileSystem } from "../core/virtual-fs";
 import { processAddonsDeps } from "./addons-deps";
-import { processAlchemyPlugins } from "./alchemy-plugins";
 import { processApiDeps } from "./api-deps";
 import { processAuthDeps } from "./auth-deps";
 import { processAuthPlugins } from "./auth-plugins";
@@ -12,9 +11,7 @@ import { processDeployDeps } from "./deploy-deps";
 import { processEnvDeps } from "./env-deps";
 import { processEnvVariables } from "./env-vars";
 import { processExamplesDeps } from "./examples-deps";
-import { processFrontendDeps } from "./frontend-deps";
 import { processInfraDeps } from "./infra-deps";
-import { processNxConfig } from "./nx-generator";
 import { processPaymentsDeps } from "./payments-deps";
 import { processPwaPlugins } from "./pwa-plugins";
 import { processReadme } from "./readme-generator";
@@ -25,7 +22,6 @@ import { processWorkspaceDeps } from "./workspace-deps";
 
 export function processDependencies(vfs: VirtualFileSystem, config: ProjectConfig): void {
   processWorkspaceDeps(vfs, config);
-  processFrontendDeps(vfs, config);
   processEnvDeps(vfs, config);
   processInfraDeps(vfs, config);
   processDatabaseDeps(vfs, config);
@@ -38,7 +34,6 @@ export function processDependencies(vfs: VirtualFileSystem, config: ProjectConfi
   processAddonsDeps(vfs, config);
   processExamplesDeps(vfs, config);
   processTurboConfig(vfs, config);
-  processNxConfig(vfs, config);
   processVitePlusConfig(vfs, config);
 }
 
@@ -51,17 +46,14 @@ export {
   processDeployDeps,
   processEnvDeps,
   processExamplesDeps,
-  processFrontendDeps,
   processInfraDeps,
   processPaymentsDeps,
-  processNxConfig,
   processReadme,
   processRuntimeDeps,
   processTurboConfig,
   processVitePlusConfig,
   processWorkspaceDeps,
   processAuthPlugins,
-  processAlchemyPlugins,
   processPwaPlugins,
   processEnvVariables,
 };

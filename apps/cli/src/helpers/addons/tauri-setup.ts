@@ -4,44 +4,26 @@ import { Result } from "better-result";
 import { execa } from "execa";
 import fs from "fs-extra";
 
-import { desktopWebFrontends, type ProjectConfig } from "../../types";
+import type { ProjectConfig } from "../../types";
 import { AddonSetupError } from "../../utils/errors";
 import { shouldSkipExternalCommands } from "../../utils/external-commands";
 import { getPackageRunnerPrefix } from "../../utils/package-runner";
 import { createSpinner } from "../../utils/terminal-output";
 
 function getWebFrontend(frontend: Pick<ProjectConfig, "frontend">["frontend"]) {
-  return frontend.find((value) => (desktopWebFrontends as readonly string[]).includes(value));
+  return frontend.find((value) => value === "tanstack-router" || value === "tanstack-start");
 }
 
-function getTauriDevUrl(frontend: Pick<ProjectConfig, "frontend">["frontend"]) {
-  const webFrontend = getWebFrontend(frontend);
-
-  switch (webFrontend) {
-    case "react-router":
-    case "svelte":
-      return "http://localhost:5173";
-    case "astro":
-      return "http://localhost:4321";
-    default:
-      return "http://localhost:3001";
-  }
+function getTauriDevUrl(_frontend: Pick<ProjectConfig, "frontend">["frontend"]) {
+  return "http://localhost:3001";
 }
 
 function getTauriFrontendDist(frontend: Pick<ProjectConfig, "frontend">["frontend"]) {
   const webFrontend = getWebFrontend(frontend);
 
   switch (webFrontend) {
-    case "react-router":
-      return "../build/client";
     case "tanstack-start":
       return "../dist/client";
-    case "next":
-      return "../out";
-    case "nuxt":
-      return "../.output/public";
-    case "svelte":
-      return "../build";
     default:
       return "../dist";
   }
@@ -49,11 +31,9 @@ function getTauriFrontendDist(frontend: Pick<ProjectConfig, "frontend">["fronten
 
 function getTauriBeforeBuildCommand(
   packageManager: Pick<ProjectConfig, "packageManager">["packageManager"],
-  frontend: Pick<ProjectConfig, "frontend">["frontend"],
+  _frontend: Pick<ProjectConfig, "frontend">["frontend"],
 ) {
-  return frontend.includes("nuxt")
-    ? `${packageManager} run generate`
-    : `${packageManager} run build`;
+  return `${packageManager} run build`;
 }
 
 export function buildTauriInitArgs(

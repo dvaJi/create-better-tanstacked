@@ -202,7 +202,7 @@ export function PreviewPanel({ preview, selectedFilePath, onSelectFile }: Previe
               <p>
                 This is a static template preview. Files are not formatted. Some features like
                 database provider setup (Turso, Neon, Supabase, etc.) and certain addons (Fumadocs,
-                Starlight, Tauri, etc.) require CLI execution and are not shown here.
+                Tauri, etc.) require CLI execution and are not shown here.
               </p>
             </TooltipContent>
           </Tooltip>

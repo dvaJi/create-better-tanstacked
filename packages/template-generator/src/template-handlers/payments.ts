@@ -10,23 +10,7 @@ export async function processPaymentsTemplates(
 ): Promise<void> {
   if (!config.payments || config.payments === "none") return;
 
-  const hasReactWeb = config.frontend.some((f) =>
-    ["tanstack-router", "react-router", "tanstack-start", "next"].includes(f),
-  );
-  const hasNuxtWeb = config.frontend.includes("nuxt");
-  const hasSvelteWeb = config.frontend.includes("svelte");
-  const hasSolidWeb = config.frontend.includes("solid");
-
-  if (config.backend === "convex") {
-    processTemplatesFromPrefix(
-      vfs,
-      templates,
-      `payments/${config.payments}/convex/backend`,
-      "packages/backend",
-      config,
-    );
-    return;
-  } else if (config.backend !== "none") {
+  if (config.backend !== "none") {
     processTemplatesFromPrefix(
       vfs,
       templates,
@@ -36,40 +20,14 @@ export async function processPaymentsTemplates(
     );
   }
 
-  if (hasReactWeb) {
-    const reactFramework = config.frontend.find((f) =>
-      ["tanstack-router", "react-router", "tanstack-start", "next"].includes(f),
-    );
-    if (reactFramework) {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `payments/${config.payments}/web/react/${reactFramework}`,
-        "apps/web",
-        config,
-      );
-    }
-  } else if (hasNuxtWeb) {
+  const webFrontend = config.frontend.find((frontend) =>
+    ["tanstack-router", "tanstack-start"].includes(frontend),
+  );
+  if (webFrontend) {
     processTemplatesFromPrefix(
       vfs,
       templates,
-      `payments/${config.payments}/web/nuxt`,
-      "apps/web",
-      config,
-    );
-  } else if (hasSvelteWeb) {
-    processTemplatesFromPrefix(
-      vfs,
-      templates,
-      `payments/${config.payments}/web/svelte`,
-      "apps/web",
-      config,
-    );
-  } else if (hasSolidWeb) {
-    processTemplatesFromPrefix(
-      vfs,
-      templates,
-      `payments/${config.payments}/web/solid`,
+      `payments/${config.payments}/web/react/${webFrontend}`,
       "apps/web",
       config,
     );

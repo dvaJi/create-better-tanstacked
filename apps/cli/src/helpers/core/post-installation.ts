@@ -13,12 +13,7 @@ import type {
   ServerDeploy,
   WebDeploy,
 } from "../../types";
-import {
-  getLocalD1Owner,
-  isAlchemyDeployTarget,
-  usesAlchemyManagedDatabase,
-  webFrontends,
-} from "../../types";
+import { isAlchemyDeployTarget, usesAlchemyManagedDatabase, webFrontends } from "../../types";
 import { getDockerStatus } from "../../utils/docker-utils";
 import {
   fetchSponsorsQuietly,
@@ -27,13 +22,7 @@ import {
 import { cliLog } from "../../utils/terminal-output";
 
 function getDesktopStaticBuildNote(frontend: Frontend[]): string {
-  const staticBuildFrontends = new Map<Frontend, string>([
-    ["tanstack-start", "TanStack Start"],
-    ["next", "Next.js"],
-    ["nuxt", "Nuxt"],
-    ["svelte", "SvelteKit"],
-    ["astro", "Astro"],
-  ]);
+  const staticBuildFrontends = new Map<Frontend, string>([["tanstack-start", "TanStack Start"]]);
 
   const staticBuildFrontend = frontend.find((value) => staticBuildFrontends.has(value));
   if (!staticBuildFrontend) {
@@ -67,24 +56,18 @@ export async function displayPostInstallInstructions(
     dbSetupOptions,
   } = config;
 
-  const isConvex = backend === "convex";
   const isBackendSelf = backend === "self";
   const runCmd =
     packageManager === "npm" ? "npm run" : packageManager === "pnpm" ? "pnpm run" : "bun run";
   const cdCmd = `cd ${relativePath}`;
-  const hasHusky = addons?.includes("husky");
   const hasLefthook = addons?.includes("lefthook");
   const hasVitePlus = addons?.includes("vite-plus");
-  const hasVitePlusNativeHooks = hasVitePlus && !hasHusky && !hasLefthook;
+  const hasVitePlusNativeHooks = hasVitePlus && !hasLefthook;
   const hasGitHooksOrLinting =
-    addons?.includes("husky") ||
-    addons?.includes("biome") ||
-    addons?.includes("lefthook") ||
-    addons?.includes("oxlint") ||
-    hasVitePlus;
+    addons?.includes("lefthook") || addons?.includes("oxlint") || hasVitePlus;
 
   const databaseInstructions =
-    !isConvex && database !== "none"
+    database !== "none"
       ? await getDatabaseInstructions(
           database,
           orm,
@@ -102,7 +85,6 @@ export async function displayPostInstallInstructions(
   const electrobunInstructions = addons?.includes("electrobun")
     ? getElectrobunInstructions(runCmd, frontend)
     : "";
-  const huskyInstructions = hasHusky ? getHuskyInstructions(runCmd) : "";
   const lefthookInstructions = hasLefthook ? getLefthookInstructions(packageManager) : "";
   const vitePlusNativeHooksInstructions = hasVitePlusNativeHooks
     ? getVitePlusNativeHooksInstructions(runCmd)
@@ -113,13 +95,10 @@ export async function displayPostInstallInstructions(
       frontend?.includes("native-uniwind") ||
       frontend?.includes("native-unistyles")) &&
     backend !== "none"
-      ? getNativeInstructions(isConvex, isBackendSelf, frontend || [], runCmd)
+      ? getNativeInstructions(isBackendSelf, frontend || [], runCmd)
       : "";
   const pwaInstructions =
-    addons?.includes("pwa") && frontend?.includes("react-router") ? getPwaInstructions() : "";
-  const starlightInstructions = addons?.includes("starlight")
-    ? getStarlightInstructions(runCmd)
-    : "";
+    addons?.includes("pwa") && frontend?.includes("tanstack-router") ? getPwaInstructions() : "";
   const clerkInstructions =
     config.auth === "clerk" ? getClerkInstructions(frontend || [], backend, api) : "";
   const alchemyDeployInstructions = getAlchemyDeployInstructions(
@@ -138,24 +117,15 @@ export async function displayPostInstallInstructions(
     frontend?.includes("native-uniwind") ||
     frontend?.includes("native-unistyles");
 
-  const hasReactRouter = frontend?.includes("react-router");
-  const hasSvelte = frontend?.includes("svelte");
-  const hasAstro = frontend?.includes("astro");
-  // TanStack Router/Start, Next, Nuxt and Solid all dev on 3001; only React Router and SvelteKit use Vite's default 5173.
-  const webPort = hasReactRouter || hasSvelte ? "5173" : hasAstro ? "4321" : "3001";
-
-  const betterAuthConvexInstructions =
-    isConvex && config.auth === "better-auth"
-      ? getBetterAuthConvexInstructions(hasWeb ?? false, webPort, packageManager, runCmd)
-      : "";
+  const webPort = "3001";
   const polarInstructions =
     config.payments === "polar" && config.auth === "better-auth"
-      ? getPolarInstructions(backend, packageManager)
+      ? getPolarInstructions(backend)
       : "";
 
   const bunWebNativeWarning =
     packageManager === "bun" && hasNative && hasWeb ? getBunWebNativeWarning() : "";
-  const noOrmWarning = !isConvex && database !== "none" && orm === "none" ? getNoOrmWarning() : "";
+  const noOrmWarning = database !== "none" && orm === "none" ? getNoOrmWarning() : "";
 
   let output = `${pc.cyan("1.")} ${cdCmd}\n`;
   let stepCounter = 2;
@@ -173,32 +143,11 @@ export async function displayPostInstallInstructions(
   const hasAlchemyD1 =
     dbSetup === "d1" &&
     (serverDeploy === "cloudflare" || (isBackendSelf && webDeploy === "cloudflare"));
-  const hasWranglerLocalD1 = getLocalD1Owner(config) === "wrangler";
-
-  if (orm === "prisma" && !hasAlchemyD1) {
-    output += `${pc.cyan(`${stepCounter++}.`)} ${runCmd} db:generate\n`;
-  }
-
   if (hasAlchemyD1 && orm !== "none") {
     output += `${pc.cyan(`${stepCounter++}.`)} ${runCmd} db:generate\n`;
-    if (orm === "prisma") {
-      output += `${pc.cyan(`${stepCounter++}.`)} ${runCmd} db:migrate\n`;
-    }
-    if (hasWranglerLocalD1) {
-      output += `${pc.cyan(`${stepCounter++}.`)} ${runCmd} db:migrate:local\n`;
-    }
   }
 
-  if (isConvex) {
-    output += `${pc.cyan(`${stepCounter++}.`)} ${runCmd} dev:setup\n${pc.dim(
-      "   (this will guide you through Convex project setup)",
-    )}\n`;
-
-    output += `${pc.cyan(`${stepCounter++}.`)} Copy environment variables from\n${pc.white(
-      "   packages/backend/.env.local",
-    )} to ${pc.white("apps/*/.env")}\n`;
-    output += `${pc.cyan(`${stepCounter++}.`)} ${runCmd} dev\n\n`;
-  } else if (isBackendSelf) {
+  if (isBackendSelf) {
     output += `${pc.cyan(`${stepCounter++}.`)} ${runCmd} dev\n`;
   } else {
     if (runtime !== "workers") {
@@ -211,8 +160,7 @@ export async function displayPostInstallInstructions(
   }
 
   const hasStandaloneBackend = backend !== "none";
-  const hasAnyService =
-    hasWeb || hasStandaloneBackend || addons?.includes("starlight") || addons?.includes("fumadocs");
+  const hasAnyService = hasWeb || hasStandaloneBackend || addons?.includes("fumadocs");
 
   if (hasAnyService) {
     const localServices: Array<{ label: string; url: string }> = [];
@@ -220,11 +168,11 @@ export async function displayPostInstallInstructions(
 
     if (hasWeb) {
       localServices.push({ label: "Frontend", url: `http://localhost:${webPort}` });
-    } else if (!hasNative && !addons?.includes("starlight")) {
+    } else if (!hasNative) {
       localDevelopmentNote = "Backend-only app — no frontend selected";
     }
 
-    if (!isConvex && !isBackendSelf && hasStandaloneBackend) {
+    if (!isBackendSelf && hasStandaloneBackend) {
       localServices.push({ label: "API", url: "http://localhost:3000" });
 
       if (api === "orpc") {
@@ -236,16 +184,11 @@ export async function displayPostInstallInstructions(
     }
 
     if (isBackendSelf && api === "orpc") {
-      const rpcPath =
-        frontend?.includes("next") || frontend?.includes("tanstack-start") ? "/api/rpc" : "/rpc";
+      const rpcPath = frontend?.includes("tanstack-start") ? "/api/rpc" : "/rpc";
       localServices.push({
         label: "API reference",
         url: `http://localhost:${webPort}${rpcPath}/api-reference`,
       });
-    }
-
-    if (addons?.includes("starlight")) {
-      localServices.push({ label: "Docs", url: "http://localhost:4321" });
     }
 
     if (addons?.includes("fumadocs")) {
@@ -269,14 +212,11 @@ export async function displayPostInstallInstructions(
   if (databaseInstructions) output += `\n${databaseInstructions.trim()}\n`;
   if (tauriInstructions) output += `\n${tauriInstructions.trim()}\n`;
   if (electrobunInstructions) output += `\n${electrobunInstructions.trim()}\n`;
-  if (huskyInstructions) output += `\n${huskyInstructions.trim()}\n`;
   if (lefthookInstructions) output += `\n${lefthookInstructions.trim()}\n`;
   if (vitePlusNativeHooksInstructions) output += `\n${vitePlusNativeHooksInstructions.trim()}\n`;
   if (lintingInstructions) output += `\n${lintingInstructions.trim()}\n`;
   if (pwaInstructions) output += `\n${pwaInstructions.trim()}\n`;
-  if (starlightInstructions) output += `\n${starlightInstructions.trim()}\n`;
   if (clerkInstructions) output += `\n${clerkInstructions.trim()}\n`;
-  if (betterAuthConvexInstructions) output += `\n${betterAuthConvexInstructions.trim()}\n`;
   if (polarInstructions) output += `\n${polarInstructions.trim()}\n`;
   // Deploy steps come last so env sync happens after auth/payment keys exist
   if (alchemyDeployInstructions) output += `\n${alchemyDeployInstructions.trim()}\n`;
@@ -308,37 +248,15 @@ export async function displayPostInstallInstructions(
   );
 }
 
-function getNativeInstructions(
-  isConvex: boolean,
-  isBackendSelf: boolean,
-  frontend: Frontend[],
-  runCmd: string,
-) {
-  const envVar = isConvex ? "EXPO_PUBLIC_CONVEX_URL" : "EXPO_PUBLIC_SERVER_URL";
-  const selfBackendPort = frontend.includes("svelte")
-    ? "5173"
-    : frontend.includes("astro")
-      ? "4321"
-      : "3001";
-  const exampleUrl = isConvex
-    ? "https://example.convex.cloud"
-    : isBackendSelf
-      ? `http://<YOUR_LOCAL_IP>:${selfBackendPort}`
-      : "http://<YOUR_LOCAL_IP>:3000";
+function getNativeInstructions(isBackendSelf: boolean, frontend: Frontend[], runCmd: string) {
+  const envVar = "EXPO_PUBLIC_SERVER_URL";
+  const exampleUrl = isBackendSelf ? "http://<YOUR_LOCAL_IP>:3001" : "http://<YOUR_LOCAL_IP>:3000";
   const envFileName = ".env";
-  const ipNote = isConvex
-    ? "your Convex deployment URL (find after running 'dev:setup')"
-    : "your local IP address";
+  const ipNote = "your local IP address";
 
   let instructions = `${pc.yellow(
     "NOTE:",
   )} For Expo connectivity issues, update\n   apps/native/${envFileName} with ${ipNote}:\n   ${`${envVar}=${exampleUrl}`}\n`;
-
-  if (isConvex) {
-    instructions += `\n${pc.yellow(
-      "IMPORTANT:",
-    )} When using local development with Convex and native apps,\n   ensure you use your local IP address instead of localhost or 127.0.0.1\n   for proper connectivity.\n`;
-  }
 
   if (frontend.includes("native-unistyles")) {
     instructions += `\n${pc.yellow(
@@ -347,12 +265,6 @@ function getNativeInstructions(
   }
 
   return instructions;
-}
-
-function getHuskyInstructions(runCmd: string) {
-  return `${pc.bold("Git hooks with Husky:")}\n${pc.cyan(
-    "•",
-  )} Initialize hooks: ${`${runCmd} prepare`}\n`;
 }
 
 function getLintingInstructions(runCmd: string) {
@@ -402,10 +314,7 @@ async function getDatabaseInstructions(
 
   if (dbSetup === "docker") {
     const dockerStatus = await getDockerStatus(database);
-
-    if (dockerStatus.message) {
-      notes.push(dockerStatus.message);
-    }
+    if (dockerStatus.message) notes.push(dockerStatus.message);
   }
 
   if (isAlchemyManagedDatabase) {
@@ -425,48 +334,7 @@ async function getDatabaseInstructions(
     }
   }
 
-  if (dbSetup === "planetscale" && !isAlchemyManagedDatabase) {
-    if (database === "mysql" && orm === "drizzle") {
-      notes.push(
-        `${pc.yellow("NOTE:")} Enable foreign key constraints in PlanetScale database settings`,
-      );
-    }
-    if (database === "mysql" && orm === "prisma") {
-      notes.push(
-        `${pc.yellow(
-          "NOTE:",
-        )} How to handle Prisma migrations with PlanetScale:\n   https://github.com/prisma/prisma/issues/7292`,
-      );
-    }
-  }
-
-  if (dbSetup === "turso" && orm === "prisma") {
-    notes.push(
-      `${pc.yellow(
-        "NOTE:",
-      )} Follow Turso's Prisma guide for migrations via the Turso CLI:\n   https://docs.turso.tech/sdk/ts/orm/prisma`,
-    );
-  }
-
-  if (orm === "prisma") {
-    if (database === "mongodb" && dbSetup === "docker") {
-      notes.push(
-        `${pc.yellow("WARNING:")} Prisma + MongoDB + Docker combination\n   may not work.`,
-      );
-    }
-    if (dbSetup === "docker") {
-      commands.push({ label: "Start database", command: `${runCmd} db:start` });
-    }
-    if (isAlchemyManagedDatabase) {
-      commands.push({ label: "Generate client", command: `${runCmd} db:generate` });
-    } else if (!isD1Alchemy) {
-      commands.push({ label: "Generate client", command: `${runCmd} db:generate` });
-      commands.push({ label: "Apply schema", command: `${runCmd} db:push` });
-    }
-    if (!isD1Alchemy && !isAlchemyManagedDatabase) {
-      commands.push({ label: "Open studio", command: `${runCmd} db:studio` });
-    }
-  } else if (orm === "drizzle") {
+  if (orm === "drizzle") {
     if (dbSetup === "docker") {
       commands.push({ label: "Start database", command: `${runCmd} db:start` });
     }
@@ -478,33 +346,24 @@ async function getDatabaseInstructions(
     if (!isD1Alchemy && !isAlchemyManagedDatabase) {
       commands.push({ label: "Open studio", command: `${runCmd} db:studio` });
     }
-  } else if (orm === "mongoose") {
-    if (dbSetup === "docker") {
-      commands.push({ label: "Start database", command: `${runCmd} db:start` });
-    }
   } else if (orm === "none") {
     notes.push(`${pc.yellow("NOTE:")} Manual database schema setup required.`);
   }
 
-  if (notes.length === 0 && commands.length === 0) {
-    return "";
-  }
+  if (notes.length === 0 && commands.length === 0) return "";
 
   const sections = [pc.bold("Database")];
-  if (notes.length > 0) {
-    sections.push(notes.join("\n"));
-  }
+  if (notes.length > 0) sections.push(notes.join("\n"));
   if (commands.length > 0) {
     const labelWidth = Math.max(...commands.map(({ label }) => label.length));
-    const commandRows = commands.map(
-      ({ label, command }) => `${pc.dim(label.padEnd(labelWidth))}  ${pc.cyan(command)}`,
+    sections.push(
+      commands
+        .map(({ label, command }) => `${pc.dim(label.padEnd(labelWidth))}  ${pc.cyan(command)}`)
+        .join("\n"),
     );
-    sections.push(commandRows.join("\n"));
   }
-
   return sections.join("\n");
 }
-
 function getTauriInstructions(runCmd: string, frontend: Frontend[]) {
   const staticBuildNote = getDesktopStaticBuildNote(frontend);
 
@@ -536,17 +395,9 @@ function getElectrobunInstructions(runCmd: string, frontend: Frontend[]) {
 }
 
 function getPwaInstructions() {
-  return `\n${pc.bold("PWA with React Router:")}\n${pc.yellow(
+  return `\n${pc.bold("PWA with TanStack Router:")}\n${pc.yellow(
     "NOTE:",
   )} Verify PWA behavior with a production build on HTTPS or localhost.\n   Offline navigation shows a precached fallback page.\n   Server-rendered pages require a connection.`;
-}
-
-function getStarlightInstructions(runCmd: string) {
-  return `\n${pc.bold("Documentation with Starlight:")}\n${pc.cyan(
-    "•",
-  )} Start docs site: ${`cd apps/docs && ${runCmd} dev`}\n${pc.cyan(
-    "•",
-  )} Build docs site: ${`cd apps/docs && ${runCmd} build`}`;
 }
 
 function getNoOrmWarning() {
@@ -562,10 +413,6 @@ function getBunWebNativeWarning() {
 }
 
 function getClerkQuickstartUrl(frontend: Frontend[]) {
-  if (frontend.includes("next")) return "https://clerk.com/docs/nextjs/getting-started/quickstart";
-  if (frontend.includes("react-router")) {
-    return "https://clerk.com/docs/react-router/getting-started/quickstart";
-  }
   if (frontend.includes("tanstack-start")) {
     return "https://clerk.com/docs/tanstack-react-start/getting-started/quickstart";
   }
@@ -579,7 +426,6 @@ function getClerkQuickstartUrl(frontend: Frontend[]) {
   ) {
     return "https://clerk.com/docs/expo/getting-started/quickstart";
   }
-
   return "https://clerk.com/docs";
 }
 
@@ -589,42 +435,19 @@ function getClerkInstructionLines(
   api: ProjectConfig["api"],
 ) {
   const lines: string[] = [];
+  const hasNativeFrontend = frontend.some((value) =>
+    ["native-bare", "native-uniwind", "native-unistyles"].includes(value),
+  );
 
-  if (frontend.includes("next")) {
-    lines.push("Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY in apps/web/.env");
-  }
-
-  if (
-    frontend.some((value) => ["react-router", "tanstack-router", "tanstack-start"].includes(value))
-  ) {
+  if (frontend.some((value) => ["tanstack-router", "tanstack-start"].includes(value))) {
     lines.push("Set VITE_CLERK_PUBLISHABLE_KEY in apps/web/.env");
   }
-
-  if (
-    frontend.some((value) => ["native-bare", "native-uniwind", "native-unistyles"].includes(value))
-  ) {
+  if (hasNativeFrontend) {
     lines.push("Set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in apps/native/.env");
   }
 
-  if (backend === "convex") {
-    return [
-      "Set CLERK_JWT_ISSUER_DOMAIN in Convex Dashboard",
-      ...lines,
-      ...(frontend.some((value) => ["next", "react-router", "tanstack-start"].includes(value))
-        ? ["Set CLERK_SECRET_KEY in apps/web/.env for Clerk server middleware"]
-        : []),
-    ];
-  }
-
-  const hasClerkServerFrontend = frontend.some((value) =>
-    ["next", "react-router", "tanstack-start"].includes(value),
-  );
+  const hasClerkServerFrontend = frontend.includes("tanstack-start");
   const serverEnvPath = backend === "self" ? "apps/web/.env" : "apps/server/.env";
-  const needsServerSideClerkAuth = backend !== "none";
-  const needsClerkBackendPublishableKey = ["express", "fastify"].includes(backend);
-  const needsClerkRequestVerification =
-    api !== "none" && ["self", "hono", "elysia"].includes(backend);
-
   if (hasClerkServerFrontend && backend === "self") {
     lines.push(
       "Set CLERK_SECRET_KEY in apps/web/.env for Clerk server middleware and server-side Clerk auth",
@@ -633,22 +456,15 @@ function getClerkInstructionLines(
     if (hasClerkServerFrontend) {
       lines.push("Set CLERK_SECRET_KEY in apps/web/.env for Clerk server middleware");
     }
-
-    if (needsServerSideClerkAuth) {
+    if (backend !== "none") {
       lines.push(`Set CLERK_SECRET_KEY in ${serverEnvPath} for server-side Clerk auth`);
     }
   }
-
-  if (needsClerkRequestVerification) {
+  if (api !== "none" && ["self", "hono", "elysia"].includes(backend)) {
     lines.push(
       `Set CLERK_PUBLISHABLE_KEY in ${serverEnvPath} for server-side Clerk request verification`,
     );
   }
-
-  if (needsClerkBackendPublishableKey) {
-    lines.push(`Set CLERK_PUBLISHABLE_KEY in ${serverEnvPath} for Clerk backend middleware`);
-  }
-
   return lines;
 }
 
@@ -658,47 +474,13 @@ function getClerkInstructions(frontend: Frontend[], backend: Backend, api: Proje
     `${pc.cyan("•")} Follow the guide: ${pc.underline(getClerkQuickstartUrl(frontend))}`,
     ...getClerkInstructionLines(frontend, backend, api).map((line) => `${pc.cyan("•")} ${line}`),
   ];
-
   return lines.join("\n");
 }
 
-function getBetterAuthConvexInstructions(
-  hasWeb: boolean,
-  webPort: string,
-  packageManager: string,
-  runCmd: string,
-) {
-  const cmd = packageManager === "npm" ? "npx" : packageManager;
-  return (
-    `${pc.bold("Better Auth + Convex Setup:")}\n` +
-    `${pc.cyan("•")} Configure the Convex deployment before setting env vars:\n` +
-    `${pc.white(`   ${runCmd} dev:setup`)}\n` +
-    `${pc.cyan("•")} Set environment variables from ${pc.white("packages/backend")}:\n` +
-    `${pc.white("   cd packages/backend")}\n` +
-    `${pc.white(`   ${cmd} convex env set BETTER_AUTH_SECRET=$(openssl rand -base64 32)`)}\n` +
-    (hasWeb ? `${pc.white(`   ${cmd} convex env set SITE_URL http://localhost:${webPort}`)}\n` : "")
-  );
-}
-
-function getPolarInstructions(backend: Backend, packageManager: string) {
-  if (backend === "convex") {
-    const cmd = packageManager === "npm" ? "npx" : packageManager;
-    return (
-      `${pc.bold("Polar Payments Setup:")}\n` +
-      `${pc.cyan("•")} Create a Polar organization token, webhook secret, and product in ${pc.underline("https://sandbox.polar.sh/")}\n` +
-      `${pc.cyan("•")} Set the Convex env vars from ${pc.white("packages/backend")}:\n` +
-      `${pc.white("   cd packages/backend")}\n` +
-      `${pc.white(`   ${cmd} convex env set POLAR_ORGANIZATION_TOKEN your_polar_token`)}\n` +
-      `${pc.white(`   ${cmd} convex env set POLAR_WEBHOOK_SECRET your_polar_webhook_secret`)}\n` +
-      `${pc.white(`   Optional: ${cmd} convex env set POLAR_SERVER production`)}\n` +
-      `${pc.cyan("•")} Configure a Polar webhook to ${pc.white("https://<your-convex-site-url>/polar/events")}`
-    );
-  }
-
+function getPolarInstructions(backend: Backend) {
   const envPath = backend === "self" ? "apps/web/.env" : "apps/server/.env";
   return `${pc.bold("Polar Payments Setup:")}\n${pc.cyan("•")} Get access token & product ID from ${pc.underline("https://sandbox.polar.sh/")}\n${pc.cyan("•")} Set POLAR_ACCESS_TOKEN in ${envPath}`;
 }
-
 function getAlchemyDeployInstructions(
   runCmd: string,
   webDeploy: WebDeploy,

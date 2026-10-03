@@ -57,7 +57,7 @@ Add addons to an existing project with a single JSON payload.
 ```bash
 create-better-t-stack add-json --input '{
   "projectDir": "./my-app",
-  "addons": ["skills", "ultracite"],
+  "addons": ["skills", "oxlint"],
   "addonOptions": {
     "skills": {
       "scope": "project",
@@ -72,11 +72,6 @@ create-better-t-stack add-json --input '{
           "skills": ["review-logging-patterns", "analyze-logs"]
         }
       ]
-    },
-    "ultracite": {
-      "linter": "biome",
-      "editors": ["vscode", "cursor"],
-      "agents": ["claude", "codex"]
     }
   },
   "dryRun": true
@@ -236,7 +231,6 @@ Supported structured addon surfaces include:
 - `opentui`
 - `mcp`
 - `skills`
-- `ultracite`
 
 When `skills` is used with the `evlog` or `axiom` addon, Better-T-Stack recommends Evlog's agent skills from `https://www.evlog.dev`: `review-logging-patterns` and `analyze-logs`.
 
@@ -293,7 +287,6 @@ Current behavior:
   - `neon`
   - `prisma-postgres`
   - `supabase`
-  - `mongodb-atlas`
 - Providers that only write local/manual config today are not forced to `manual`:
   - `d1`
   - `docker`

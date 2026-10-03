@@ -12,7 +12,7 @@ type PackageJson = {
 export function processRuntimeDeps(vfs: VirtualFileSystem, config: ProjectConfig): void {
   const { runtime, backend } = config;
 
-  if (backend === "convex" || backend === "self" || runtime === "none") return;
+  if (backend === "self" || runtime === "none") return;
 
   const serverPath = "apps/server/package.json";
   if (!vfs.exists(serverPath)) return;

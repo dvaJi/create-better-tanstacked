@@ -3,7 +3,7 @@
  * Replaces the previous Handlebars template with type-safe TypeScript generation
  */
 
-import { getLocalD1Owner, isAlchemyDeployTarget, type ProjectConfig } from "@better-t-stack/types";
+import { isAlchemyDeployTarget, type ProjectConfig } from "@better-t-stack/types";
 
 import type { VirtualFileSystem } from "../core/virtual-fs";
 import { getDbScriptSupport, type DbScriptSupport } from "../utils/db-scripts";
@@ -35,7 +35,6 @@ export function processTurboConfig(vfs: VirtualFileSystem, config: ProjectConfig
 export function generateTurboConfig(config: ProjectConfig): TurboConfig {
   const { backend, database, dbSetup, webDeploy, serverDeploy, frontend } = config;
 
-  const isConvex = backend === "convex";
   const dbSupport = getDbScriptSupport(config);
   const hasDatabase = dbSupport.hasDbScripts;
   const isDocker = dbSetup === "docker";
@@ -44,19 +43,16 @@ export function generateTurboConfig(config: ProjectConfig): TurboConfig {
     isAlchemyDeployTarget(webDeploy) ||
     isAlchemyDeployTarget(serverDeploy) ||
     config.addons.includes("axiom");
-  const hasLocalD1 = getLocalD1Owner(config) === "wrangler";
 
   const tasks: TurboTasks = getBaseTasks(frontend, config.addons);
-  if (config.api === "orpc" && !["convex", "none"].includes(backend)) {
+  if (config.api === "orpc" && backend !== "none") {
     tasks["check-types"] = { ...tasks["check-types"], outputs: ["dist/**"] };
   }
 
   if (config.addons.includes("electrobun")) Object.assign(tasks, getElectrobunTasks());
-  if (isConvex) Object.assign(tasks, getConvexTasks());
-  if (!isConvex && hasDatabase) Object.assign(tasks, getDatabaseTasks(dbSupport, config.orm));
+  if (hasDatabase) Object.assign(tasks, getDatabaseTasks(dbSupport));
   if (isDocker) Object.assign(tasks, getDockerTasks());
   if (isSqliteLocal) Object.assign(tasks, getSqliteLocalTask());
-  if (hasLocalD1) Object.assign(tasks, getLocalD1Task());
   if (hasAlchemy) Object.assign(tasks, getDeployTasks());
 
   return {
@@ -66,34 +62,8 @@ export function generateTurboConfig(config: ProjectConfig): TurboConfig {
   };
 }
 
-function getBaseTasks(frontend: string[], addons: string[]): TurboTasks {
-  // Build outputs per framework:
-  // - Vite-based client apps: dist/**
-  // - Next.js: .next/** excluding .next/cache/**
-  // - Nuxt: .nuxt/**, .output/**
+function getBaseTasks(_frontend: string[], addons: string[]): TurboTasks {
   const buildOutputs = ["dist/**"];
-
-  if (frontend.includes("next")) {
-    buildOutputs.push(".next/**", "!.next/cache/**");
-  }
-
-  if (frontend.includes("nuxt")) {
-    buildOutputs.push(".nuxt/**", ".output/**");
-  }
-
-  if (frontend.includes("solid")) {
-    buildOutputs.push(".output/**");
-  }
-
-  // SvelteKit outputs to .svelte-kit/** in addition to build/
-  if (frontend.includes("svelte")) {
-    buildOutputs.push(".svelte-kit/**", "build/**");
-  }
-
-  // Astro outputs to dist/**
-  if (frontend.includes("astro")) {
-    buildOutputs.push(".astro/**");
-  }
 
   if (addons.includes("electrobun")) {
     buildOutputs.push("artifacts/**");
@@ -137,16 +107,7 @@ function getElectrobunTasks(): TurboTasks {
   };
 }
 
-function getConvexTasks(): TurboTasks {
-  return {
-    "dev:setup": {
-      cache: false,
-      interactive: true,
-    },
-  };
-}
-
-function getDatabaseTasks(dbSupport: DbScriptSupport, orm: ProjectConfig["orm"]): TurboTasks {
+function getDatabaseTasks(dbSupport: DbScriptSupport): TurboTasks {
   const tasks: TurboTasks = {};
 
   if (dbSupport.hasDbPush) {
@@ -154,8 +115,7 @@ function getDatabaseTasks(dbSupport: DbScriptSupport, orm: ProjectConfig["orm"])
   }
 
   if (dbSupport.hasDbGenerate) {
-    // prisma generate never prompts, and Vercel builds run it without a terminal
-    tasks["db:generate"] = { cache: false, interactive: orm === "drizzle" };
+    tasks["db:generate"] = { cache: false, interactive: true };
   }
 
   if (dbSupport.hasDbMigrate) {
@@ -192,15 +152,6 @@ function getSqliteLocalTask(): TurboTasks {
     "db:local": {
       cache: false,
       persistent: true,
-    },
-  };
-}
-
-function getLocalD1Task(): TurboTasks {
-  return {
-    "db:migrate:local": {
-      cache: false,
-      interactive: true,
     },
   };
 }

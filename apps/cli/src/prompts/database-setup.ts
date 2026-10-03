@@ -22,10 +22,6 @@ export async function getDBSetupChoice(
   runtime?: Runtime,
   previousValue?: DatabaseSetup,
 ) {
-  if (backend === "convex") {
-    return "none";
-  }
-
   if (dbSetup !== undefined) return dbSetup as DatabaseSetup;
 
   if (databaseType === "none") {
@@ -47,7 +43,7 @@ export async function getDBSetupChoice(
     {
       value: "planetscale" as const,
       label: "PlanetScale",
-      hint: "Postgres & Vitess (MySQL) on NVMe",
+      hint: "Managed Postgres on NVMe",
     },
     {
       value: "supabase" as const,
@@ -58,11 +54,6 @@ export async function getDBSetupChoice(
       value: "prisma-postgres" as const,
       label: "Prisma Postgres",
       hint: "Instant Postgres for Global Applications",
-    },
-    {
-      value: "mongodb-atlas" as const,
-      label: "MongoDB Atlas",
-      hint: "The most effective way to deploy MongoDB",
     },
     { value: "docker" as const, label: "Docker", hint: "Run locally with docker compose" },
     { value: "none" as const, label: "None", hint: "Manual setup" },

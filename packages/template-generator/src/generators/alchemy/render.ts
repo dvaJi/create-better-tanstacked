@@ -1,4 +1,4 @@
-import type { ProjectConfig } from "@better-t-stack/types";
+import type { SupportedProjectConfig } from "@better-t-stack/types";
 
 import type { VirtualFileSystem } from "../../core/virtual-fs";
 import { writeDatabaseResources } from "./database";
@@ -9,10 +9,7 @@ import { writeExportedWebResource, writeStackWebResource } from "./web";
 import { createAlchemyWriter, writeObject, type AlchemyWriter } from "./writer";
 
 function databaseProvidersUseCommand(plan: AlchemyDeploymentPlan): boolean {
-  return (
-    plan.managedDatabase.kind === "prisma-postgres" ||
-    (plan.managedDatabase.kind !== "none" && plan.managedDatabase.orm === "prisma")
-  );
+  return plan.managedDatabase.kind === "prisma-postgres";
 }
 
 function usesCommand(plan: AlchemyDeploymentPlan): boolean {
@@ -26,20 +23,12 @@ function usesCommand(plan: AlchemyDeploymentPlan): boolean {
 
 function usesOutput(plan: AlchemyDeploymentPlan): boolean {
   const database = plan.managedDatabase;
-  return (
-    database.kind === "neon" ||
-    database.kind === "prisma-postgres" ||
-    (database.kind === "planetscale-mysql" && database.orm === "prisma")
-  );
+  return database.kind === "neon" || database.kind === "prisma-postgres";
 }
 
 function usesRedacted(plan: AlchemyDeploymentPlan): boolean {
   const database = plan.managedDatabase;
-  return (
-    plan.web.target === "prisma" ||
-    database.kind === "neon" ||
-    (database.kind === "planetscale-mysql" && database.orm === "prisma")
-  );
+  return plan.web.target === "prisma" || database.kind === "neon";
 }
 
 function providerLayers(plan: AlchemyDeploymentPlan): string[] {
@@ -67,10 +56,7 @@ function writeImports(writer: AlchemyWriter, plan: AlchemyDeploymentPlan): void 
   if (plan.managedDatabase.kind === "neon") {
     writer.writeLine('import * as Neon from "alchemy/Neon";');
   }
-  if (
-    plan.managedDatabase.kind === "planetscale-postgres" ||
-    plan.managedDatabase.kind === "planetscale-mysql"
-  ) {
+  if (plan.managedDatabase.kind === "planetscale-postgres") {
     writer.writeLine('import * as Planetscale from "alchemy/Planetscale";');
   }
   if (plan.hasPrismaDeploy || plan.managedDatabase.kind === "prisma-postgres") {
@@ -190,7 +176,7 @@ function writeStack(writer: AlchemyWriter, plan: AlchemyDeploymentPlan): void {
   writer.writeLine(");");
 }
 
-export function generateAlchemyRun(config: ProjectConfig): string {
+export function generateAlchemyRun(config: SupportedProjectConfig): string {
   const plan = createAlchemyDeploymentPlan(config);
   const writer = createAlchemyWriter();
 
@@ -215,6 +201,6 @@ export function generateAlchemyRun(config: ProjectConfig): string {
     : source.replace('import * as Config from "effect/Config";\n', "");
 }
 
-export function processAlchemyRun(vfs: VirtualFileSystem, config: ProjectConfig): void {
+export function processAlchemyRun(vfs: VirtualFileSystem, config: SupportedProjectConfig): void {
   vfs.writeFile("packages/infra/alchemy.run.ts", generateAlchemyRun(config));
 }

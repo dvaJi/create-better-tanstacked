@@ -12,7 +12,7 @@ export async function getApiChoice(
   backend?: Backend,
   previousValue?: API,
 ) {
-  if (backend === "convex" || backend === "none") {
+  if (backend === "none") {
     return "none";
   }
 
@@ -39,7 +39,7 @@ export async function getApiChoice(
         : {
             value: "none" as const,
             label: "None",
-            hint: "No API layer (e.g. for full-stack frameworks like Next.js with Route Handlers)",
+            hint: "No API layer (e.g. for a TanStack Start fullstack app)",
           },
   );
 

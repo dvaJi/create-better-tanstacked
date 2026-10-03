@@ -2,52 +2,91 @@ import { z } from "zod";
 
 import { TASK_RUNNER_ADDONS, OBSERVABILITY_ADDONS } from "./compatibility";
 
+const LegacyDatabaseSchema = z.enum(["none", "sqlite", "postgres", "mysql", "mongodb"]);
 export const DatabaseSchema = z
-  .enum(["none", "sqlite", "postgres", "mysql", "mongodb"])
+  .enum(["none", "sqlite", "postgres"])
+  .pipe(LegacyDatabaseSchema)
   .describe("Database type");
 
-export const ORMSchema = z.enum(["drizzle", "prisma", "mongoose", "none"]).describe("ORM type");
+const LegacyORMSchema = z.enum(["drizzle", "prisma", "mongoose", "none"]);
+export const ORMSchema = z.enum(["drizzle", "none"]).pipe(LegacyORMSchema).describe("ORM type");
 
+const LegacyBackendSchema = z.enum([
+  "hono",
+  "express",
+  "fastify",
+  "elysia",
+  "convex",
+  "self",
+  "none",
+]);
 export const BackendSchema = z
-  .enum(["hono", "express", "fastify", "elysia", "convex", "self", "none"])
+  .enum(["hono", "elysia", "self", "none"])
+  .pipe(LegacyBackendSchema)
   .describe("Backend framework");
 
 export const RuntimeSchema = z
   .enum(["bun", "node", "workers", "none"])
   .describe("Runtime environment");
 
+const LegacyFrontendSchema = z.enum([
+  "tanstack-router",
+  "react-router",
+  "tanstack-start",
+  "next",
+  "nuxt",
+  "native-bare",
+  "native-uniwind",
+  "native-unistyles",
+  "svelte",
+  "solid",
+  "astro",
+  "none",
+]);
 export const FrontendSchema = z
   .enum([
     "tanstack-router",
-    "react-router",
     "tanstack-start",
-    "next",
-    "nuxt",
     "native-bare",
     "native-uniwind",
     "native-unistyles",
-    "svelte",
-    "solid",
-    "astro",
     "none",
   ])
+  .pipe(LegacyFrontendSchema)
   .describe("Frontend framework");
 
+const LegacyAddonsSchema = z.enum([
+  "pwa",
+  "tauri",
+  "electrobun",
+  "starlight",
+  "biome",
+  "lefthook",
+  "husky",
+  "mcp",
+  "turborepo",
+  "nx",
+  "vite-plus",
+  "fumadocs",
+  "ultracite",
+  "oxlint",
+  "opentui",
+  "wxt",
+  "skills",
+  "evlog",
+  "axiom",
+  "none",
+]);
 export const AddonsSchema = z
   .enum([
     "pwa",
     "tauri",
     "electrobun",
-    "starlight",
-    "biome",
     "lefthook",
-    "husky",
     "mcp",
     "turborepo",
-    "nx",
     "vite-plus",
     "fumadocs",
-    "ultracite",
     "oxlint",
     "opentui",
     "wxt",
@@ -56,6 +95,7 @@ export const AddonsSchema = z
     "axiom",
     "none",
   ])
+  .pipe(LegacyAddonsSchema)
   .describe("Additional addons");
 
 const AddonsListSchema = z.array(AddonsSchema).superRefine((addons, ctx) => {
@@ -63,7 +103,7 @@ const AddonsListSchema = z.array(AddonsSchema).superRefine((addons, ctx) => {
   if (taskRunners.length > 1) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "`nx`, `turborepo`, and `vite-plus` cannot be used together",
+      message: "`turborepo` and `vite-plus` cannot be used together",
     });
   }
 
@@ -82,18 +122,20 @@ export const ExamplesSchema = z
 
 export const PackageManagerSchema = z.enum(["npm", "pnpm", "bun"]).describe("Package manager");
 
+const LegacyDatabaseSetupSchema = z.enum([
+  "turso",
+  "neon",
+  "prisma-postgres",
+  "planetscale",
+  "mongodb-atlas",
+  "supabase",
+  "d1",
+  "docker",
+  "none",
+]);
 export const DatabaseSetupSchema = z
-  .enum([
-    "turso",
-    "neon",
-    "prisma-postgres",
-    "planetscale",
-    "mongodb-atlas",
-    "supabase",
-    "d1",
-    "docker",
-    "none",
-  ])
+  .enum(["turso", "neon", "prisma-postgres", "planetscale", "supabase", "d1", "docker", "none"])
+  .pipe(LegacyDatabaseSetupSchema)
   .describe("Database hosting setup");
 
 export const APISchema = z.enum(["trpc", "orpc", "none"]).describe("API type");
@@ -116,8 +158,10 @@ export const DirectoryConflictSchema = z
   .enum(["merge", "overwrite", "increment", "error"])
   .describe("How to handle existing directory conflicts");
 
+const LegacyTemplateSchema = z.enum(["mern", "pern", "t3", "uniwind", "none"]);
 export const TemplateSchema = z
-  .enum(["mern", "pern", "t3", "uniwind", "none"])
+  .enum(["uniwind", "none"])
+  .pipe(LegacyTemplateSchema)
   .describe("Predefined project template");
 
 export const WxtTemplateSchema = z
@@ -127,25 +171,14 @@ export const WxtTemplateSchema = z
 export const TuiTemplateSchema = z.enum(["core", "react", "solid"]).describe("OpenTUI template");
 
 export const FumadocsTemplateSchema = z
-  .enum([
-    "next-mdx",
-    "next-mdx-static",
-    "waku",
-    "react-router",
-    "react-router-spa",
-    "tanstack-start",
-    "tanstack-start-spa",
-    "astro",
-  ])
+  .enum(["tanstack-start", "tanstack-start-spa"])
   .describe("Fumadocs template");
 
 export const FumadocsSearchSchema = z
   .enum(["orama", "orama-cloud"])
   .describe("Fumadocs search solution");
 
-export const FumadocsOgImageSchema = z
-  .enum(["next-og", "takumi"])
-  .describe("Fumadocs OG image generator");
+export const FumadocsOgImageSchema = z.enum(["takumi"]).describe("Fumadocs OG image generator");
 
 export const FumadocsAiChatSchema = z
   .enum(["openrouter", "llmgateway", "inkeep"])
@@ -157,15 +190,8 @@ export const McpServerSchema = z
   .enum([
     "better-t-stack",
     "context7",
-    "nx",
     "cloudflare-docs",
-    "convex",
     "shadcn",
-    "next-devtools",
-    "nuxt-docs",
-    "nuxt-ui-docs",
-    "svelte-docs",
-    "astro-docs",
     "planetscale",
     "neon",
     "supabase",
@@ -207,8 +233,6 @@ export const SkillsSourceSchema = z
     "vercel/ai",
     "vercel/turborepo",
     "honojs/skills",
-    "vercel/next.js",
-    "nuxt/ui",
     "heroui-inc/heroui",
     "shadcn/ui",
     "better-auth/skills",
@@ -217,11 +241,8 @@ export const SkillsSourceSchema = z
     "supabase/agent-skills",
     "planetscale/database-skills",
     "expo/skills",
-    "prisma/skills",
     "elysiajs/skills",
-    "waynesutton/convexskills",
     "msmps/opentui-skill",
-    "haydenbleasel/ultracite",
     "https://www.evlog.dev",
   ])
   .describe("Skill source repository");
@@ -316,75 +337,6 @@ export const SkillSelectionSchema = z.strictObject({
   skills: z.array(z.string()).describe("Curated skill names to install from this source"),
 });
 
-export const UltraciteLinterSchema = z.enum(["biome", "oxlint"]).describe("Ultracite linter");
-
-export const UltraciteEditorSchema = z
-  .enum([
-    "vscode",
-    "cursor",
-    "windsurf",
-    "codebuddy",
-    "antigravity",
-    "bob",
-    "kiro",
-    "trae",
-    "void",
-    "zed",
-    "universal",
-  ])
-  .describe("Ultracite editor integration");
-
-export const UltraciteAgentSchema = z
-  .enum([
-    "universal",
-    "claude",
-    "codex",
-    "jules",
-    "replit",
-    "devin",
-    "lovable",
-    "zencoder",
-    "ona",
-    "openclaw",
-    "continue",
-    "snowflake-cortex",
-    "deepagents",
-    "qoder",
-    "kimi-cli",
-    "mcpjam",
-    "mux",
-    "pi",
-    "adal",
-    "copilot",
-    "cline",
-    "amp",
-    "aider",
-    "firebase-studio",
-    "open-hands",
-    "gemini",
-    "junie",
-    "augmentcode",
-    "bob",
-    "kilo-code",
-    "goose",
-    "roo-code",
-    "warp",
-    "droid",
-    "opencode",
-    "crush",
-    "qwen",
-    "amazon-q-cli",
-    "firebender",
-    "cursor-cli",
-    "mistral-vibe",
-    "vercel",
-  ])
-  .describe("Ultracite agent integration");
-
-export const UltraciteHookSchema = z
-  .enum(["cursor", "windsurf", "codebuddy", "claude", "copilot"])
-  .describe("Ultracite hook integration");
-
 export const DbSetupModeSchema = z
   .enum(["manual", "auto", "alchemy"])
   .describe("Database setup mode");
@@ -393,57 +345,58 @@ export const NeonSetupMethodSchema = z
   .enum(["neon-new", "neon", "neondb", "neonctl"])
   .describe("Neon database provisioning method");
 
+const addonOptionsFields = {
+  wxt: z
+    .strictObject({
+      template: WxtTemplateSchema,
+      devPort: z.number().int().min(1).max(65535).optional().describe("WXT dev server port"),
+    })
+    .optional()
+    .describe("Options for the WXT addon"),
+  fumadocs: z
+    .strictObject({
+      template: FumadocsTemplateSchema,
+      devPort: z.number().int().min(1).max(65535).optional().describe("Fumadocs dev server port"),
+      search: FumadocsSearchSchema.optional().describe("Fumadocs search solution"),
+      ogImage: FumadocsOgImageSchema.optional().describe("Fumadocs OG image generator"),
+      aiChat: FumadocsAiChatSchema.optional().describe("Fumadocs AI chat provider"),
+    })
+    .optional()
+    .describe("Options for the Fumadocs addon"),
+  opentui: z
+    .strictObject({
+      template: TuiTemplateSchema,
+    })
+    .optional()
+    .describe("Options for the OpenTUI addon"),
+  mcp: z
+    .strictObject({
+      scope: InstallScopeSchema.optional(),
+      servers: z.array(McpServerSchema).optional().describe("MCP servers to install"),
+      agents: z.array(McpAgentSchema).optional().describe("Agents to wire MCP servers into"),
+    })
+    .optional()
+    .describe("Options for the MCP addon"),
+  skills: z
+    .strictObject({
+      scope: InstallScopeSchema.optional(),
+      agents: z.array(SkillsAgentSchema).optional().describe("Agents to install skills into"),
+      selections: z.array(SkillSelectionSchema).optional().describe("Skills grouped by source"),
+    })
+    .optional()
+    .describe("Options for the Skills addon"),
+};
+
+const LegacyAddonOptionsSchema = z.strictObject(addonOptionsFields);
 export const AddonOptionsSchema = z
   .strictObject({
-    wxt: z
-      .strictObject({
-        template: WxtTemplateSchema,
-        devPort: z.number().int().min(1).max(65535).optional().describe("WXT dev server port"),
-      })
-      .optional()
-      .describe("Options for the WXT addon"),
-    fumadocs: z
-      .strictObject({
-        template: FumadocsTemplateSchema,
-        devPort: z.number().int().min(1).max(65535).optional().describe("Fumadocs dev server port"),
-        search: FumadocsSearchSchema.optional().describe("Fumadocs search solution"),
-        ogImage: FumadocsOgImageSchema.optional().describe("Fumadocs OG image generator"),
-        aiChat: FumadocsAiChatSchema.optional().describe("Fumadocs AI chat provider"),
-      })
-      .optional()
-      .describe("Options for the Fumadocs addon"),
-    opentui: z
-      .strictObject({
-        template: TuiTemplateSchema,
-      })
-      .optional()
-      .describe("Options for the OpenTUI addon"),
-    mcp: z
-      .strictObject({
-        scope: InstallScopeSchema.optional(),
-        servers: z.array(McpServerSchema).optional().describe("MCP servers to install"),
-        agents: z.array(McpAgentSchema).optional().describe("Agents to wire MCP servers into"),
-      })
-      .optional()
-      .describe("Options for the MCP addon"),
-    skills: z
-      .strictObject({
-        scope: InstallScopeSchema.optional(),
-        agents: z.array(SkillsAgentSchema).optional().describe("Agents to install skills into"),
-        selections: z.array(SkillSelectionSchema).optional().describe("Skills grouped by source"),
-      })
-      .optional()
-      .describe("Options for the Skills addon"),
-    ultracite: z
-      .strictObject({
-        linter: UltraciteLinterSchema.optional(),
-        editors: z.array(UltraciteEditorSchema).optional(),
-        agents: z.array(UltraciteAgentSchema).optional(),
-        hooks: z.array(UltraciteHookSchema).optional(),
-      })
-      .optional()
-      .describe("Options for the Ultracite addon"),
+    wxt: addonOptionsFields.wxt,
+    fumadocs: addonOptionsFields.fumadocs,
+    opentui: addonOptionsFields.opentui,
+    mcp: addonOptionsFields.mcp,
+    skills: addonOptionsFields.skills,
   })
+  .pipe(LegacyAddonOptionsSchema)
   .describe("Addon-specific configuration");
 
 export const DbSetupOptionsSchema = z
@@ -628,19 +581,51 @@ export const InitResultSchema = z.object({
   warnings: z.array(z.string()).optional(),
 });
 
-export const DATABASE_VALUES = DatabaseSchema.options;
-export const ORM_VALUES = ORMSchema.options;
-export const BACKEND_VALUES = BackendSchema.options;
+export const DATABASE_VALUES = ["none", "sqlite", "postgres"] as const;
+export const ORM_VALUES = ["drizzle", "none"] as const;
+export const BACKEND_VALUES = ["hono", "elysia", "self", "none"] as const;
 export const RUNTIME_VALUES = RuntimeSchema.options;
-export const FRONTEND_VALUES = FrontendSchema.options;
-export const ADDONS_VALUES = AddonsSchema.options;
+export const FRONTEND_VALUES = [
+  "tanstack-router",
+  "tanstack-start",
+  "native-bare",
+  "native-uniwind",
+  "native-unistyles",
+  "none",
+] as const;
+export const ADDONS_VALUES = [
+  "pwa",
+  "tauri",
+  "electrobun",
+  "lefthook",
+  "mcp",
+  "turborepo",
+  "vite-plus",
+  "fumadocs",
+  "oxlint",
+  "opentui",
+  "wxt",
+  "skills",
+  "evlog",
+  "axiom",
+  "none",
+] as const;
 export const EXAMPLES_VALUES = ExamplesSchema.options;
 export const PACKAGE_MANAGER_VALUES = PackageManagerSchema.options;
-export const DATABASE_SETUP_VALUES = DatabaseSetupSchema.options;
+export const DATABASE_SETUP_VALUES = [
+  "turso",
+  "neon",
+  "prisma-postgres",
+  "planetscale",
+  "supabase",
+  "d1",
+  "docker",
+  "none",
+] as const;
 export const API_VALUES = APISchema.options;
 export const AUTH_VALUES = AuthSchema.options;
 export const PAYMENTS_VALUES = PaymentsSchema.options;
 export const WEB_DEPLOY_VALUES = WebDeploySchema.options;
 export const SERVER_DEPLOY_VALUES = ServerDeploySchema.options;
 export const DIRECTORY_CONFLICT_VALUES = DirectoryConflictSchema.options;
-export const TEMPLATE_VALUES = TemplateSchema.options;
+export const TEMPLATE_VALUES = ["uniwind", "none"] as const;

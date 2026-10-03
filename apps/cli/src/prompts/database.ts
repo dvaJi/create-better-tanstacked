@@ -1,5 +1,3 @@
-import { supportsRuntimeDatabase } from "@better-t-stack/types";
-
 import { DEFAULT_CONFIG } from "../constants";
 import type { Backend, Database, Runtime } from "../types";
 import { UserCancelledError } from "../utils/errors";
@@ -8,10 +6,10 @@ import { isCancel, navigableSelect, preferValidInitial } from "./navigable";
 export async function getDatabaseChoice(
   database?: Database,
   backend?: Backend,
-  runtime?: Runtime,
+  _runtime?: Runtime,
   previousValue?: Database,
 ) {
-  if (backend === "convex" || backend === "none") {
+  if (backend === "none") {
     return "none";
   }
 
@@ -37,20 +35,7 @@ export async function getDatabaseChoice(
       label: "PostgreSQL",
       hint: "powerful, open source object-relational database system",
     },
-    {
-      value: "mysql",
-      label: "MySQL",
-      hint: "popular open-source relational database system",
-    },
   ];
-
-  if (supportsRuntimeDatabase(runtime, "mongodb")) {
-    databaseOptions.push({
-      value: "mongodb",
-      label: "MongoDB",
-      hint: "open-source NoSQL database that stores data in JSON-like documents called BSON",
-    });
-  }
 
   const response = await navigableSelect<Database>({
     message: "Choose a database",

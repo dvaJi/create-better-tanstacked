@@ -17,7 +17,7 @@ export async function processUiPackage(
   config: ProjectConfig,
 ): Promise<void> {
   const hasReactWeb = config.frontend.some((f) =>
-    ["tanstack-router", "react-router", "tanstack-start", "next"].includes(f),
+    ["tanstack-router", "tanstack-start"].includes(f),
   );
 
   if (!hasReactWeb) return;

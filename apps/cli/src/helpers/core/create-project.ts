@@ -7,7 +7,7 @@ import { Result } from "better-result";
 import fs from "fs-extra";
 import pc from "picocolors";
 
-import type { DbSetupOptions, ProjectConfig } from "../../types";
+import type { DbSetupOptions, SupportedProjectConfig } from "../../types";
 import { isSilent } from "../../utils/context";
 import { ProjectCreationError } from "../../utils/errors";
 import { formatProject } from "../../utils/file-formatter";
@@ -47,13 +47,11 @@ export interface CreateProjectOutcome {
  * is already on disk by then.
  */
 export async function createProject(
-  options: ProjectConfig,
+  options: SupportedProjectConfig,
   cliInput: CreateProjectOptions,
 ): Promise<Result<CreateProjectOutcome, ProjectCreationError>> {
   return Result.gen(async function* () {
     const projectDir = options.projectDir;
-    const isConvex = options.backend === "convex";
-
     yield* Result.await(
       Result.tryPromise({
         try: () => fs.ensureDir(projectDir),
@@ -103,7 +101,7 @@ export async function createProject(
     // Files are on disk from here: Ctrl-C only stops the current step
     beginInterruptibleScope();
     try {
-      return yield* runPostScaffoldSteps(options, cliInput, projectDir, isConvex);
+      return yield* runPostScaffoldSteps(options, cliInput, projectDir);
     } finally {
       endInterruptibleScope();
     }
@@ -111,12 +109,11 @@ export async function createProject(
 }
 
 async function* runPostScaffoldSteps(
-  options: ProjectConfig,
+  options: SupportedProjectConfig,
   cliInput: CreateProjectOptions,
   projectDir: string,
-  isConvex: boolean,
 ) {
-  if (!isConvex && options.database !== "none") {
+  if (options.database !== "none") {
     yield* Result.await(
       Result.tryPromise({
         try: () => setupDatabase(options, cliInput),

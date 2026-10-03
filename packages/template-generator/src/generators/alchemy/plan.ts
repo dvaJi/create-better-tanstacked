@@ -1,29 +1,16 @@
 import {
   isAlchemyDeployTarget,
   usesAlchemyManagedDatabase,
-  webFrontends,
-  type Frontend,
-  type ProjectConfig,
-  type WebFrontend,
+  type SupportedProjectConfig,
 } from "@better-t-stack/types";
 
-export type DeployedWebFramework = Exclude<WebFrontend, "none">;
+export type DeployedWebFramework = "tanstack-router" | "tanstack-start";
 
 export type ManagedDatabasePlan =
   | { kind: "none" }
-  | { kind: "neon"; orm: "drizzle" | "prisma" }
-  | {
-      kind: "planetscale-postgres";
-      orm: "drizzle" | "prisma";
-    }
-  | {
-      kind: "planetscale-mysql";
-      orm: "drizzle" | "prisma";
-    }
-  | {
-      kind: "prisma-postgres";
-      orm: "drizzle" | "prisma";
-    };
+  | { kind: "neon" }
+  | { kind: "planetscale-postgres" }
+  | { kind: "prisma-postgres" };
 
 export type AlchemyWebPlan =
   | { target: "none" }
@@ -36,7 +23,7 @@ export type AlchemyWebPlan =
 export type AlchemyServerPlan = { target: "none" } | { target: "cloudflare" | "prisma" };
 
 export type AlchemyDeploymentPlan = {
-  config: ProjectConfig;
+  config: SupportedProjectConfig;
   managedDatabase: ManagedDatabasePlan;
   web: AlchemyWebPlan;
   server: AlchemyServerPlan;
@@ -52,65 +39,35 @@ export type AlchemyDeploymentPlan = {
   needsStandaloneWebDev: boolean;
 };
 
-const AXIOM_SERVER_BACKENDS: readonly ProjectConfig["backend"][] = [
-  "hono",
-  "express",
-  "fastify",
-  "elysia",
-];
+const AXIOM_SERVER_BACKENDS: readonly SupportedProjectConfig["backend"][] = ["hono", "elysia"];
+const AXIOM_WEB_FRONTENDS: readonly DeployedWebFramework[] = ["tanstack-start"];
 
-const AXIOM_WEB_FRONTENDS: readonly Frontend[] = [
-  "next",
-  "tanstack-start",
-  "nuxt",
-  "svelte",
-  "astro",
-];
-
-function isDeployedWebFramework(frontend: Frontend): frontend is DeployedWebFramework {
-  return (webFrontends as readonly Frontend[]).includes(frontend);
-}
-
-function getDeployedWebFramework(config: ProjectConfig): DeployedWebFramework {
-  const framework = config.frontend.find(isDeployedWebFramework);
-
+function getDeployedWebFramework(config: SupportedProjectConfig): DeployedWebFramework {
+  const framework = config.frontend.find(
+    (frontend): frontend is DeployedWebFramework =>
+      frontend === "tanstack-router" || frontend === "tanstack-start",
+  );
   if (!framework) {
     throw new Error(
-      `Alchemy web deployment requires a web framework, received: ${config.frontend}`,
+      `Alchemy web deployment requires a TanStack web app, received: ${config.frontend}`,
     );
   }
-
   return framework;
 }
 
-function createManagedDatabasePlan(config: ProjectConfig): ManagedDatabasePlan {
+function createManagedDatabasePlan(config: SupportedProjectConfig): ManagedDatabasePlan {
   if (!usesAlchemyManagedDatabase(config)) return { kind: "none" };
-  if (config.orm !== "drizzle" && config.orm !== "prisma") {
-    throw new Error(`Alchemy managed databases require Drizzle or Prisma, received: ${config.orm}`);
-  }
-
-  if (config.dbSetup === "neon") {
-    return { kind: "neon", orm: config.orm };
-  }
-
-  if (config.dbSetup === "prisma-postgres") {
-    return { kind: "prisma-postgres", orm: config.orm };
-  }
-
+  if (config.dbSetup === "neon") return { kind: "neon" };
+  if (config.dbSetup === "prisma-postgres") return { kind: "prisma-postgres" };
   if (config.dbSetup === "planetscale" && config.database === "postgres") {
-    return { kind: "planetscale-postgres", orm: config.orm };
+    return { kind: "planetscale-postgres" };
   }
-
-  if (config.dbSetup === "planetscale" && config.database === "mysql") {
-    return { kind: "planetscale-mysql", orm: config.orm };
-  }
-
   throw new Error(
     `Unsupported Alchemy managed database combination: ${config.dbSetup}/${config.database}`,
   );
 }
 
-export function createAlchemyDeploymentPlan(config: ProjectConfig): AlchemyDeploymentPlan {
+export function createAlchemyDeploymentPlan(config: SupportedProjectConfig): AlchemyDeploymentPlan {
   const hasCloudflare = config.webDeploy === "cloudflare" || config.serverDeploy === "cloudflare";
   const hasPrismaDeploy = config.webDeploy === "prisma" || config.serverDeploy === "prisma";
   const hasAlchemyManagedDatabase = usesAlchemyManagedDatabase(config);
@@ -129,7 +86,6 @@ export function createAlchemyDeploymentPlan(config: ProjectConfig): AlchemyDeplo
         topology: config.backend === "self" ? "self" : "split",
       }
     : { target: "none" };
-
   const server: AlchemyServerPlan = isAlchemyDeployTarget(config.serverDeploy)
     ? { target: config.serverDeploy }
     : { target: "none" };
@@ -159,22 +115,8 @@ export function assertNever(value: never): never {
   throw new Error(`Unhandled Alchemy plan variant: ${JSON.stringify(value)}`);
 }
 
-export function getPrismaWebsiteFramework(config: ProjectConfig): string | undefined {
+export function getPrismaWebsiteFramework(config: SupportedProjectConfig): string | undefined {
   if (config.webDeploy !== "prisma" || config.backend !== "none") return;
-  for (const frontend of config.frontend) {
-    switch (frontend) {
-      case "next":
-        return "Nextjs";
-      case "nuxt":
-        return "Nuxt";
-      case "astro":
-        return "Astro";
-      case "svelte":
-        return "SvelteKit";
-      case "tanstack-start":
-        return "TanStackStart";
-      case "tanstack-router":
-        return "Vite";
-    }
-  }
+  if (config.frontend.includes("tanstack-start")) return "TanStackStart";
+  if (config.frontend.includes("tanstack-router")) return "Vite";
 }

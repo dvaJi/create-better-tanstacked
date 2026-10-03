@@ -29,15 +29,15 @@ import {
 
 // Generate JSON schemas for each type
 export function getDatabaseJsonSchema() {
-  return z.toJSONSchema(DatabaseSchema);
+  return z.toJSONSchema(DatabaseSchema, { io: "input" });
 }
 
 export function getORMJsonSchema() {
-  return z.toJSONSchema(ORMSchema);
+  return z.toJSONSchema(ORMSchema, { io: "input" });
 }
 
 export function getBackendJsonSchema() {
-  return z.toJSONSchema(BackendSchema);
+  return z.toJSONSchema(BackendSchema, { io: "input" });
 }
 
 export function getRuntimeJsonSchema() {
@@ -45,11 +45,11 @@ export function getRuntimeJsonSchema() {
 }
 
 export function getFrontendJsonSchema() {
-  return z.toJSONSchema(FrontendSchema);
+  return z.toJSONSchema(FrontendSchema, { io: "input" });
 }
 
 export function getAddonsJsonSchema() {
-  return z.toJSONSchema(AddonsSchema);
+  return z.toJSONSchema(AddonsSchema, { io: "input" });
 }
 
 export function getExamplesJsonSchema() {
@@ -61,7 +61,7 @@ export function getPackageManagerJsonSchema() {
 }
 
 export function getDatabaseSetupJsonSchema() {
-  return z.toJSONSchema(DatabaseSetupSchema);
+  return z.toJSONSchema(DatabaseSetupSchema, { io: "input" });
 }
 
 export function getAPIJsonSchema() {
@@ -89,11 +89,11 @@ export function getDirectoryConflictJsonSchema() {
 }
 
 export function getTemplateJsonSchema() {
-  return z.toJSONSchema(TemplateSchema);
+  return z.toJSONSchema(TemplateSchema, { io: "input" });
 }
 
 export function getAddonOptionsJsonSchema() {
-  return z.toJSONSchema(AddonOptionsSchema);
+  return z.toJSONSchema(AddonOptionsSchema, { io: "input" });
 }
 
 export function getDbSetupOptionsJsonSchema() {
@@ -101,27 +101,27 @@ export function getDbSetupOptionsJsonSchema() {
 }
 
 export function getCreateInputJsonSchema() {
-  return z.toJSONSchema(CreateInputSchema);
+  return z.toJSONSchema(CreateInputSchema, { io: "input" });
 }
 
 export function getAddInputJsonSchema() {
-  return z.toJSONSchema(AddInputSchema);
+  return z.toJSONSchema(AddInputSchema, { io: "input" });
 }
 
 export function getProjectConfigJsonSchema() {
-  return z.toJSONSchema(ProjectConfigSchema);
+  return z.toJSONSchema(ProjectConfigSchema, { io: "input" });
 }
 
 export function getBetterTStackConfigJsonSchema() {
-  return z.toJSONSchema(BetterTStackConfigSchema);
+  return z.toJSONSchema(BetterTStackConfigSchema, { io: "input" });
 }
 
 export function getBetterTStackConfigFileJsonSchema() {
-  return z.toJSONSchema(BetterTStackConfigFileSchema, { target: "draft-7" });
+  return z.toJSONSchema(BetterTStackConfigFileSchema, { target: "draft-7", io: "input" });
 }
 
 export function getInitResultJsonSchema() {
-  return z.toJSONSchema(InitResultSchema);
+  return z.toJSONSchema(InitResultSchema, { io: "input" });
 }
 
 // Get all JSON schemas as a single object

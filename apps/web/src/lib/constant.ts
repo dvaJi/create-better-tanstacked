@@ -38,59 +38,11 @@ export const TECH_OPTIONS: TechOptions = {
       default: true,
     },
     {
-      id: "react-router",
-      name: "React Router",
-      description: "Declarative routing for React",
-      icon: `${ICON_BASE_URL}/react-router.svg`,
-      color: "from-cyan-400 to-cyan-600",
-      default: false,
-    },
-    {
       id: "tanstack-start",
       name: "TanStack Start",
       description: "Full-stack React framework powered by TanStack Router",
       icon: `${ICON_BASE_URL}/tanstack.svg`,
       color: "from-purple-400 to-purple-600",
-      default: false,
-    },
-    {
-      id: "next",
-      name: "Next.js",
-      description: "React framework with hybrid rendering",
-      icon: `${ICON_BASE_URL}/nextjs.svg`,
-      color: "from-gray-700 to-black",
-      default: false,
-    },
-    {
-      id: "nuxt",
-      name: "Nuxt",
-      description: "Vue full-stack framework (SSR, SSG, hybrid)",
-      icon: `${ICON_BASE_URL}/nuxt.svg`,
-      color: "from-green-400 to-green-700",
-      default: false,
-    },
-    {
-      id: "svelte",
-      name: "Svelte",
-      description: "Cybernetically enhanced web apps",
-      icon: `${ICON_BASE_URL}/svelte.svg`,
-      color: "from-orange-500 to-orange-700",
-      default: false,
-    },
-    {
-      id: "solid",
-      name: "Solid",
-      description: "Solid application with file-based routing and SSR",
-      icon: `${ICON_BASE_URL}/solid.svg`,
-      color: "from-blue-600 to-blue-800",
-      default: false,
-    },
-    {
-      id: "astro",
-      name: "Astro",
-      description: "The web framework for content-driven websites",
-      icon: `${ICON_BASE_URL}/astro.svg`,
-      color: "from-purple-500 to-orange-500",
       default: false,
     },
     {
@@ -187,67 +139,11 @@ export const TECH_OPTIONS: TechOptions = {
       color: "from-purple-500 to-purple-700",
     },
     {
-      id: "express",
-      name: "Express",
-      description: "Popular Node.js framework",
-      icon: `${ICON_BASE_URL}/express.svg`,
-      color: "from-gray-500 to-gray-700",
-    },
-    {
-      id: "fastify",
-      name: "Fastify",
-      description: "Fast, low-overhead web framework for Node.js",
-      icon: `${ICON_BASE_URL}/fastify.svg`,
-      color: "from-gray-500 to-gray-700",
-    },
-    {
-      id: "convex",
-      name: "Convex",
-      description: "Reactive backend-as-a-service",
-      icon: `${ICON_BASE_URL}/convex.svg`,
-      color: "from-pink-500 to-pink-700",
-    },
-    {
-      id: "self-next",
-      name: "Fullstack Next.js",
-      description: "Use Next.js built-in API routes",
-      icon: `${ICON_BASE_URL}/nextjs.svg`,
-      color: "from-gray-700 to-black",
-    },
-    {
       id: "self-tanstack-start",
       name: "Fullstack TanStack Start",
       description: "Use TanStack Start's built-in API routes",
       icon: `${ICON_BASE_URL}/tanstack.svg`,
       color: "from-purple-400 to-purple-600",
-    },
-    {
-      id: "self-nuxt",
-      name: "Fullstack Nuxt",
-      description: "Use Nuxt's built-in server routes",
-      icon: `${ICON_BASE_URL}/nuxt.svg`,
-      color: "from-green-400 to-green-700",
-    },
-    {
-      id: "self-svelte",
-      name: "Fullstack SvelteKit",
-      description: "Use SvelteKit's built-in server routes",
-      icon: `${ICON_BASE_URL}/svelte.svg`,
-      color: "from-orange-500 to-orange-700",
-    },
-    {
-      id: "self-solid",
-      name: "Fullstack Solid",
-      description: "Use Solid file-based API routes",
-      icon: `${ICON_BASE_URL}/solid.svg`,
-      color: "from-blue-400 to-blue-700",
-    },
-    {
-      id: "self-astro",
-      name: "Fullstack Astro",
-      description: "Use Astro's built-in API routes",
-      icon: `${ICON_BASE_URL}/astro.svg`,
-      color: "from-purple-500 to-orange-500",
     },
     {
       id: "none",
@@ -274,20 +170,6 @@ export const TECH_OPTIONS: TechOptions = {
       color: "from-indigo-400 to-indigo-600",
     },
     {
-      id: "mysql",
-      name: "MySQL",
-      description: "Popular relational database",
-      icon: `${ICON_BASE_URL}/mysql.svg`,
-      color: "from-blue-500 to-blue-700",
-    },
-    {
-      id: "mongodb",
-      name: "MongoDB",
-      description: "NoSQL document database",
-      icon: `${ICON_BASE_URL}/mongodb.svg`,
-      color: "from-green-400 to-green-600",
-    },
-    {
       id: "none",
       name: "No Database",
       description: "Skip database integration",
@@ -303,20 +185,6 @@ export const TECH_OPTIONS: TechOptions = {
       icon: `${ICON_BASE_URL}/drizzle.svg`,
       color: "from-cyan-400 to-cyan-600",
       default: true,
-    },
-    {
-      id: "prisma",
-      name: "Prisma",
-      description: "Next-gen ORM",
-      icon: `${ICON_BASE_URL}/prisma.svg`,
-      color: "from-purple-400 to-purple-600",
-    },
-    {
-      id: "mongoose",
-      name: "Mongoose",
-      description: "Elegant object modeling tool",
-      icon: `${ICON_BASE_URL}/mongoose.svg`,
-      color: "from-blue-400 to-blue-600",
     },
     {
       id: "none",
@@ -356,13 +224,6 @@ export const TECH_OPTIONS: TechOptions = {
       color: "from-indigo-400 to-indigo-600",
     },
     {
-      id: "mongodb-atlas",
-      name: "MongoDB Atlas",
-      description: "Managed MongoDB clusters in the cloud",
-      icon: `${ICON_BASE_URL}/mongodb.svg`,
-      color: "from-green-400 to-green-600",
-    },
-    {
       id: "supabase",
       name: "Supabase",
       description: "Local Postgres stack via Supabase (Docker required)",
@@ -372,14 +233,14 @@ export const TECH_OPTIONS: TechOptions = {
     {
       id: "planetscale",
       name: "PlanetScale",
-      description: "Postgres & Vitess (MySQL) on NVMe",
+      description: "Managed Postgres on NVMe",
       icon: `${ICON_BASE_URL}/planetscale.svg`,
       color: "from-orange-400 to-orange-600",
     },
     {
       id: "docker",
       name: "Docker",
-      description: "Run Postgres/MySQL/MongoDB locally via Docker Compose",
+      description: "Run PostgreSQL locally via Docker Compose",
       icon: `${ICON_BASE_URL}/docker.svg`,
       color: "from-blue-500 to-blue-700",
     },
@@ -563,14 +424,6 @@ export const TECH_OPTIONS: TechOptions = {
       default: false,
     },
     {
-      id: "starlight",
-      name: "Starlight",
-      description: "Build stellar docs with astro",
-      icon: `${ICON_BASE_URL}/starlight.svg`,
-      color: "from-teal-500 to-teal-700",
-      default: false,
-    },
-    {
       id: "fumadocs",
       name: "Fumadocs",
       description: "Build excellent documentation site",
@@ -584,22 +437,6 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Fast and powerful Git hooks manager",
       icon: "",
       color: "from-red-500 to-red-700",
-      default: false,
-    },
-    {
-      id: "husky",
-      name: "Husky",
-      description: "Modern native Git hooks made easy",
-      icon: "",
-      color: "from-purple-500 to-purple-700",
-      default: false,
-    },
-    {
-      id: "biome",
-      name: "Biome",
-      description: "Format, lint, and more",
-      icon: `${ICON_BASE_URL}/biome.svg`,
-      color: "from-green-500 to-green-700",
       default: false,
     },
     {
@@ -619,29 +456,11 @@ export const TECH_OPTIONS: TechOptions = {
       default: true,
     },
     {
-      id: "nx",
-      name: "Nx",
-      description: "Smart monorepo build system and task runner",
-      icon: `${ICON_BASE_URL}/nx.svg`,
-      color: "from-cyan-500 to-cyan-700",
-      default: false,
-    },
-    {
       id: "vite-plus",
       name: "Vite+",
       description: "Unified Vite toolchain, task runner, linting, formatting, and optional hooks",
       icon: `${ICON_BASE_URL}/vite-plus.svg`,
       color: "from-violet-500 to-cyan-600",
-      default: false,
-    },
-    {
-      id: "ultracite",
-      name: "Ultracite",
-      description:
-        "A zero-config preset for ESLint, Biome, and Oxlint that helps AI write better code",
-      icon: `${ICON_BASE_URL}/ultracite.svg`,
-      color: "from-blue-500 to-blue-700",
-      className: "invert-0 dark:invert",
       default: false,
     },
     {
@@ -765,84 +584,6 @@ export const PRESET_TEMPLATES: {
   stack: StackState;
 }[] = [
   {
-    id: "mern",
-    name: "MERN Stack",
-    description: "MongoDB + Express + React + Node.js - Classic MERN stack",
-    stack: {
-      projectName: "my-better-t-app",
-      webFrontend: ["react-router"],
-      nativeFrontend: ["none"],
-      runtime: "node",
-      backend: "express",
-      database: "mongodb",
-      orm: "mongoose",
-      dbSetup: "mongodb-atlas",
-      auth: "better-auth",
-      payments: "none",
-      packageManager: "bun",
-      addons: ["turborepo"],
-      examples: ["todo"],
-      git: "true",
-      install: "true",
-      api: "orpc",
-      webDeploy: "none",
-      serverDeploy: "none",
-      yolo: "false",
-    },
-  },
-  {
-    id: "pern",
-    name: "PERN Stack",
-    description: "PostgreSQL + Express + React + Node.js - Popular PERN stack",
-    stack: {
-      projectName: "my-better-t-app",
-      webFrontend: ["tanstack-router"],
-      nativeFrontend: ["none"],
-      runtime: "node",
-      backend: "express",
-      database: "postgres",
-      orm: "drizzle",
-      dbSetup: "none",
-      auth: "better-auth",
-      payments: "none",
-      packageManager: "bun",
-      addons: ["turborepo"],
-      examples: ["todo"],
-      git: "true",
-      install: "true",
-      api: "trpc",
-      webDeploy: "none",
-      serverDeploy: "none",
-      yolo: "false",
-    },
-  },
-  {
-    id: "t3",
-    name: "T3 Stack",
-    description: "Next.js + tRPC + Prisma + PostgreSQL + Better Auth",
-    stack: {
-      projectName: "my-better-t-app",
-      webFrontend: ["next"],
-      nativeFrontend: ["none"],
-      runtime: "none",
-      backend: "self-next",
-      database: "postgres",
-      orm: "prisma",
-      dbSetup: "none",
-      auth: "better-auth",
-      payments: "none",
-      packageManager: "bun",
-      addons: ["biome", "turborepo"],
-      examples: ["none"],
-      git: "true",
-      install: "true",
-      api: "trpc",
-      webDeploy: "none",
-      serverDeploy: "none",
-      yolo: "false",
-    },
-  },
-  {
     id: "uniwind",
     name: "Uniwind Native",
     description: "Expo + Uniwind native app with no backend services",
@@ -893,20 +634,10 @@ export const DEFAULT_STACK: StackState = {
 };
 
 export const isStackDefault = <K extends keyof StackState>(
-  stack: StackState,
   key: K,
   value: StackState[K],
 ): boolean => {
   const defaultValue = DEFAULT_STACK[key];
-
-  if (stack.backend === "convex") {
-    if (key === "runtime" && value === "none") return true;
-    if (key === "database" && value === "none") return true;
-    if (key === "orm" && value === "none") return true;
-    if (key === "api" && value === "none") return true;
-    if (key === "auth" && value === "none") return true;
-    if (key === "dbSetup" && value === "none") return true;
-  }
 
   if (key === "webFrontend" || key === "nativeFrontend" || key === "addons" || key === "examples") {
     if (Array.isArray(defaultValue) && Array.isArray(value)) {

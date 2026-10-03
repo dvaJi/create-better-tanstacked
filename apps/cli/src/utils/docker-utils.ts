@@ -23,7 +23,7 @@ export async function isDockerRunning(): Promise<boolean> {
   return result.isOk() ? result.value : false;
 }
 
-export function getDockerInstallInstructions(platform: string, database: Database) {
+export function getDockerInstallInstructions(platform: string) {
   const isMac = platform === "darwin";
   const isWindows = platform === "win32";
   const isLinux = platform === "linux";
@@ -42,8 +42,7 @@ export function getDockerInstallInstructions(platform: string, database: Databas
     platformName = "Linux";
   }
 
-  const databaseName =
-    database === "mongodb" ? "MongoDB" : database === "mysql" ? "MySQL" : "PostgreSQL";
+  const databaseName = "PostgreSQL";
 
   return `${pc.yellow("IMPORTANT:")} Docker required for ${databaseName}. Install for ${platformName}:\n${pc.blue(installUrl)}`;
 }
@@ -56,7 +55,7 @@ export async function getDockerStatus(database: Database) {
     return {
       installed: false,
       running: false,
-      message: getDockerInstallInstructions(platform, database),
+      message: getDockerInstallInstructions(platform),
     };
   }
 
