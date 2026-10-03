@@ -90,7 +90,7 @@ export async function historyHandler(input: HistoryCommandInput): Promise<boolea
   if (entries.length === 0) {
     outro(
       `${pc.dim("No saved projects yet · create one with")} ${pc.cyan(
-        "create-better-t-stack my-app",
+        "create-better-tanstacked my-app",
       )}`,
     );
     return true;

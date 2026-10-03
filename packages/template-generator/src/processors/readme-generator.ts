@@ -102,7 +102,7 @@ function generateReadmeContent(options: SupportedProjectConfig): string {
 
   return `# ${projectName}
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack${stackDescription ? ` that combines ${stackDescription}` : ""}.
+This project was created with [Better-T-Stack](https://github.com/dvaJi/create-better-tanstacked), a modern TypeScript stack${stackDescription ? ` that combines ${stackDescription}` : ""}.
 
 ## Features
 

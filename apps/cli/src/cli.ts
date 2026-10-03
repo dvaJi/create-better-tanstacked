@@ -7,12 +7,12 @@ const [, , command, ...args] = process.argv;
 
 if (command === "mcp") {
   if (args.includes("--help") || args.includes("-h")) {
-    console.log(`Usage: create-better-t-stack mcp
+    console.log(`Usage: create-better-tanstacked mcp
 
 Start the Better T Stack MCP server over stdio.
 
 This command is intended to be launched by an MCP client, for example:
-  create-better-t-stack mcp`);
+  create-better-tanstacked mcp`);
     process.exit(0);
   }
 

@@ -24,7 +24,7 @@ export function ShowcasePage({ showcaseProjects }: { showcaseProjects: Array<Sho
       <PageHeader
         icon={Terminal}
         title="PROJECT_SHOWCASE.SH"
-        description="Community projects built with create-better-t-stack"
+        description="Community projects built with create-better-tanstacked"
         count={showcaseProjects.length}
       />
 
@@ -54,7 +54,7 @@ export function ShowcasePage({ showcaseProjects }: { showcaseProjects: Array<Sho
           <span className="text-fd-muted-foreground">
             Want to showcase your project? Submit via{" "}
             <a
-              href="https://github.com/AmanVarshney01/create-better-t-stack/issues/new/choose"
+              href="https://github.com/dvaJi/create-better-tanstacked/issues/new/choose"
               target="_blank"
               rel="noreferrer"
               onClick={() => track("showcase_submit", {})}

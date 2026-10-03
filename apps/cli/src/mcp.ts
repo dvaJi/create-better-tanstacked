@@ -182,7 +182,7 @@ export function createBtsMcpServer() {
   setProcessMode("mcp");
   const server = new McpServer(
     {
-      name: "create-better-t-stack",
+      name: "create-better-tanstacked",
       version: getLatestCLIVersion(),
     },
     {

@@ -126,7 +126,7 @@ export function buildDiagnosticPayload<Name extends DiagnosticEventName>(
 }
 
 export function diagnosticUserAgent() {
-  return `Mozilla/5.0 (compatible; create-better-t-stack/${getLatestCLIVersion()})`;
+  return `Mozilla/5.0 (compatible; create-better-tanstacked/${getLatestCLIVersion()})`;
 }
 
 export async function reportDiagnostic<Name extends DiagnosticEventName>(

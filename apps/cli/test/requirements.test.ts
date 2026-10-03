@@ -14,7 +14,7 @@ describe("baseline requirements (before prompts)", () => {
   it("covers only the package manager and the host Node.js, never the stack", () => {
     expect(getBaselineRequirements("pnpm", "node")).toEqual([
       expect.objectContaining({ tool: "pnpm", range: PACKAGE_MANAGER_VERSION_RANGES.pnpm }),
-      expect.objectContaining({ tool: "node", reason: "create-better-t-stack" }),
+      expect.objectContaining({ tool: "node", reason: "create-better-tanstacked" }),
     ]);
     expect(getBaselineRequirements(undefined, "bun")).toEqual([]);
   });
@@ -48,13 +48,13 @@ describe("baseline requirements (before prompts)", () => {
     const result = validateRequirements(
       getBaselineRequirements("pnpm", "node"),
       { pnpm: "9.15.0", node: "v22.22.0" },
-      "Your local toolchain does not meet create-better-t-stack's requirements:",
+      "Your local toolchain does not meet create-better-tanstacked's requirements:",
     );
     expect(result.isErr()).toBe(true);
     if (result.isErr()) {
       expect(
         result.error.message.startsWith(
-          "Your local toolchain does not meet create-better-t-stack's requirements:",
+          "Your local toolchain does not meet create-better-tanstacked's requirements:",
         ),
       ).toBe(true);
     }
@@ -130,7 +130,7 @@ describe("local tool requirements", () => {
     const result = validateLocalToolVersions(config(), { bun: "1.3.3", node: "v21.7.3" }, "node");
 
     expect(result.isErr()).toBe(true);
-    expect(result.isErr() ? result.error.message : "").toContain("create-better-t-stack");
+    expect(result.isErr() ? result.error.message : "").toContain("create-better-tanstacked");
   });
 
   it("does not require Node tooling when Bun owns the install and runtime", () => {

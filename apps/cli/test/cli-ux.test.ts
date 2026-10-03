@@ -298,7 +298,7 @@ describe("CLI flow presentation", () => {
           packageManager: "bun",
         },
         cliVersion: "1.0.0",
-        reproducibleCommand: "bun create better-t-stack@latest acme-app --yes",
+        reproducibleCommand: "bun create better-tanstacked@latest acme-app --yes",
       },
       0,
     );
@@ -307,22 +307,22 @@ describe("CLI flow presentation", () => {
     expect(output).toContain("Location");
     expect(output).toContain("TanStack Router + Hono + SQLite + Drizzle");
     expect(output).toContain("Recreate");
-    expect(output).toContain("bun create better-t-stack@latest acme-app --yes");
+    expect(output).toContain("bun create better-tanstacked@latest acme-app --yes");
     expect(output).not.toContain("tanstack-router");
   });
 
   it("uses the active package runner for follow-up commands", () => {
     expect(getCliSubcommandCommand("history", "npm", "bun/1.3.0")).toBe(
-      "bunx create-better-t-stack@latest history",
+      "bunx create-better-tanstacked@latest history",
     );
     expect(getCliSubcommandCommand("history", "bun", "npm/11.0.0")).toBe(
-      "npx create-better-t-stack@latest history",
+      "npx create-better-tanstacked@latest history",
     );
     expect(getCliSubcommandCommand("history", "npm", "pnpm/10.0.0")).toBe(
-      "pnpm dlx create-better-t-stack@latest history",
+      "pnpm dlx create-better-tanstacked@latest history",
     );
     expect(getCliSubcommandCommand("history", "bun", "")).toBe(
-      "bunx create-better-t-stack@latest history",
+      "bunx create-better-tanstacked@latest history",
     );
   });
 });

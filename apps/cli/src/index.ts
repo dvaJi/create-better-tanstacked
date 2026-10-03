@@ -111,7 +111,7 @@ const command = os.$meta<TrpcCliMeta>({});
 function getCliSchemaJson(): unknown {
   return createCli({
     router,
-    name: "create-better-t-stack",
+    name: "create-better-tanstacked",
     version: getLatestCLIVersion(),
   }).toJSON();
 }
@@ -300,7 +300,7 @@ export const router = os.router({
 export function createBtsCli(): TrpcCli {
   return createCli({
     router,
-    name: "create-better-t-stack",
+    name: "create-better-tanstacked",
     version: getLatestCLIVersion(),
   });
 }
@@ -334,7 +334,7 @@ function formatInputValidationError(label: string, error: z.ZodError): string {
  *
  * @example
  * ```typescript
- * import { create, Result } from "create-better-t-stack";
+ * import { create, Result } from "create-better-tanstacked";
  *
  * const result = await create("my-app", {
  *   frontend: ["tanstack-router"],
@@ -442,7 +442,7 @@ import {
  *
  * @example
  * ```typescript
- * import { createVirtual, EMBEDDED_TEMPLATES, Result } from "create-better-t-stack";
+ * import { createVirtual, EMBEDDED_TEMPLATES, Result } from "create-better-tanstacked";
  *
  * const result = await createVirtual({
  *   frontend: ["tanstack-router"],
@@ -561,7 +561,7 @@ export type AddOptions = Pick<
  *
  * @example
  * ```typescript
- * import { add } from "create-better-t-stack";
+ * import { add } from "create-better-tanstacked";
  *
  * const result = await add({
  *   addons: ["oxlint", "lefthook"],

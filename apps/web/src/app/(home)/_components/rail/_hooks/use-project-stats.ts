@@ -24,10 +24,10 @@ export function useProjectStats() {
   const stats = useQuery(api.analytics.getStats, {});
   const monthlyStats = useQuery(api.analytics.getMonthlyStats, {});
   const githubRepo = useQuery(api.stats.getGithubRepo, {
-    name: "AmanVarshney01/create-better-t-stack",
+    name: "dvaJi/create-better-tanstacked",
   }) as GithubRepoStats | null | undefined;
   const npmPackages = useQuery(api.stats.getNpmPackages, {
-    names: ["create-better-t-stack"],
+    names: ["create-better-tanstacked"],
   }) as NpmPackageStats | null | undefined;
 
   const liveNpmDownloadCount = useNpmDownloadCounter(npmPackages);

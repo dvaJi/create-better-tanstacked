@@ -120,7 +120,9 @@ describe("buildDiagnosticPayload", () => {
   });
 
   test("uses a browser-compatible user agent so Umami does not drop it as a bot", () => {
-    expect(diagnosticUserAgent()).toMatch(/^Mozilla\/5\.0 \(compatible; create-better-t-stack\/\d/);
+    expect(diagnosticUserAgent()).toMatch(
+      /^Mozilla\/5\.0 \(compatible; create-better-tanstacked\/\d/,
+    );
   });
 });
 

@@ -11,14 +11,14 @@ const PAGES = {
     section: "home",
     title: "Roll Your Own Stack",
     description: "Modern CLI for scaffolding end-to-end type-safe TypeScript projects",
-    command: "bun create better-t-stack@latest",
+    command: "bun create better-tanstacked@latest",
   },
   new: {
     path: "~/new",
     section: "stack builder",
     title: "Stack Builder",
     description: "Pick your stack, get a ready-to-run command",
-    command: "bun create better-t-stack@latest my-app --yes",
+    command: "bun create better-tanstacked@latest my-app --yes",
   },
   showcase: {
     path: "~/showcase",
@@ -30,7 +30,7 @@ const PAGES = {
     path: "~/analytics",
     section: "analytics",
     title: "Analytics",
-    description: "Live usage insights from the create-better-t-stack CLI",
+    description: "Live usage insights from the create-better-tanstacked CLI",
   },
   sponsors: {
     path: "~/sponsors",

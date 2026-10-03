@@ -56,7 +56,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           needs_publish=false
-          for entry in types=@better-t-stack/types generator=@better-t-stack/template-generator cli=create-better-t-stack alias=create-bts; do
+          for entry in types=@better-t-stack/types generator=@better-t-stack/template-generator cli=create-better-tanstacked alias=create-bts; do
             key=${entry%%=*}
             package=${entry#*=}
             versions=$(npm view "$package" versions --json)
@@ -123,7 +123,7 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           cd packages/create-bts
-          jq --arg v "$VERSION" --arg dep "^$VERSION" '.version = $v | .dependencies["create-better-t-stack"] = $dep' package.json > tmp.json && mv tmp.json package.json
+          jq --arg v "$VERSION" --arg dep "^$VERSION" '.version = $v | .dependencies["create-better-tanstacked"] = $dep' package.json > tmp.json && mv tmp.json package.json
 
       - name: Setup pnpm
         if: steps.published.outputs.needs_publish == 'true'
@@ -133,7 +133,7 @@ jobs:
 
       # Gate all publishes on the smoke so a failure here doesn't leave a
       # partial release on npm (e.g. types/template-generator published but
-      # create-better-t-stack broken).
+      # create-better-tanstacked broken).
       - name: Publish smoke test (npm, pnpm, bun)
         if: steps.published.outputs.needs_publish == 'true'
         run: bun run smoke:publish
@@ -203,7 +203,7 @@ jobs:
           echo "## Packages published for v$VERSION" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Published Packages" >> $GITHUB_STEP_SUMMARY
-          echo "- [create-better-t-stack@$VERSION](https://www.npmjs.com/package/create-better-t-stack/v/$VERSION)" >> $GITHUB_STEP_SUMMARY
+          echo "- [create-better-tanstacked@$VERSION](https://www.npmjs.com/package/create-better-tanstacked/v/$VERSION)" >> $GITHUB_STEP_SUMMARY
           echo "- [create-bts@$VERSION](https://www.npmjs.com/package/create-bts/v/$VERSION)" >> $GITHUB_STEP_SUMMARY
           echo "- [@better-t-stack/types@$VERSION](https://www.npmjs.com/package/@better-t-stack/types/v/$VERSION)" >> $GITHUB_STEP_SUMMARY
           echo "- [@better-t-stack/template-generator@$VERSION](https://www.npmjs.com/package/@better-t-stack/template-generator/v/$VERSION)" >> $GITHUB_STEP_SUMMARY

@@ -12,7 +12,7 @@ The Better-T-Stack CLI provides several commands to manage your TypeScript proje
 Creates a new Better-T-Stack project.
 
 ```bash
-create-better-t-stack [project-directory] [options]
+create-better-tanstacked [project-directory] [options]
 ```
 
 ### Parameters
@@ -55,16 +55,16 @@ For JSON-first automation and agent usage, see [Agent Workflows](/docs/cli/agent
 
 ```bash
 # Default setup with prompts
-create-better-t-stack
+create-better-tanstacked
 
 # Quick setup with defaults
-create-better-t-stack --yes
+create-better-tanstacked --yes
 
 # Specific configuration
-create-better-t-stack --database postgres --backend hono --frontend tanstack-router
+create-better-tanstacked --database postgres --backend hono --frontend tanstack-router
 
 # Validate without writing files
-create-better-t-stack my-app --yes --dry-run
+create-better-tanstacked my-app --yes --dry-run
 ```
 
 ## `add`
@@ -72,7 +72,7 @@ create-better-t-stack my-app --yes --dry-run
 Adds addons or scaffolds a workspace package in an existing Better-T-Stack project.
 
 ```bash
-create-better-t-stack add [options]
+create-better-tanstacked add [options]
 ```
 
 ### Options
@@ -89,16 +89,16 @@ create-better-t-stack add [options]
 
 ```bash
 # Add addons interactively
-create-better-t-stack add
+create-better-tanstacked add
 
 # Add specific addons
-create-better-t-stack add --addons pwa tauri --install
+create-better-tanstacked add --addons pwa tauri --install
 
 # Add addons in a specific project directory
-create-better-t-stack add --project-dir ./my-app --addons mcp skills
+create-better-tanstacked add --project-dir ./my-app --addons mcp skills
 
 # Scaffold @my-app/shared in packages/shared
-create-better-t-stack add --package shared
+create-better-tanstacked add --package shared
 ```
 
 ## `create-json`
@@ -106,7 +106,7 @@ create-better-t-stack add --package shared
 Create a project from a raw JSON payload.
 
 ```bash
-create-better-t-stack create-json --input '{"projectName":"my-app","yes":true,"dryRun":true}'
+create-better-tanstacked create-json --input '{"projectName":"my-app","yes":true,"dryRun":true}'
 ```
 
 Use this when you want a single machine-readable input object instead of many flags.
@@ -116,7 +116,7 @@ Use this when you want a single machine-readable input object instead of many fl
 Add addons from a raw JSON payload.
 
 ```bash
-create-better-t-stack add-json --input '{"projectDir":"./my-app","addons":["wxt"],"addonOptions":{"wxt":{"template":"react"}}}'
+create-better-tanstacked add-json --input '{"projectDir":"./my-app","addons":["wxt"],"addonOptions":{"wxt":{"template":"react"}}}'
 ```
 
 ## `schema`
@@ -124,10 +124,10 @@ create-better-t-stack add-json --input '{"projectDir":"./my-app","addons":["wxt"
 Print runtime CLI and input schemas as JSON.
 
 ```bash
-create-better-t-stack schema --name all
-create-better-t-stack schema --name createInput
-create-better-t-stack schema --name addonOptions
-create-better-t-stack schema --name dbSetupOptions
+create-better-tanstacked schema --name all
+create-better-tanstacked schema --name createInput
+create-better-tanstacked schema --name addonOptions
+create-better-tanstacked schema --name dbSetupOptions
 ```
 
 This is the best way for scripts and agents to discover the current input contract at runtime.
@@ -137,7 +137,7 @@ This is the best way for scripts and agents to discover the current input contra
 Start the Better-T-Stack MCP server over stdio. It is launched by an MCP client (Claude Code, Codex, Cursor, opencode, and others), not run directly.
 
 ```bash
-create-better-t-stack mcp
+create-better-tanstacked mcp
 ```
 
 It exposes tools for planning and creating projects (`bts_plan_project`, `bts_create_project`) and managing addons (`bts_plan_addons`, `bts_add_addons`), plus schema and guidance helpers. See [Agent Workflows](/docs/cli/agent-workflows#use-it-inside-your-ai-agent) for setup and the full tool list.
@@ -147,7 +147,7 @@ It exposes tools for planning and creating projects (`bts_plan_project`, `bts_cr
 Displays Better-T-Stack sponsors.
 
 ```bash
-create-better-t-stack sponsors
+create-better-tanstacked sponsors
 ```
 
 Shows a list of project sponsors and supporters.
@@ -157,7 +157,7 @@ Shows a list of project sponsors and supporters.
 Opens the Better-T-Stack documentation in your default browser.
 
 ```bash
-create-better-t-stack docs
+create-better-tanstacked docs
 ```
 
 Opens `https://www.better-t-stack.dev/docs` in your browser.
@@ -167,7 +167,7 @@ Opens `https://www.better-t-stack.dev/docs` in your browser.
 Opens the web-based stack builder in your default browser.
 
 ```bash
-create-better-t-stack builder
+create-better-tanstacked builder
 ```
 
 Opens `https://www.better-t-stack.dev/new` where you can configure your stack visually.
@@ -177,7 +177,7 @@ Opens `https://www.better-t-stack.dev/new` where you can configure your stack vi
 Shows project creation history stored on your local machine.
 
 ```bash
-create-better-t-stack history [options]
+create-better-tanstacked history [options]
 ```
 
 ### Options
@@ -190,16 +190,16 @@ create-better-t-stack history [options]
 
 ```bash
 # Show latest entries
-create-better-t-stack history
+create-better-tanstacked history
 
 # Show 5 entries
-create-better-t-stack history --limit 5
+create-better-tanstacked history --limit 5
 
 # JSON output
-create-better-t-stack history --json
+create-better-tanstacked history --json
 
 # Clear history
-create-better-t-stack history --clear
+create-better-tanstacked history --clear
 ```
 
 ## Global Options
@@ -214,7 +214,7 @@ These options work with any command:
 ### Create a Full-Stack App
 
 ```bash
-create-better-t-stack \
+create-better-tanstacked \
   --database postgres \
   --orm drizzle \
   --backend hono \
@@ -226,7 +226,7 @@ create-better-t-stack \
 ### Create a Backend-Only Project
 
 ```bash
-create-better-t-stack api-server \
+create-better-tanstacked api-server \
   --frontend none \
   --backend hono \
   --database postgres \
@@ -238,13 +238,13 @@ create-better-t-stack api-server \
 
 ```bash
 cd my-existing-project
-create-better-t-stack add --addons tauri fumadocs --install
+create-better-tanstacked add --addons tauri fumadocs --install
 ```
 
 ### Show Local History
 
 ```bash
-create-better-t-stack history --limit 20
+create-better-tanstacked history --limit 20
 ```
 
 ## Programmatic Usage
@@ -252,7 +252,7 @@ create-better-t-stack history --limit 20
 For advanced use cases, automation, or integration with other tools, you can use the [Programmatic API](/docs/cli/programmatic-api) to create projects from Node.js code:
 
 ```typescript
-import { create } from "create-better-t-stack";
+import { create } from "create-better-tanstacked";
 
 const result = await create("my-app", {
   frontend: ["tanstack-router"],

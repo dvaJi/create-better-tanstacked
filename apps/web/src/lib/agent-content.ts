@@ -59,7 +59,7 @@ The analytics page publishes aggregate usage trends from successful CLI project 
 - Disable CLI telemetry with \`BTS_TELEMETRY_DISABLED=1\`, \`DO_NOT_TRACK=1\`, or \`--disable-analytics\`.`,
   builder: `# Better-T-Stack browser builder
 
-Use the stack builder to choose a frontend, backend, runtime, database, ORM, API layer, authentication, deployment targets, and addons. It produces a reproducible \`create-better-t-stack\` command.
+Use the stack builder to choose a frontend, backend, runtime, database, ORM, API layer, authentication, deployment targets, and addons. It produces a reproducible \`create-better-tanstacked\` command.
 
 - [Open the builder](${SITE_URL}/new)
 - [CLI options](${SITE_URL}/docs/cli/options.mdx)
@@ -198,21 +198,21 @@ Better-T-Stack does not expose a public hosted application API. The supported au
 ## Quick start
 
 \`\`\`bash
-npx create-better-t-stack@latest my-app
+npx create-better-tanstacked@latest my-app
 \`\`\`
 
 Non-interactive default project:
 
 \`\`\`bash
-npx create-better-t-stack@latest my-app --yes
+npx create-better-tanstacked@latest my-app --yes
 \`\`\`
 
 ## Agent interfaces
 
-- JSON project creation: \`create-better-t-stack create-json --input '{...}'\`
-- JSON project updates: \`create-better-t-stack add-json --input '{...}'\`
-- JSON schemas: \`create-better-t-stack schema --name all\`
-- Local MCP server: \`npx create-better-t-stack@latest mcp\`
+- JSON project creation: \`create-better-tanstacked create-json --input '{...}'\`
+- JSON project updates: \`create-better-tanstacked add-json --input '{...}'\`
+- JSON schemas: \`create-better-tanstacked schema --name all\`
+- Local MCP server: \`npx create-better-tanstacked@latest mcp\`
 - [Agent workflow guide](${SITE_URL}/docs/cli/agent-workflows.mdx)
 - [Programmatic API](${SITE_URL}/docs/cli/programmatic-api.mdx)
 

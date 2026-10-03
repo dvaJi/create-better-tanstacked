@@ -243,7 +243,7 @@ export async function displayPostInstallInstructions(
 
   cliLog.message(
     `${pc.bold("Like Better T Stack?")} ${pc.dim("Star the project on GitHub")}\n${pc.cyan(
-      "https://github.com/AmanVarshney01/create-better-t-stack",
+      "https://github.com/dvaJi/create-better-tanstacked",
     )}`,
   );
 }

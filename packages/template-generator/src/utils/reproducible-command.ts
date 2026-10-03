@@ -15,14 +15,14 @@ function formatMultiFlag(flag: string, values: string[]): string {
 
 function getBaseCommand(packageManager: ProjectConfig["packageManager"]): string {
   if (packageManager === "bun") {
-    return "bun create better-t-stack@latest";
+    return "bun create better-tanstacked@latest";
   }
 
   if (packageManager === "pnpm") {
-    return "pnpm create better-t-stack@latest";
+    return "pnpm create better-tanstacked@latest";
   }
 
-  return "npx create-better-t-stack@latest";
+  return "npx create-better-tanstacked@latest";
 }
 
 export function generateReproducibleCommand(config: ProjectConfig): string {

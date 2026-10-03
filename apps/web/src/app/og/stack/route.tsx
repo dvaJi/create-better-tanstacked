@@ -29,9 +29,9 @@ function hasCategoryColor(category: string): category is keyof typeof categoryCh
 }
 
 function commandBase(packageManager: StackState["packageManager"]) {
-  if (packageManager === "npm") return "npx create-better-t-stack@latest";
-  if (packageManager === "pnpm") return "pnpm create better-t-stack@latest";
-  return "bun create better-t-stack@latest";
+  if (packageManager === "npm") return "npx create-better-tanstacked@latest";
+  if (packageManager === "pnpm") return "pnpm create better-tanstacked@latest";
+  return "bun create better-tanstacked@latest";
 }
 
 export async function GET(req: NextRequest) {

@@ -143,7 +143,7 @@ export function getBaselineRequirements(
     });
   }
   if (hostRuntime === "node") {
-    addNodeRequirement(requirements, ">=22.12.0", "create-better-t-stack");
+    addNodeRequirement(requirements, ">=22.12.0", "create-better-tanstacked");
   }
   return requirements;
 }
@@ -194,7 +194,7 @@ export function validateLocalToolVersions(
 
 const STACK_REQUIREMENTS_HEADLINE = "Your local toolchain does not meet this stack's requirements:";
 const BASELINE_REQUIREMENTS_HEADLINE =
-  "Your local toolchain does not meet create-better-t-stack's requirements:";
+  "Your local toolchain does not meet create-better-tanstacked's requirements:";
 
 export function validateRequirements(
   requirements: VersionRequirement[],

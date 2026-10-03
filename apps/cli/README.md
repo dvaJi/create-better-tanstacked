@@ -8,7 +8,7 @@ A modern CLI tool for scaffolding end-to-end type-safe TypeScript projects with 
 <img src="https://sponsors.better-t-stack.dev/sponsors.png" alt="Sponsors">
 </p>
 
-![demo](https://cdn.jsdelivr.net/gh/amanvarshney01/create-better-t-stack@master/demo.gif)
+![demo](https://cdn.jsdelivr.net/gh/dvaji/create-better-tanstacked@master/demo.gif)
 
 ## Quick Start
 
@@ -16,13 +16,13 @@ Run without installing globally:
 
 ```bash
 # Using bun (recommended)
-bun create better-t-stack@latest
+bun create better-tanstacked@latest
 
 # Using pnpm
-pnpm create better-t-stack@latest
+pnpm create better-tanstacked@latest
 
 # Using npm
-npx create-better-t-stack@latest
+npx create-better-tanstacked@latest
 ```
 
 Follow the prompts to configure your project or use the `--yes` flag for defaults.
@@ -59,7 +59,7 @@ generated commands.
 ## Usage
 
 ```bash
-Usage: create-better-t-stack [project-directory] [options]
+Usage: create-better-tanstacked [project-directory] [options]
 
 Options:
   -V, --version                   Output the version number
@@ -94,29 +94,29 @@ Options:
 
 ```bash
 # Raw JSON payload input (agent-friendly)
-create-better-t-stack create-json --input '{"projectName":"my-app","yes":true,"dryRun":true}'
-create-better-t-stack add-json --input '{"projectDir":"./my-app","addons":["wxt"],"addonOptions":{"wxt":{"template":"react"}}}'
-create-better-t-stack create-json --input '{"projectName":"db-app","database":"postgres","orm":"drizzle","dbSetup":"neon","dbSetupOptions":{"mode":"manual"}}'
+create-better-tanstacked create-json --input '{"projectName":"my-app","yes":true,"dryRun":true}'
+create-better-tanstacked add-json --input '{"projectDir":"./my-app","addons":["wxt"],"addonOptions":{"wxt":{"template":"react"}}}'
+create-better-tanstacked create-json --input '{"projectName":"db-app","database":"postgres","orm":"drizzle","dbSetup":"neon","dbSetupOptions":{"mode":"manual"}}'
 
 # Runtime schema/introspection output
-create-better-t-stack schema --name all
-create-better-t-stack schema --name createInput
-create-better-t-stack schema --name addInput
-create-better-t-stack schema --name addonOptions
-create-better-t-stack schema --name dbSetupOptions
-create-better-t-stack schema --name cli
+create-better-tanstacked schema --name all
+create-better-tanstacked schema --name createInput
+create-better-tanstacked schema --name addInput
+create-better-tanstacked schema --name addonOptions
+create-better-tanstacked schema --name dbSetupOptions
+create-better-tanstacked schema --name cli
 
 # Local stdio MCP server
-npx create-better-t-stack@latest mcp
+npx create-better-tanstacked@latest mcp
 ```
 
 To install Better T Stack into supported agent configs with `add-mcp` and avoid relying on a global CLI install:
 
 ```bash
-npx -y add-mcp@latest "npx -y create-better-t-stack@latest mcp"
+npx -y add-mcp@latest "npx -y create-better-tanstacked@latest mcp"
 ```
 
-When you scaffold with the `mcp` addon, Better T Stack itself can also be installed into supported agent configs through `add-mcp` using a package runner command instead of assuming a global CLI install. For Bun projects, the generated config uses the equivalent `bunx create-better-t-stack@latest mcp` server command inside `add-mcp`.
+When you scaffold with the `mcp` addon, Better T Stack itself can also be installed into supported agent configs through `add-mcp` using a package runner command instead of assuming a global CLI install. For Bun projects, the generated config uses the equivalent `bunx create-better-tanstacked@latest mcp` server command inside `add-mcp`.
 
 For MCP project creation, prefer `install: false`. Long dependency installs can exceed common MCP client request timeouts, so the safest flow is to scaffold first and run your package manager install command afterward in the project directory.
 
@@ -140,7 +140,7 @@ You can disable telemetry by setting the `BTS_TELEMETRY_DISABLED` environment va
 
 ```bash
 # Disable telemetry for a single run
-BTS_TELEMETRY_DISABLED=1 npx create-better-t-stack
+BTS_TELEMETRY_DISABLED=1 npx create-better-tanstacked
 
 # Disable telemetry globally in your shell profile (.bashrc, .zshrc, etc.)
 export BTS_TELEMETRY_DISABLED=1
@@ -153,103 +153,103 @@ The CLI also honors the cross-tool `DO_NOT_TRACK=1` convention (https://consoled
 Create a project with default configuration:
 
 ```bash
-npx create-better-t-stack --yes
+npx create-better-tanstacked --yes
 ```
 
 Validate a command without writing files:
 
 ```bash
-npx create-better-t-stack --yes --dry-run
+npx create-better-tanstacked --yes --dry-run
 ```
 
 Create a project with specific options:
 
 ```bash
-npx create-better-t-stack --database postgres --orm drizzle --auth better-auth --addons pwa oxlint
+npx create-better-tanstacked --database postgres --orm drizzle --auth better-auth --addons pwa oxlint
 ```
 
 Create a project with Elysia backend and Node.js runtime:
 
 ```bash
-npx create-better-t-stack --backend elysia --runtime node
+npx create-better-tanstacked --backend elysia --runtime node
 ```
 
 Create a project with multiple frontend options (one web + one native):
 
 ```bash
-npx create-better-t-stack --frontend tanstack-router native-bare
+npx create-better-tanstacked --frontend tanstack-router native-bare
 ```
 
 Create a project with examples:
 
 ```bash
-npx create-better-t-stack --examples todo ai
+npx create-better-tanstacked --examples todo ai
 ```
 
 Create a project with Turso database setup:
 
 ```bash
-npx create-better-t-stack --database sqlite --orm drizzle --db-setup turso
+npx create-better-tanstacked --database sqlite --orm drizzle --db-setup turso
 ```
 
 Create a project with Supabase PostgreSQL setup:
 
 ```bash
-npx create-better-t-stack --database postgres --orm drizzle --db-setup supabase --auth better-auth
+npx create-better-tanstacked --database postgres --orm drizzle --db-setup supabase --auth better-auth
 ```
 
 Create a fullstack project with TanStack Start:
 
 ```bash
-npx create-better-t-stack --backend self --frontend tanstack-start
+npx create-better-tanstacked --backend self --frontend tanstack-start
 ```
 
 Create a project with a Fumadocs site:
 
 ```bash
-npx create-better-t-stack --addons fumadocs
+npx create-better-tanstacked --addons fumadocs
 ```
 
 Create a minimal TypeScript project with no backend:
 
 ```bash
-npx create-better-t-stack --backend none --frontend tanstack-router
+npx create-better-tanstacked --backend none --frontend tanstack-router
 ```
 
 Create a backend-only project with no frontend:
 
 ```bash
-npx create-better-t-stack --frontend none --backend hono --database postgres --orm drizzle
+npx create-better-tanstacked --frontend none --backend hono --database postgres --orm drizzle
 ```
 
 Create a simple frontend-only project:
 
 ```bash
-npx create-better-t-stack --backend none --frontend tanstack-router --addons none --examples none
+npx create-better-tanstacked --backend none --frontend tanstack-router --addons none --examples none
 ```
 
 Create a Cloudflare Workers project:
 
 ```bash
-npx create-better-t-stack --backend hono --runtime workers --database sqlite --orm drizzle --db-setup d1
+npx create-better-tanstacked --backend hono --runtime workers --database sqlite --orm drizzle --db-setup d1
 ```
 
 Create a self-hosted fullstack project on Cloudflare with D1:
 
 ```bash
-npx create-better-t-stack --backend self --frontend tanstack-start --runtime none --api trpc --database sqlite --orm drizzle --db-setup d1 --web-deploy cloudflare
+npx create-better-tanstacked --backend self --frontend tanstack-start --runtime none --api trpc --database sqlite --orm drizzle --db-setup d1 --web-deploy cloudflare
 ```
 
 Create a self-hosted project that ships as Docker containers (web + server + database via Docker Compose):
 
 ```bash
-npx create-better-t-stack --frontend tanstack-router --backend hono --runtime bun --database postgres --orm drizzle --db-setup docker --web-deploy docker --server-deploy docker
+npx create-better-tanstacked --frontend tanstack-router --backend hono --runtime bun --database postgres --orm drizzle --db-setup docker --web-deploy docker --server-deploy docker
 ```
 
 Create a minimal API-only project:
 
 ```bash
-npx create-better-t-stack --frontend none --backend hono --api trpc --database none --addons none
+npx create-better-tanstacked --frontend none --backend hono --api trpc --database none --addons none
 ```
 
 ## Compatibility Notes

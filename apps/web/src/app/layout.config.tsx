@@ -46,7 +46,7 @@ export const links: LinkItemType[] = [
     icon: <Image src={npmLogo} alt="npm" className="size-4 invert-0 dark:invert" />,
     label: "NPM",
     type: "icon",
-    url: "https://www.npmjs.com/package/create-better-t-stack",
+    url: "https://www.npmjs.com/package/create-better-tanstacked",
     external: true,
     secondary: true,
   },
@@ -82,5 +82,5 @@ export const baseOptions: BaseLayoutProps = {
     ),
   },
   links: links,
-  githubUrl: "https://github.com/AmanVarshney01/create-better-t-stack",
+  githubUrl: "https://github.com/dvaJi/create-better-tanstacked",
 };

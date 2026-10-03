@@ -45,10 +45,10 @@ export function writeBtsConfigToVfs(
 
   const addCommand =
     projectConfig.packageManager === "npm"
-      ? "npx create-better-t-stack@latest add"
+      ? "npx create-better-tanstacked@latest add"
       : projectConfig.packageManager === "pnpm"
-        ? "pnpm dlx create-better-t-stack@latest add"
-        : "bunx create-better-t-stack@latest add";
+        ? "pnpm dlx create-better-tanstacked@latest add"
+        : "bunx create-better-tanstacked@latest add";
 
   const finalContent = `// Better-T-Stack project metadata
 //

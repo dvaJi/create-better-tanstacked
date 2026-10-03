@@ -4,20 +4,20 @@ Make your AI assistant scaffold and extend projects with [Better-T-Stack](https:
 
 The plugin bundles:
 
-- **MCP server** — the official `create-better-t-stack mcp` server (stdio, no auth/key). Exposes `bts_get_stack_guidance`, `bts_get_schema`, `bts_plan_project`, `bts_create_project`, `bts_plan_addons`, `bts_add_addons`.
+- **MCP server** — the official `create-better-tanstacked mcp` server (stdio, no auth/key). Exposes `bts_get_stack_guidance`, `bts_get_schema`, `bts_plan_project`, `bts_create_project`, `bts_plan_addons`, `bts_add_addons`.
 - **Skills** — `scaffold-project` (start a new project) and `add-to-project` (add addons). These steer the assistant to plan a valid stack and generate it through the MCP rather than writing config by hand.
 - **Commands** — `/better-t-stack:new` and `/better-t-stack:add`.
 - **Agent** — `stack-architect`, which designs a coherent stack from a product description and generates it.
 
 ## Requirements
 
-- Node.js with `npx` available (the MCP server runs via `npx -y create-better-t-stack@latest mcp`).
+- Node.js with `npx` available (the MCP server runs via `npx -y create-better-tanstacked@latest mcp`).
 
 ## Install in Claude Code
 
 ```bash
 # Add this repo as a plugin marketplace
-/plugin marketplace add AmanVarshney01/create-better-t-stack
+/plugin marketplace add dvaJi/create-better-tanstacked
 
 # Install the plugin
 /plugin install better-t-stack@better-t-stack
@@ -38,7 +38,7 @@ Add the marketplace and install via Codex's plugins screen, or point Codex at th
 Wire the server into Codex (and Cursor, VS Code, Gemini CLI, etc.) with `add-mcp`:
 
 ```bash
-npx -y add-mcp@latest "npx -y create-better-t-stack@latest mcp"
+npx -y add-mcp@latest "npx -y create-better-tanstacked@latest mcp"
 ```
 
 …and choose `codex` (or your client) when prompted. Or add it to `~/.codex/config.toml` manually:
@@ -46,7 +46,7 @@ npx -y add-mcp@latest "npx -y create-better-t-stack@latest mcp"
 ```toml
 [mcp_servers.better-t-stack]
 command = "npx"
-args = ["-y", "create-better-t-stack@latest", "mcp"]
+args = ["-y", "create-better-tanstacked@latest", "mcp"]
 ```
 
 ## How the assistant uses it

@@ -1,5 +1,5 @@
 export default {
-  repo: "AmanVarshney01/create-better-t-stack",
+  repo: "dvaJi/create-better-tanstacked",
   emoji: true,
   contributors: true,
 };

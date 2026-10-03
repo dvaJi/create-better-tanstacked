@@ -29,7 +29,7 @@ Umami derives coarse location (country, region, city) from the request IP and a 
 Telemetry is enabled by default. To disable:
 
 ```bash
-BTS_TELEMETRY_DISABLED=1 npx create-better-t-stack@latest
+BTS_TELEMETRY_DISABLED=1 npx create-better-tanstacked@latest
 ```
 
 <Callout title="Note">The above command disables it for a single run.</Callout>
@@ -59,8 +59,8 @@ If in doubt, set `BTS_TELEMETRY_DISABLED=1` and proceed. You can still use all C
 
 ## Source code
 
-- CLI event sender: [`apps/cli/src/utils/analytics.ts`](https://github.com/AmanVarshney01/create-better-t-stack/blob/main/apps/cli/src/utils/analytics.ts)
-- CLI diagnostic events: [`apps/cli/src/utils/diagnostics.ts`](https://github.com/AmanVarshney01/create-better-t-stack/blob/main/apps/cli/src/utils/diagnostics.ts)
-- Telemetry toggle logic: [`apps/cli/src/utils/telemetry.ts`](https://github.com/AmanVarshney01/create-better-t-stack/blob/main/apps/cli/src/utils/telemetry.ts)
-- Ingest endpoint: [`packages/backend/convex/http.ts`](https://github.com/AmanVarshney01/create-better-t-stack/blob/main/packages/backend/convex/http.ts)
-- Analytics backend (ingest + aggregation): [`packages/backend/convex/analytics.ts`](https://github.com/AmanVarshney01/create-better-t-stack/blob/main/packages/backend/convex/analytics.ts)
+- CLI event sender: [`apps/cli/src/utils/analytics.ts`](https://github.com/dvaJi/create-better-tanstacked/blob/main/apps/cli/src/utils/analytics.ts)
+- CLI diagnostic events: [`apps/cli/src/utils/diagnostics.ts`](https://github.com/dvaJi/create-better-tanstacked/blob/main/apps/cli/src/utils/diagnostics.ts)
+- Telemetry toggle logic: [`apps/cli/src/utils/telemetry.ts`](https://github.com/dvaJi/create-better-tanstacked/blob/main/apps/cli/src/utils/telemetry.ts)
+- Ingest endpoint: [`packages/backend/convex/http.ts`](https://github.com/dvaJi/create-better-tanstacked/blob/main/packages/backend/convex/http.ts)
+- Analytics backend (ingest + aggregation): [`packages/backend/convex/analytics.ts`](https://github.com/dvaJi/create-better-tanstacked/blob/main/packages/backend/convex/analytics.ts)

@@ -27,13 +27,13 @@ https://github.com/user-attachments/assets/87b541ea-9d4d-4734-b383-00784b0b43ff
 
 ```bash
 # Using bun (recommended)
-bun create better-t-stack@latest
+bun create better-tanstacked@latest
 
 # Using pnpm
-pnpm create better-t-stack@latest
+pnpm create better-tanstacked@latest
 
 # Using npm
-npx create-better-t-stack@latest
+npx create-better-tanstacked@latest
 ```
 
 ## Claude Code plugin
@@ -41,7 +41,7 @@ npx create-better-t-stack@latest
 Want your AI assistant to scaffold and extend projects with Better-T-Stack? Install the plugin and it will plan a valid stack and generate it through the bundled MCP server instead of hand-rolling boilerplate.
 
 ```bash
-/plugin marketplace add AmanVarshney01/create-better-t-stack
+/plugin marketplace add dvaJi/create-better-tanstacked
 /plugin install better-t-stack@better-t-stack
 ```
 
@@ -79,7 +79,7 @@ Visit [better-t-stack.dev](https://better-t-stack.dev) for full documentation, g
 
 ```bash
 # Clone the repository
-git clone https://github.com/AmanVarshney01/create-better-t-stack.git
+git clone https://github.com/dvaJi/create-better-tanstacked.git
 
 # Install dependencies
 bun install
@@ -100,10 +100,10 @@ Please read the Contribution Guide first and open an issue before starting new f
 
 ## Star History
 
-<a href="https://www.star-history.com/#AmanVarshney01/create-better-t-stack&Date">
+<a href="https://www.star-history.com/#dvaJi/create-better-tanstacked&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=AmanVarshney01/create-better-t-stack&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=AmanVarshney01/create-better-t-stack&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=AmanVarshney01/create-better-t-stack&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dvaJi/create-better-tanstacked&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dvaJi/create-better-tanstacked&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dvaJi/create-better-tanstacked&type=Date" />
  </picture>
 </a>

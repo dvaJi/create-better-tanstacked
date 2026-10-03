@@ -15,5 +15,8 @@ export function getCliSubcommandCommand(
         ? "npm"
         : fallbackPackageManager;
 
-  return getPackageExecutionCommand(packageManager, `create-better-t-stack@latest ${subcommand}`);
+  return getPackageExecutionCommand(
+    packageManager,
+    `create-better-tanstacked@latest ${subcommand}`,
+  );
 }

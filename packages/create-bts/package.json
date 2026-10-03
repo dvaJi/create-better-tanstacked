@@ -1,7 +1,7 @@
 {
   "name": "create-bts",
   "version": "3.44.2",
-  "description": "A modern CLI tool for scaffolding end-to-end type-safe TypeScript projects with best practices and customizable configurations (alias for create-better-t-stack)",
+  "description": "A modern CLI tool for scaffolding end-to-end type-safe TypeScript projects with best practices and customizable configurations (alias for create-better-tanstacked)",
   "keywords": [
     "better-auth",
     "better-t-stack",
@@ -34,7 +34,7 @@
   "author": "Aman Varshney",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AmanVarshney01/create-better-t-stack.git",
+    "url": "git+https://github.com/dvaJi/create-better-tanstacked.git",
     "directory": "packages/create-bts"
   },
   "bin": {
@@ -62,7 +62,7 @@
     "access": "public"
   },
   "dependencies": {
-    "create-better-t-stack": "^3.44.2"
+    "create-better-tanstacked": "^3.44.2"
   },
   "engines": {
     "node": ">=22.0.0"

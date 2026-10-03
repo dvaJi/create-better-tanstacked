@@ -10,7 +10,7 @@ description: Complete reference for all CLI options and flags
 Use default configuration and skip interactive prompts.
 
 ```bash
-create-better-t-stack --yes
+create-better-tanstacked --yes
 ```
 
 ### `--template <type>`
@@ -21,7 +21,7 @@ Use a predefined project template:
 - `uniwind`: UniWind React Native template
 
 ```bash
-create-better-t-stack --template uniwind
+create-better-tanstacked --template uniwind
 ```
 
 ### `--manual-db`
@@ -29,7 +29,7 @@ create-better-t-stack --template uniwind
 Skip automatic database setup prompts and use manual database configuration.
 
 ```bash
-create-better-t-stack --manual-db
+create-better-tanstacked --manual-db
 ```
 
 ### `--dry-run`
@@ -37,7 +37,7 @@ create-better-t-stack --manual-db
 Validate configuration, compatibility, and directory handling without writing files.
 
 ```bash
-create-better-t-stack my-app --yes --dry-run
+create-better-tanstacked my-app --yes --dry-run
 ```
 
 ### `--package-manager <pm>`
@@ -45,7 +45,7 @@ create-better-t-stack my-app --yes --dry-run
 Choose package manager: `npm`, `pnpm`, or `bun`.
 
 ```bash
-create-better-t-stack --package-manager bun
+create-better-tanstacked --package-manager bun
 ```
 
 ### `--install / --no-install`
@@ -53,7 +53,7 @@ create-better-t-stack --package-manager bun
 Control dependency installation after project creation.
 
 ```bash
-create-better-t-stack --no-install
+create-better-tanstacked --no-install
 ```
 
 ### `--open <target>`
@@ -62,8 +62,8 @@ Open the generated project in an installed editor, IDE, or coding agent. Interac
 installed-tools-only picker after scaffolding. Use `none` to skip it explicitly.
 
 ```bash
-create-better-t-stack my-app --yes --open zed
-create-better-t-stack my-app --yes --open codex
+create-better-tanstacked my-app --yes --open zed
+create-better-tanstacked my-app --yes --open codex
 ```
 
 Supported targets include Cursor, VS Code, VS Code Insiders, Zed, Windsurf, VSCodium, WebStorm,
@@ -79,7 +79,7 @@ still works in those modes. JSON and programmatic creation never launch external
 Control Git repository initialization.
 
 ```bash
-create-better-t-stack --no-git
+create-better-tanstacked --no-git
 ```
 
 ### `--yolo`
@@ -87,7 +87,7 @@ create-better-t-stack --no-git
 Bypass validations and compatibility checks. Not recommended for normal use.
 
 ```bash
-create-better-t-stack --yolo
+create-better-tanstacked --yolo
 ```
 
 ### `--verbose`
@@ -95,7 +95,7 @@ create-better-t-stack --yolo
 Show detailed result information in JSON format after project creation.
 
 ```bash
-create-better-t-stack --verbose
+create-better-tanstacked --verbose
 ```
 
 ### `--render-title / --no-render-title`
@@ -104,7 +104,7 @@ Control whether the ASCII art title is shown. Enabled by default.
 
 ```bash
 # Hide the title (useful in CI)
-create-better-t-stack --no-render-title
+create-better-tanstacked --no-render-title
 ```
 
 ### `--directory-conflict <strategy>`
@@ -122,10 +122,10 @@ links are rejected instead of being followed.
 
 ```bash
 # Overwrite an existing directory without prompting
-create-better-t-stack my-app --yes --directory-conflict overwrite
+create-better-tanstacked my-app --yes --directory-conflict overwrite
 
 # Safely create a new directory name if it exists
-create-better-t-stack my-app --yes --directory-conflict increment
+create-better-tanstacked my-app --yes --directory-conflict increment
 ```
 
 ### `--disable-analytics / --no-disable-analytics`
@@ -134,10 +134,10 @@ Control whether analytics and telemetry data is collected.
 
 ```bash
 # Disable analytics collection
-create-better-t-stack --disable-analytics
+create-better-tanstacked --disable-analytics
 
 # Enable analytics collection (default)
-create-better-t-stack --no-disable-analytics
+create-better-tanstacked --no-disable-analytics
 ```
 
 Analytics help improve Better-T-Stack by providing insights into usage patterns. When disabled, no data is collected or transmitted.
@@ -155,7 +155,7 @@ Database type to use:
 - `postgres`: PostgreSQL database
 
 ```bash
-create-better-t-stack --database postgres
+create-better-tanstacked --database postgres
 ```
 
 ### `--orm <type>`
@@ -166,7 +166,7 @@ ORM to use with your database:
 - `drizzle`: Drizzle ORM (TypeScript-first)
 
 ```bash
-create-better-t-stack --database postgres --orm drizzle
+create-better-tanstacked --database postgres --orm drizzle
 ```
 
 ### `--db-setup <setup>`
@@ -183,7 +183,7 @@ Database hosting/setup provider:
 - `docker`: Local Docker containers
 
 ```bash
-create-better-t-stack --database postgres --db-setup neon
+create-better-tanstacked --database postgres --db-setup neon
 ```
 
 If you need structured control over database provisioning behavior, use `dbSetupOptions` with `create-json` or the programmatic API. See [Agent Workflows](/docs/cli/agent-workflows).
@@ -200,7 +200,7 @@ Backend framework to use:
 - `self`: TanStack Start fullstack backend
 
 ```bash
-create-better-t-stack --backend hono
+create-better-tanstacked --backend hono
 ```
 
 ### `--runtime <runtime>`
@@ -213,7 +213,7 @@ Runtime environment:
 - `workers`: Cloudflare Workers
 
 ```bash
-create-better-t-stack --backend hono --runtime bun
+create-better-tanstacked --backend hono --runtime bun
 ```
 
 ### `--api <type>`
@@ -225,7 +225,7 @@ API layer type:
 - `orpc`: oRPC (OpenAPI-compatible)
 
 ```bash
-create-better-t-stack --api trpc
+create-better-tanstacked --api trpc
 ```
 
 ## Frontend Options
@@ -251,13 +251,13 @@ Frontend frameworks (can specify multiple):
 
 ```bash
 # Single web frontend
-create-better-t-stack --frontend tanstack-router
+create-better-tanstacked --frontend tanstack-router
 
 # TanStack web + Expo native
-create-better-t-stack --frontend tanstack-start native-uniwind
+create-better-tanstacked --frontend tanstack-start native-uniwind
 
 # Backend-only
-create-better-t-stack --frontend none
+create-better-tanstacked --frontend none
 ```
 
 ## Authentication
@@ -271,9 +271,9 @@ Choose authentication provider:
 - `none`: No authentication
 
 ```bash
-create-better-t-stack --auth better-auth
-create-better-t-stack --auth clerk
-create-better-t-stack --auth none
+create-better-tanstacked --auth better-auth
+create-better-tanstacked --auth clerk
+create-better-tanstacked --auth none
 ```
 
 **Note:**
@@ -294,7 +294,7 @@ Payments provider:
 - `polar`: Polar payments integration
 
 ```bash
-create-better-t-stack --payments polar --auth better-auth
+create-better-tanstacked --payments polar --auth better-auth
 ```
 
 **Note:** Polar payments requires Better-Auth authentication.
@@ -322,7 +322,7 @@ Additional features to include:
 - `axiom`: Managed Axiom observability through Evlog and Alchemy (select during project creation)
 
 ```bash
-create-better-t-stack --addons pwa oxlint lefthook
+create-better-tanstacked --addons pwa oxlint lefthook
 ```
 
 ## Examples
@@ -336,7 +336,7 @@ Example implementations to include:
 - `ai`: AI chat interface example
 
 ```bash
-create-better-t-stack --examples todo ai
+create-better-tanstacked --examples todo ai
 ```
 
 ## Deployment
@@ -352,7 +352,7 @@ Web deployment configuration:
 - `vercel`: Vercel Services deployment with a root `vercel.json`
 
 ```bash
-create-better-t-stack --web-deploy docker
+create-better-tanstacked --web-deploy docker
 ```
 
 When the app that consumes Neon, PlanetScale, or Prisma Postgres is deployed with Alchemy, the CLI asks how the database should be provisioned and defaults to Alchemy. You can instead choose the provider's automatic setup when available or configure an existing database manually. With Alchemy selected, the generated stack provisions the database, injects runtime credentials, and applies checked-in migrations. Run `alchemy profile edit` from `packages/infra`; no separate provider setup step is required. See the [Alchemy deployment guide](/docs/guides/cloudflare-alchemy) for details.
@@ -381,7 +381,7 @@ Server deployment configuration:
 - `vercel`: Vercel Services deployment (requires the bun or node runtime)
 
 ```bash
-create-better-t-stack --server-deploy docker
+create-better-tanstacked --server-deploy docker
 ```
 
 **Note:** The CLI displays this target simply as **Prisma**. The generated infrastructure uses Alchemy's Prisma provider. See the [Alchemy deployment guide](/docs/guides/cloudflare-alchemy) for details.
@@ -398,16 +398,16 @@ View your project creation history. Projects are tracked locally using platform-
 
 ```bash
 # Show last 10 projects
-create-better-t-stack history
+create-better-tanstacked history
 
 # Show last 5 projects
-create-better-t-stack history --limit 5
+create-better-tanstacked history --limit 5
 
 # Output as JSON
-create-better-t-stack history --json
+create-better-tanstacked history --json
 
 # Clear all history
-create-better-t-stack history --clear
+create-better-tanstacked history --clear
 ```
 
 **Options:**
@@ -425,7 +425,7 @@ The CLI validates option combinations and will show errors for incompatible sele
 ### Full Configuration
 
 ```bash
-create-better-t-stack \
+create-better-tanstacked \
   --database postgres \
   --orm drizzle \
   --backend hono \
@@ -444,7 +444,7 @@ create-better-t-stack \
 ### Minimal Setup
 
 ```bash
-create-better-t-stack \
+create-better-tanstacked \
   --backend none \
   --frontend tanstack-router \
   --addons none \

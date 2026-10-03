@@ -279,7 +279,7 @@ export function SponsorsPage({
       <PageHeader
         icon={Heart}
         title="SPONSORS.SH"
-        description="The companies and developers funding create-better-t-stack"
+        description="The companies and developers funding create-better-tanstacked"
         meta={`LAST_SYNC: ${lastSync}`}
         actions={
           <a
@@ -422,7 +422,7 @@ export function SponsorsPage({
           <div className="flex items-center gap-2 text-[13px] leading-[1.55]">
             <span className="text-primary">$</span>
             <span className="text-fd-muted-foreground">
-              Sponsorship funds development and infrastructure for create-better-t-stack
+              Sponsorship funds development and infrastructure for create-better-tanstacked
             </span>
           </div>
           {totalProjects > 0 && (
