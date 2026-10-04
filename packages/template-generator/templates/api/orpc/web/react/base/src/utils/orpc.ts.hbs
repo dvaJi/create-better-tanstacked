@@ -18,9 +18,7 @@ import { getClerkAuthToken } from "@/utils/clerk-auth";
 {{/if}}
 {{else}}
 import type { AppRouterClient } from "@{{projectName}}/api/routers/index";
-{{#unless (or (eq backend "self") (includes frontend "next"))}}
 import { ENV } from "../env{{#if (eq webDeploy "cloudflare")}}.public{{/if}}";
-{{/unless}}
 {{#if (eq auth "clerk")}}
 import { getClerkAuthToken } from "@/utils/clerk-auth";
 {{/if}}
@@ -106,38 +104,15 @@ const link = new RPCLink({
 export const client: AppRouterClient = createORPCClient(link);
 {{else}}
 export const link = new RPCLink({
-{{#if (and (eq backend "self") (includes frontend "next"))}}
-	url: `${typeof window !== "undefined" ? window.location.origin : "http://localhost:3001"}/api/rpc`,
-{{else if (includes frontend "next")}}
-{{#if (and (eq webDeploy serverDeploy) (or (eq webDeploy "vercel") (eq webDeploy "docker")))}}
-	url: `${getServerUrl(process.env.NEXT_PUBLIC_SERVER_URL!)}/rpc`,
-{{else}}
-	url: `${process.env.NEXT_PUBLIC_SERVER_URL!.replace(/\/$/, "")}/rpc`,
-{{/if}}
-{{else}}
 {{#if (and (eq webDeploy serverDeploy) (or (eq webDeploy "vercel") (eq webDeploy "docker")))}}
 	url: `${getServerUrl(ENV.VITE_SERVER_URL)}/rpc`,
 {{else}}
 	url: `${ENV.VITE_SERVER_URL.replace(/\/$/, "")}/rpc`,
 {{/if}}
-{{/if}}
 {{#if (eq auth "clerk")}}
 	headers: async () => {
-		{{#if (includes frontend "next")}}
-		if (typeof window !== "undefined") {
-			const token = await getClerkAuthToken();
-			return token ? { Authorization: `Bearer ${token}` } : {};
-		}
-
-		const { auth } = await import("@clerk/nextjs/server");
-		const clerkAuth = await auth();
-		const token = await clerkAuth.getToken();
-
-		return token ? { Authorization: `Bearer ${token}` } : {};
-		{{else}}
 		const token = await getClerkAuthToken();
 		return token ? { Authorization: `Bearer ${token}` } : {};
-		{{/if}}
 	},
 {{/if}}
 {{#if (eq auth "better-auth")}}
@@ -147,16 +122,7 @@ export const link = new RPCLink({
 			credentials: "include",
 		});
 	},
-{{#if (includes frontend "next")}}
-	headers: async () => {
-		if (typeof window !== "undefined") {
-			return {}
-		}
 
-		const { headers } = await import("next/headers")
-		return Object.fromEntries(await headers())
-	},
-{{/if}}
 {{/if}}
 });
 

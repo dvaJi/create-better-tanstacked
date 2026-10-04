@@ -31,12 +31,6 @@ Choose `tanstack-router` for a client-side web app or `tanstack-start` for serve
 
 TanStack Router routes are in `apps/web/src/routes`. TanStack Start routes are in `apps/web/src/routes` and its server functions live alongside the app. With `--backend self`, TanStack Start provides the backend routes and no separate `apps/server` app is created.
 
-### Expo native
-
-Choose `native-bare`, `native-uniwind`, or `native-unistyles` to add `apps/native`. Each option uses Expo Router; Uniwind and Unistyles add their respective styling setup.
-
-A project can include one Expo frontend alongside one TanStack web frontend.
-
 ### Hono or Elysia server
 
 Choosing Hono or Elysia adds `apps/server`. The server entrypoint and API or auth adapters are generated there according to the selected options. Hono can also use the Cloudflare Workers runtime.
@@ -55,7 +49,7 @@ The todo example requires a database and API. The AI example adds its client and
 
 - `apps/desktop` is added by Tauri or Electrobun when a web frontend is selected.
 - `apps/fumadocs` is added by the Fumadocs addon.
-- OpenTUI and WXT add their app files and dependencies based on their selected templates.
+- OpenTUI adds its terminal app files and dependencies based on its selected template.
 - Oxlint and Vite+ add lint and format configuration. Lefthook adds Git hook configuration.
 
 ## Development Scripts
@@ -64,4 +58,4 @@ Root scripts run commands across the workspace. Turborepo uses `turbo run`; Vite
 
 Database scripts such as `db:push`, `db:generate`, and `db:studio` are added when Drizzle and a supported database are selected. Database hosting setup can add local Docker Compose files or provider-specific configuration.
 
-This page describes the generated TanStack, Expo, Hono/Elysia, Drizzle, and supported addon layouts.
+This page describes the generated TanStack, Hono/Elysia, Drizzle, and supported addon layouts.

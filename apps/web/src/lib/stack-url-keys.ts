@@ -7,7 +7,6 @@ type StackUrlState = StackState & { viewMode: string; selectedFile: string };
 export const stackUrlKeys: UrlKeys<StackUrlState> = {
   projectName: "name",
   webFrontend: "fe-w",
-  nativeFrontend: "fe-n",
   runtime: "rt",
   backend: "be",
   api: "api",

@@ -7,22 +7,22 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       secrets:
-{{#if (or (includes frontend "next") (includes frontend "nuxt") (includes frontend "astro") (includes frontend "svelte") (includes frontend "solid") (includes frontend "tanstack-router") (includes frontend "tanstack-start") (includes frontend "react-router"))}}
+{{#if (or (includes frontend "tanstack-router") (includes frontend "tanstack-start"))}}
         - web_env
 {{/if}}
 {{#if (and (ne backend "self") (ne backend "none") (ne backend "convex"))}}
         - server_env
 {{/if}}
-{{#if (or (and (ne backend "self") (ne backend "none") (ne backend "convex")) (eq backend "convex") (and (eq auth "clerk") (or (includes frontend "next") (includes frontend "react-router") (includes frontend "tanstack-router") (includes frontend "tanstack-start"))))}}
+{{#if (or (and (ne backend "self") (ne backend "none") (ne backend "convex")) (eq backend "convex") (and (eq auth "clerk") (or (includes frontend "tanstack-router") (includes frontend "tanstack-start"))))}}
       args:
 {{#if (and (ne backend "self") (ne backend "none") (ne backend "convex"))}}
-        {{#if (includes frontend "next")}}NEXT_PUBLIC_SERVER_URL{{else if (includes frontend "nuxt")}}NUXT_PUBLIC_SERVER_URL{{else if (or (includes frontend "svelte") (includes frontend "astro"))}}PUBLIC_SERVER_URL{{else}}VITE_SERVER_URL{{/if}}: http://localhost:3000
+        VITE_SERVER_URL: http://localhost:3000
 {{/if}}
 {{#if (eq backend "convex")}}
-        {{#if (includes frontend "next")}}NEXT_PUBLIC_CONVEX_URL: ${NEXT_PUBLIC_CONVEX_URL:-}{{else if (or (includes frontend "svelte") (includes frontend "astro"))}}PUBLIC_CONVEX_URL: ${PUBLIC_CONVEX_URL:-}{{else}}VITE_CONVEX_URL: ${VITE_CONVEX_URL:-}{{/if}}
+        VITE_CONVEX_URL: ${VITE_CONVEX_URL:-}
 {{/if}}
-{{#if (and (eq auth "clerk") (or (includes frontend "next") (includes frontend "react-router") (includes frontend "tanstack-router") (includes frontend "tanstack-start")))}}
-        {{#if (includes frontend "next")}}NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}{{else}}VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:-}{{/if}}
+{{#if (and (eq auth "clerk") (or (includes frontend "tanstack-router") (includes frontend "tanstack-start")))}}
+        VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY:-}
 {{/if}}
 {{/if}}
     init: true
@@ -73,21 +73,18 @@ services:
           create_host_path: false
 {{/if}}
 {{else}}
-{{#if (or (eq serverDeploy "docker") (and (includes addons "axiom") (or (includes frontend "next") (includes frontend "tanstack-start") (includes frontend "nuxt") (includes frontend "svelte") (includes frontend "astro"))))}}
+{{#if (or (eq serverDeploy "docker") (and (includes addons "axiom") (includes frontend "tanstack-start")))}}
 {{#unless (includes frontend "tanstack-router")}}
     environment:
-{{#if (and (includes addons "axiom") (or (includes frontend "next") (includes frontend "tanstack-start") (includes frontend "nuxt") (includes frontend "svelte") (includes frontend "astro")))}}
+{{#if (and (includes addons "axiom") (includes frontend "tanstack-start"))}}
       AXIOM_API_KEY: ${AXIOM_API_KEY:?Set AXIOM_API_KEY}
       AXIOM_DATASET: ${AXIOM_DATASET:?Set AXIOM_DATASET}
       AXIOM_EDGE_URL: ${AXIOM_EDGE_URL:?Set AXIOM_EDGE_URL}
 {{/if}}
 {{#if (eq serverDeploy "docker")}}
       SERVER_URL: http://server:3000
-{{#if (includes frontend "next")}}
-      NEXT_PUBLIC_SERVER_URL: http://server:3000
-{{/if}}
-{{#if (includes frontend "nuxt")}}
-      NUXT_SERVER_URL: http://server:3000
+{{#if (includes frontend "tanstack-start")}}
+      VITE_SERVER_URL: http://server:3000
 {{/if}}
 {{/if}}
 {{/unless}}
@@ -127,7 +124,7 @@ services:
       context: .
       dockerfile: apps/server/Dockerfile
       secrets:
-{{#if (or (includes frontend "next") (includes frontend "nuxt") (includes frontend "astro") (includes frontend "svelte") (includes frontend "solid") (includes frontend "tanstack-router") (includes frontend "tanstack-start") (includes frontend "react-router"))}}
+{{#if (or (includes frontend "tanstack-router") (includes frontend "tanstack-start"))}}
         - web_env
 {{/if}}
 {{#if (and (ne backend "self") (ne backend "none") (ne backend "convex"))}}
@@ -259,7 +256,7 @@ volumes:
 
 # BuildKit makes these available only while install/build commands run.
 secrets:
-{{#if (or (includes frontend "next") (includes frontend "nuxt") (includes frontend "astro") (includes frontend "svelte") (includes frontend "solid") (includes frontend "tanstack-router") (includes frontend "tanstack-start") (includes frontend "react-router"))}}
+{{#if (or (includes frontend "tanstack-router") (includes frontend "tanstack-start"))}}
   web_env:
     file: apps/web/.env
 {{/if}}

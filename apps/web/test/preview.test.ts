@@ -53,7 +53,11 @@ describe("builder preview over oRPC", () => {
   });
 
   test("repairs incompatible shared choices before generating framework-specific files", async () => {
-    const input = StackStateSchema.parse({ ...DEFAULT_STACK, webFrontend: ["nuxt"], api: "trpc" });
+    const input = StackStateSchema.parse({
+      ...DEFAULT_STACK,
+      webFrontend: ["unsupported-framework"],
+      api: "trpc",
+    });
     const preview = await client.preview(input);
     const output = files(preview.root);
     const api = JSON.parse(output.get("packages/api/package.json")!);
@@ -64,7 +68,7 @@ describe("builder preview over oRPC", () => {
   test("rejects invalid payloads at the HTTP boundary", async () => {
     for (const json of [
       null,
-      { webFrontend: "next" },
+      { webFrontend: "unsupported-framework" },
       { backend: "invented" },
       { projectName: "-bad" },
       { projectName: "/" },

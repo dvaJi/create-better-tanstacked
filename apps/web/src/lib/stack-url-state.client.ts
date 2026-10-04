@@ -10,7 +10,6 @@ import { stackUrlKeys } from "./stack-url-keys";
 export const stackParsers = {
   projectName: parseAsString.withDefault(DEFAULT_STACK.projectName ?? "my-better-t-app"),
   webFrontend: parseAsArrayOf(parseAsString).withDefault(DEFAULT_STACK.webFrontend),
-  nativeFrontend: parseAsArrayOf(parseAsString).withDefault(DEFAULT_STACK.nativeFrontend),
   runtime: parseAsStringEnum<StackState["runtime"]>(getStackOptionIds("runtime")).withDefault(
     DEFAULT_STACK.runtime,
   ),
@@ -68,7 +67,6 @@ function getStackFromQueryState(queryState: RawStackLists): StackState {
   return sanitizeStackState({
     projectName: queryState.projectName,
     webFrontend: queryState.webFrontend,
-    nativeFrontend: queryState.nativeFrontend,
     runtime: queryState.runtime,
     backend: queryState.backend,
     api: queryState.api,

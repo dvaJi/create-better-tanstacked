@@ -26,15 +26,10 @@ function setupTodoDependencies(vfs: VirtualFileSystem, config: ProjectConfig): v
 function setupAIDependencies(vfs: VirtualFileSystem, config: ProjectConfig): void {
   const { frontend, backend } = config;
   const webPackagePath = "apps/web/package.json";
-  const nativePackagePath = "apps/native/package.json";
   const serverPackagePath = "apps/server/package.json";
 
   const hasWeb = frontend.some(
     (value) => value === "tanstack-router" || value === "tanstack-start",
-  );
-  const hasNative = frontend.some(
-    (value) =>
-      value === "native-bare" || value === "native-uniwind" || value === "native-unistyles",
   );
 
   if (backend === "self" && vfs.exists(webPackagePath)) {
@@ -56,14 +51,6 @@ function setupAIDependencies(vfs: VirtualFileSystem, config: ProjectConfig): voi
       vfs,
       packagePath: webPackagePath,
       dependencies: ["ai", "@ai-sdk/react", "streamdown"],
-    });
-  }
-
-  if (hasNative && vfs.exists(nativePackagePath)) {
-    addPackageDependency({
-      vfs,
-      packagePath: nativePackagePath,
-      dependencies: ["ai", "@ai-sdk/react"],
     });
   }
 }

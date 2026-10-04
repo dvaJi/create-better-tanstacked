@@ -24,13 +24,4 @@ export function processEnvDeps(vfs: VirtualFileSystem, config: ProjectConfig): v
       dependencies: ["varlock"],
     });
   }
-
-  if (vfs.exists("apps/native/package.json")) {
-    addPackageDependency({
-      vfs,
-      packagePath: "apps/native/package.json",
-      dependencies: ["varlock", "@varlock/expo-integration"],
-      devDependencies: ["babel-preset-expo"],
-    });
-  }
 }

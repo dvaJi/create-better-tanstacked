@@ -5,16 +5,16 @@ description: Supported stack combinations and compatibility rules
 
 ## Supported Stack Options
 
-Better-T-Stack currently supports TanStack Router and TanStack Start for web projects, plus Expo setups for native apps. Choose one web frontend and optionally one Expo frontend.
+The CLI supports TanStack Router, TanStack Start, or no frontend.
 
 The supported backend choices are Hono, Elysia, TanStack Start fullstack (`self`), or no backend. Data options are SQLite or PostgreSQL with Drizzle, or no database.
 
 ## Frontend and Backend
 
 - `self` uses TanStack Start server routes and requires `tanstack-start` in `--frontend`.
-- Hono and Elysia run as separate backend services and can be paired with either TanStack frontend or Expo.
+- Hono and Elysia run as separate backend services and can be paired with either TanStack frontend.
 - `--backend none` disables API, database, ORM, auth, and runtime setup.
-- `--frontend none` creates a backend-only project. Expo can be combined with a web frontend.
+- `--frontend none` creates a backend-only project.
 
 ## Runtime and Database
 
@@ -27,7 +27,7 @@ The supported backend choices are Hono, Elysia, TanStack Start fullstack (`self`
 
 ## API and Authentication
 
-Both tRPC and oRPC are supported with the available TanStack and Expo frontends. `--api none` disables API scaffolding.
+Both tRPC and oRPC are supported with TanStack frontends. `--api none` disables API scaffolding.
 
 Better Auth and Clerk are supported. Better Auth requires a backend, and Clerk can be used with Hono, Elysia, or TanStack Start fullstack. Select `--auth none` to skip authentication.
 

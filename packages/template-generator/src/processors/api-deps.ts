@@ -1,33 +1,21 @@
-import type { ProjectConfig, Frontend, API, Backend } from "@better-t-stack/types";
+import type { ProjectConfig, API, Backend } from "@better-t-stack/types";
 
 import type { VirtualFileSystem } from "../core/virtual-fs";
 import { addPackageDependency, type AvailableDependencies } from "../utils/add-deps";
 
-type FrontendType = {
-  hasWeb: boolean;
-  hasNative: boolean;
-};
-
-function getFrontendType(frontend: Frontend[]): FrontendType {
-  return {
-    hasWeb: frontend.some((value) => value === "tanstack-router" || value === "tanstack-start"),
-    hasNative: frontend.some(
-      (value) =>
-        value === "native-bare" || value === "native-uniwind" || value === "native-unistyles",
-    ),
-  };
-}
-
 export function processApiDeps(vfs: VirtualFileSystem, config: ProjectConfig): void {
   if (config.api === "none") return;
 
-  const frontendType = getFrontendType(config.frontend);
+  const hasWeb = config.frontend.some(
+    (value) => value === "tanstack-router" || value === "tanstack-start",
+  );
   addApiPackageDeps(vfs, config.api);
   addServerDeps(vfs, config.api, config.backend);
   addSelfBackendWebDeps(vfs, config.api, config.backend);
-  if (frontendType.hasWeb) addWebClientDeps(vfs, config.api, config.frontend);
-  if (frontendType.hasNative) addNativeDeps(vfs, config.api);
-  addQueryDeps(vfs, frontendType);
+  if (hasWeb) {
+    addWebClientDeps(vfs, config.api, config.frontend);
+    addQueryDeps(vfs);
+  }
 }
 
 function addApiPackageDeps(vfs: VirtualFileSystem, api: API): void {
@@ -96,35 +84,13 @@ function addWebClientDeps(vfs: VirtualFileSystem, api: API, frontend: Frontend[]
   addPackageDependency({ vfs, packagePath, dependencies });
 }
 
-function addNativeDeps(vfs: VirtualFileSystem, api: API): void {
-  const packagePath = "apps/native/package.json";
-  if (!vfs.exists(packagePath)) return;
-
-  addPackageDependency({
-    vfs,
-    packagePath,
-    dependencies:
-      api === "trpc"
-        ? ["@trpc/tanstack-react-query", "@trpc/client", "@trpc/server"]
-        : ["@orpc/tanstack-query", "@orpc/client"],
-  });
-}
-
-function addQueryDeps(vfs: VirtualFileSystem, frontendType: FrontendType): void {
-  if (frontendType.hasWeb && vfs.exists("apps/web/package.json")) {
+function addQueryDeps(vfs: VirtualFileSystem): void {
+  if (vfs.exists("apps/web/package.json")) {
     addPackageDependency({
       vfs,
       packagePath: "apps/web/package.json",
       dependencies: ["@tanstack/react-query"],
       devDependencies: ["@tanstack/react-query-devtools"],
-    });
-  }
-
-  if (frontendType.hasNative && vfs.exists("apps/native/package.json")) {
-    addPackageDependency({
-      vfs,
-      packagePath: "apps/native/package.json",
-      dependencies: ["@tanstack/react-query"],
     });
   }
 }

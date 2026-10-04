@@ -16,9 +16,7 @@ export function getStackBackend(backend: StackState["backend"]): Backend {
   return isSelfHostedFullstackBackend(backend) ? "self" : backend;
 }
 
-export function getStackFrontends(
-  stack: Pick<StackState, "webFrontend" | "nativeFrontend">,
-): Frontend[] {
-  const frontends = [...stack.webFrontend, ...stack.nativeFrontend].filter((id) => id !== "none");
+export function getStackFrontends(stack: Pick<StackState, "webFrontend">): Frontend[] {
+  const frontends = stack.webFrontend.filter((id) => id !== "none");
   return frontends.length ? frontends : ["none"];
 }

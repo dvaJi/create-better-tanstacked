@@ -31,9 +31,8 @@ create-better-tanstacked create-json --input '{
   "orm": "drizzle",
   "api": "trpc",
   "auth": "none",
-  "addons": ["wxt", "mcp"],
+  "addons": ["mcp"],
   "addonOptions": {
-    "wxt": { "template": "react", "devPort": 5555 },
     "mcp": {
       "scope": "project",
       "servers": ["context7"],
@@ -171,7 +170,7 @@ For Bun projects, the generated config uses the equivalent `bunx create-better-t
 
 ## Use it inside your AI agent
 
-Install the Better-T-Stack plugin and your assistant will scaffold and extend projects for you — just ask in plain English, like _"create a fullstack app with Next, Hono, Postgres and Better Auth"_, and it builds a valid stack instead of hand-writing boilerplate.
+Install the Better-T-Stack plugin and your assistant will scaffold and extend projects for you — just ask in plain English, like _"create a fullstack app with TanStack Start, Hono, Postgres and Better Auth"_, and it builds a valid stack instead of hand-writing boilerplate.
 
 ### Claude Code
 
@@ -226,7 +225,6 @@ Prompt-driven addons can be configured up front through `addonOptions`.
 
 Supported structured addon surfaces include:
 
-- `wxt`
 - `fumadocs`
 - `opentui`
 - `mcp`
@@ -238,11 +236,10 @@ Example:
 
 ```json
 {
-  "addons": ["wxt"],
+  "addons": ["opentui"],
   "addonOptions": {
-    "wxt": {
-      "template": "react",
-      "devPort": 5555
+    "opentui": {
+      "template": "core"
     }
   }
 }

@@ -1,7 +1,6 @@
 export const getBadgeColors = (category: string): string => {
   switch (category) {
     case "webFrontend":
-    case "nativeFrontend":
       return "border-primary/30 bg-primary/10 text-primary";
     case "runtime":
       return "border-accent/30 bg-accent/10 text-accent";

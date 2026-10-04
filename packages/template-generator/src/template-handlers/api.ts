@@ -41,14 +41,4 @@ export async function processApiTemplates(
       );
     }
   }
-
-  const hasNative = config.frontend.some(
-    (frontend) =>
-      frontend === "native-bare" ||
-      frontend === "native-uniwind" ||
-      frontend === "native-unistyles",
-  );
-  if (hasNative) {
-    processTemplatesFromPrefix(vfs, templates, `api/${config.api}/native`, "apps/native", config);
-  }
 }

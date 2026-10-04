@@ -74,10 +74,6 @@ function getAddonDisplay(addon: Addons): AddonDisplay {
       label = "OpenTUI";
       hint = "Build terminal user interfaces";
       break;
-    case "wxt":
-      label = "WXT";
-      hint = "Build browser extensions";
-      break;
     case "skills":
       label = "Skills";
       hint = "AI coding agent skills for your stack";
@@ -106,7 +102,7 @@ const ADDON_GROUPS = {
   "Monorepo & Tasks": ["turborepo", "vite-plus"],
   "Code Quality": ["oxlint", "lefthook"],
   Documentation: ["fumadocs"],
-  "Platform Extensions": ["pwa", "tauri", "electrobun", "opentui", "wxt"],
+  "Platform Extensions": ["pwa", "tauri", "electrobun", "opentui"],
   Observability: ["evlog", "axiom"],
   "AI & Agent Tools": ["skills", "mcp"],
 };

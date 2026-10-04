@@ -35,7 +35,7 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
  <Accordion 
     id="faq-6"
     title="Where do generated files live?">
-    See Project Structure for high-level layouts (server-based, optional web, and optional native apps).
+    See Project Structure for high-level layouts (server-based and optional web apps).
  </Accordion>
 </Accordions>
 
@@ -58,17 +58,11 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 ## Common issues
 
 <Accordions type="single">
- <Accordion 
-    id="faq-9"
-    title="My mobile app can’t connect to the backend (Expo)">
-    Set `EXPO_PUBLIC_SERVER_URL` in `apps/native/.env` to your machine IP (not `localhost`), check firewall, or try `npx expo start --tunnel`.
- </Accordion>
-
- <Accordion 
-    id="faq-10"
-    title="How do I disable telemetry?">
-    Set `BTS_TELEMETRY_DISABLED=1` (shell env). For one run, prefix the command; to make it permanent, export it in your shell profile. The cross-tool `DO_NOT_TRACK=1` convention is honored too.
- </Accordion>
+  <Accordion id="faq-9" title="How do I disable telemetry?">
+    Set `BTS_TELEMETRY_DISABLED=1` (shell env). For one run, prefix the command; to make it
+    permanent, export it in your shell profile. The cross-tool `DO_NOT_TRACK=1` convention is
+    honored too.
+  </Accordion>
 </Accordions>
 
 ## Getting help

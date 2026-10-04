@@ -77,7 +77,7 @@ function schema(keys: Set<string>, config: ProjectConfig, envFile: string, app: 
       );
       continue;
     }
-    const isPublic = /^(VITE_|EXPO_PUBLIC_)/.test(key);
+    const isPublic = key.startsWith("VITE_");
     let type = "string(minLength=1)";
     if (key === "BETTER_AUTH_SECRET") type = "string(minLength=32)";
     else if ((key.endsWith("URL") && key !== "DATABASE_URL") || key === "CORS_ORIGIN") type = "url";
@@ -182,7 +182,7 @@ export function processVarlock(
     "VERCEL_PROJECT_PRODUCTION_URL",
     "_VARLOCK_ENV_KEY",
   ]);
-  for (const app of ["apps/web", "apps/server", "apps/native"]) {
+  for (const app of ["apps/web", "apps/server"]) {
     if (!vfs.exists(`${app}/package.json`)) continue;
     const keys = schemaKeys(vfs, app, config);
     for (const key of keys) allKeys.add(key);

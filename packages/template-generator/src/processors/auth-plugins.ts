@@ -26,18 +26,6 @@ export function processAuthPlugins(vfs: VirtualFileSystem, config: ProjectConfig
     });
   }
 
-  // Expo Plugin
-  const hasNative = config.frontend.some((f) =>
-    ["native-bare", "native-uniwind", "native-unistyles"].includes(f),
-  );
-  if (hasNative) {
-    pluginsToAdd.push("expo()");
-    importsToAdd.push({
-      named: "expo",
-      module: "@better-auth/expo",
-    });
-  }
-
   if (pluginsToAdd.length === 0) return;
 
   // Add imports

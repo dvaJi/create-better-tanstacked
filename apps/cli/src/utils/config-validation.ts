@@ -17,7 +17,7 @@ import {
   type ProjectConfig,
 } from "../types";
 import {
-  ensureSingleWebAndNative,
+  ensureSingleFrontend,
   isWebFrontend,
   validateAddonsAgainstFrontends,
   validateApiFrontendCompatibility,
@@ -266,7 +266,7 @@ export function validateBackendConstraints(
     if (!supportsClerkBackend(backend, config.frontend))
       return validationErr("Clerk requires Hono, Elysia, or backend self with TanStack Start.");
     if (config.frontend && !supportsClerkFrontend(config.frontend))
-      return validationErr("Clerk requires a React web or native frontend.");
+      return validationErr("Clerk requires TanStack Router or TanStack Start.");
   }
 
   if (providedFlags.has("backend") && backend && !supportsRuntimeBackend("none", backend)) {
@@ -287,9 +287,9 @@ export function validateFrontendConstraints(
   const { frontend } = config;
 
   if (frontend && frontend.length > 0) {
-    const singleWebNativeResult = ensureSingleWebAndNative(frontend);
-    if (singleWebNativeResult.isErr()) {
-      return singleWebNativeResult;
+    const singleFrontendResult = ensureSingleFrontend(frontend);
+    if (singleFrontendResult.isErr()) {
+      return singleFrontendResult;
     }
 
     if (providedFlags.has("api") && providedFlags.has("frontend") && config.api) {
@@ -413,7 +413,7 @@ export function validateConfigForProgrammaticUse(config: Partial<ProjectConfig>)
     yield* validateDatabaseOrmAuth(config);
 
     if (config.frontend && config.frontend.length > 0) {
-      yield* ensureSingleWebAndNative(config.frontend);
+      yield* ensureSingleFrontend(config.frontend);
     }
 
     yield* validateApiFrontendCompatibility(config.api, config.frontend);

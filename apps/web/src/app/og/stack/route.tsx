@@ -10,7 +10,6 @@ const MAX_CHIPS = 15;
 
 const categoryChipColors = {
   webFrontend: "#89b4fa",
-  nativeFrontend: "#89b4fa",
   runtime: "#fab387",
   backend: "#74c7ec",
   api: "#b4befe",

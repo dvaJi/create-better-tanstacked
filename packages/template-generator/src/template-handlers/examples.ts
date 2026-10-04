@@ -13,12 +13,6 @@ export async function processExampleTemplates(
   const webFrontend = config.frontend.find(
     (frontend) => frontend === "tanstack-router" || frontend === "tanstack-start",
   );
-  const nativeFrontend = config.frontend.find(
-    (frontend) =>
-      frontend === "native-bare" ||
-      frontend === "native-uniwind" ||
-      frontend === "native-unistyles",
-  );
 
   for (const example of config.examples) {
     if (example === "none") continue;
@@ -61,16 +55,6 @@ export async function processExampleTemplates(
           config,
         );
       }
-    }
-
-    if (nativeFrontend) {
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `examples/${example}/native/${nativeFrontend.replace("native-", "")}`,
-        "apps/native",
-        config,
-      );
     }
   }
 }

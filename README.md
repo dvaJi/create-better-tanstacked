@@ -49,14 +49,14 @@ Then ask: _"create a fullstack app with TanStack Start, Postgres and Better Auth
 
 ## Features
 
-- Frontend: TanStack Router, TanStack Start, Expo (Bare, Uniwind, Unistyles), or none
+- Frontend: TanStack Router, TanStack Start, or none
 - Backend: Hono, Elysia, TanStack Start fullstack, or none
 - API: tRPC or oRPC (or none)
 - Runtime: Bun, Node.js, or Cloudflare Workers
 - Databases: SQLite, PostgreSQL (or none)
 - ORM: Drizzle (or none)
 - Auth: Better Auth or Clerk (optional)
-- Addons: Turborepo, Vite+, PWA, Tauri, Electrobun, Lefthook, Fumadocs, Oxlint, MCP, OpenTUI, WXT, Skills
+- Addons: Turborepo, Vite+, PWA, Tauri, Electrobun, Lefthook, Fumadocs, Oxlint, MCP, OpenTUI, Skills
 - Examples: Todo, AI
 - DB Setup: Turso, Neon, Supabase, Prisma PostgreSQL, PlanetScale, Cloudflare D1, Docker
 - Web Deploy: Cloudflare Workers

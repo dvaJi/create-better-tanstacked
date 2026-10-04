@@ -24,13 +24,7 @@ export const FULLSTACK_FRONTENDS = ["tanstack-start"] as const satisfies readonl
 export type FullstackFrontend = (typeof FULLSTACK_FRONTENDS)[number];
 
 export const SERVER_BACKENDS: readonly Backend[] = ["hono", "elysia"];
-const CLERK_SUPPORTED_FRONTENDS: readonly Frontend[] = [
-  "tanstack-router",
-  "tanstack-start",
-  "native-bare",
-  "native-uniwind",
-  "native-unistyles",
-];
+const CLERK_SUPPORTED_FRONTENDS: readonly Frontend[] = ["tanstack-router", "tanstack-start"];
 const evlogCompatibilityMessage =
   "The observability addons support Hono, Elysia, or backend self with TanStack Start. Backend none is not supported.";
 
@@ -45,7 +39,6 @@ export const ADDON_COMPATIBILITY = {
   oxlint: [],
   fumadocs: [],
   opentui: [],
-  wxt: [],
   skills: [],
   evlog: [],
   axiom: [],

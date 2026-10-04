@@ -18,7 +18,7 @@ export function checkStackTypeContracts(stack: StackState) {
   const parsed = StackStateSchema.parse(stack);
   const runtime: Runtime = parsed.runtime;
   const backend: Backend = getStackBackend(parsed.backend);
-  const frontends: Frontend[] = [...parsed.webFrontend, ...parsed.nativeFrontend];
+  const frontends: Frontend[] = [...parsed.webFrontend];
   supportsRuntimeBackend(runtime, backend);
   validateAddonCompatibility("pwa", frontends);
   const option: StackOptionId<"runtime" | "addons"> = "pwa";
@@ -32,7 +32,7 @@ export function checkStackTypeContracts(stack: StackState) {
   // @ts-expect-error Parsed state must preserve the runtime union.
   parsed.runtime = "bunn";
   // @ts-expect-error UI backend aliases must name a supported fullstack frontend.
-  getStackBackend("self-react-router");
+  getStackBackend("self-unsupported");
   // @ts-expect-error Option IDs must match their catalog category.
   TECH_OPTIONS.runtime.push({ ...TECH_OPTIONS.runtime[0], id: option });
   // @ts-expect-error Domain state must reject arbitrary frontend strings.

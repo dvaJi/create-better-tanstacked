@@ -61,8 +61,3 @@ export type InitResult = z.infer<typeof InitResultSchema>;
 export type WebFrontend = "tanstack-router" | "tanstack-start" | "none";
 
 export type DesktopWebFrontend = Exclude<WebFrontend, "none">;
-
-export type NativeFrontend = Extract<
-  Frontend,
-  "native-bare" | "native-uniwind" | "native-unistyles" | "none"
->;

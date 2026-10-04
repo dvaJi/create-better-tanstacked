@@ -121,11 +121,6 @@ const result = await createVirtual({
   backend: "hono",
   database: "sqlite",
   orm: "drizzle",
-  addonOptions: {
-    wxt: {
-      template: "react",
-    },
-  },
 });
 
 if (result.isErr()) {
@@ -229,9 +224,6 @@ const result = await create("my-app", {
   database: "postgres",
   orm: "drizzle",
   auth: "better-auth",
-  addonOptions: {
-    wxt: { template: "react" },
-  },
   dbSetupOptions: {
     mode: "manual",
   },

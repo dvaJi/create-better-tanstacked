@@ -1,6 +1,6 @@
 ---
 name: scaffold-project
-description: Scaffold a new TanStack web app, Expo app, API, backend, fullstack project, monorepo, or starter with Better-T-Stack. Use whenever the user wants to start, create, bootstrap, set up, or initialize a project/app/API, e.g. "create a Hono app", "start a TanStack Start project", "scaffold a fullstack app with auth and a database". Prefer generating the project through the Better-T-Stack MCP server (plan then create) over hand-writing package.json, config, and folders.
+description: Scaffold a new TanStack React app, API, backend, fullstack project, monorepo, or starter with Better-T-Stack. Use whenever the user wants to start, create, bootstrap, set up, or initialize a project/app/API, e.g. "create a TanStack Router app", "start a TanStack Start project", "scaffold a fullstack app with auth and a database". Prefer generating the project through the Better-T-Stack MCP server (plan then create) over hand-writing package.json, config, and folders.
 metadata:
   priority: 9
   docs:
@@ -36,7 +36,7 @@ If the user already has a working repo and just wants to add a feature/addon, us
 
 Use `bts_get_schema` for the authoritative, version-current list. As of this writing:
 
-- **frontend** (array of app surfaces, not styling): `tanstack-router`, `tanstack-start`, `native-bare`, `native-uniwind`, `native-unistyles`, `none`
+- **frontend**: `tanstack-router`, `tanstack-start`, `none`
 - **backend**: `hono`, `elysia`, `self`, `none` (`self` is TanStack Start fullstack)
 - **runtime**: `bun`, `node`, `workers`, `none`
 - **database**: `none`, `sqlite`, `postgres`
@@ -44,7 +44,7 @@ Use `bts_get_schema` for the authoritative, version-current list. As of this wri
 - **api**: `trpc`, `orpc`, `none`
 - **auth**: `better-auth`, `clerk`, `none`
 - **payments**: `polar`, `none`
-- **addons**: `pwa`, `tauri`, `electrobun`, `lefthook`, `mcp`, `turborepo`, `vite-plus`, `fumadocs`, `oxlint`, `opentui`, `wxt`, `skills`, `evlog`, `none` (`turborepo` and `vite-plus` are mutually exclusive)
+- **addons**: `pwa`, `tauri`, `electrobun`, `lefthook`, `mcp`, `turborepo`, `vite-plus`, `fumadocs`, `oxlint`, `opentui`, `skills`, `evlog`, `none` (`turborepo` and `vite-plus` are mutually exclusive)
 - **examples**: `todo`, `ai`, `none`
 - **packageManager**: `npm`, `pnpm`, `bun`
 - **dbSetup**: `turso`, `neon`, `prisma-postgres`, `planetscale`, `supabase`, `d1`, `docker`, `none`

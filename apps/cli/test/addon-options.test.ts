@@ -19,9 +19,8 @@ describe("Addon options", () => {
     await fs.remove(projectPath);
 
     const addonOptions: AddonOptions = {
-      wxt: { template: "react", devPort: 5555 },
       opentui: { template: "react" },
-      fumadocs: { template: "astro", devPort: 4000, aiChat: "llmgateway" },
+      fumadocs: { template: "tanstack-start", devPort: 4000, aiChat: "llmgateway" },
       mcp: {
         scope: "project",
         servers: ["context7"],
@@ -54,7 +53,7 @@ describe("Addon options", () => {
       auth: "none",
       payments: "none",
       api: "trpc",
-      addons: ["wxt", "opentui", "fumadocs", "mcp", "skills", "ultracite"],
+      addons: ["opentui", "fumadocs", "mcp", "skills", "ultracite"],
       examples: ["none"],
       dbSetup: "none",
       webDeploy: "none",
@@ -69,7 +68,7 @@ describe("Addon options", () => {
     expect(result.value.projectConfig.addonOptions).toEqual(addonOptions);
     expect(result.value.reproducibleCommand).toContain("--frontend tanstack-router");
     expect(result.value.reproducibleCommand).toContain(
-      "--addons wxt opentui fumadocs mcp skills ultracite",
+      "--addons opentui fumadocs mcp skills ultracite",
     );
     expect(result.value.reproducibleCommand).not.toContain("create-json --input");
 
@@ -91,7 +90,6 @@ describe("Addon options", () => {
     if (createResult.isErr()) return;
 
     const addonOptions: AddonOptions = {
-      wxt: { template: "react" },
       mcp: {
         scope: "project",
         servers: ["context7"],
@@ -101,7 +99,7 @@ describe("Addon options", () => {
 
     const addResult = await add({
       projectDir: projectPath,
-      addons: ["wxt", "mcp"],
+      addons: ["mcp"],
       addonOptions,
       install: false,
       packageManager: "bun",
@@ -111,7 +109,7 @@ describe("Addon options", () => {
 
     const btsConfig = await readBtsConfig(projectPath);
     expect(btsConfig?.addonOptions).toEqual(addonOptions);
-    expect(btsConfig?.addons).toEqual(expect.arrayContaining(["turborepo", "wxt", "mcp"]));
+    expect(btsConfig?.addons).toEqual(expect.arrayContaining(["turborepo", "mcp"]));
   });
 
   it("deep merges nested addonOptions during add", async () => {
@@ -144,13 +142,13 @@ describe("Addon options", () => {
 
     const secondAddResult = await add({
       projectDir: projectPath,
-      addons: ["wxt"],
+      addons: ["skills"],
       addonOptions: {
         mcp: {
           agents: ["codex"],
         },
-        wxt: {
-          template: "react",
+        skills: {
+          agents: ["cursor"],
         },
       },
       install: false,
@@ -166,8 +164,8 @@ describe("Addon options", () => {
         servers: ["context7"],
         agents: ["codex"],
       },
-      wxt: {
-        template: "react",
+      skills: {
+        agents: ["cursor"],
       },
     });
   });

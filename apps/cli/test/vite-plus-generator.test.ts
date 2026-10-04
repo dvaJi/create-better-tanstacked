@@ -31,7 +31,7 @@ function configWith(overrides: Partial<ProjectConfig>): ProjectConfig {
 }
 
 describe("Vite+ config generator", () => {
-  it("adds only stack-relevant frontend and backend ignore patterns", () => {
+  it("adds only TanStack Router and backend ignore patterns", () => {
     const patterns = getVitePlusIgnorePatterns(baseConfig);
 
     expect(patterns).toContain("apps/web/dist/**");
@@ -40,18 +40,16 @@ describe("Vite+ config generator", () => {
     expect(patterns).toContain("apps/server/dist/**");
     expect(patterns).toContain("packages/db/dist/**");
     expect(patterns).toContain("packages/db/local.db*");
-    expect(patterns).not.toContain("apps/web/.next/**");
-    expect(patterns).not.toContain("apps/web/.nuxt/**");
     expect(patterns).not.toContain("packages/db/prisma/generated/**");
     expect(patterns).not.toContain("packages/db/prisma/**/*.db*");
     expect(patterns).not.toContain("packages/backend/convex/_generated/**");
     expect(patterns).not.toContain(".wrangler/**");
   });
 
-  it("adds framework-specific ignore patterns for non-Vite frontends", () => {
-    const nextPatterns = getVitePlusIgnorePatterns(
+  it("adds Cloudflare patterns for TanStack Start self-hosted stacks", () => {
+    const startSelfPatterns = getVitePlusIgnorePatterns(
       configWith({
-        frontend: ["next"],
+        frontend: ["tanstack-start"],
         backend: "self",
         database: "none",
         orm: "none",
@@ -60,39 +58,30 @@ describe("Vite+ config generator", () => {
       }),
     );
 
-    expect(nextPatterns).toContain("apps/web/.next/**");
-    expect(nextPatterns).toContain("apps/web/out/**");
-    expect(nextPatterns).toContain("apps/web/.open-next/**");
-    expect(nextPatterns).toContain(".alchemy/**");
-    expect(nextPatterns).toContain(".wrangler/**");
-    expect(nextPatterns).not.toContain("packages/db/dist/**");
-    expect(nextPatterns).not.toContain("apps/web/.nuxt/**");
-    expect(nextPatterns).not.toContain("apps/server/dist/**");
+    expect(startSelfPatterns).toContain(".alchemy/**");
+    expect(startSelfPatterns).toContain(".wrangler/**");
+    expect(startSelfPatterns).not.toContain("packages/db/dist/**");
+    expect(startSelfPatterns).not.toContain("apps/server/dist/**");
 
-    const nuxtPatterns = getVitePlusIgnorePatterns(
+    const startPatterns = getVitePlusIgnorePatterns(
       configWith({
-        frontend: ["nuxt"],
+        frontend: ["tanstack-start"],
         api: "orpc",
       }),
     );
 
-    expect(nuxtPatterns).toContain("apps/web/.nuxt/**");
-    expect(nuxtPatterns).toContain("apps/web/.output/**");
-    expect(nuxtPatterns).not.toContain("apps/web/.next/**");
+    expect(startPatterns).toContain("apps/web/.output/**");
   });
 
-  it("adds native and Cloudflare ignore patterns only when selected", () => {
+  it("adds Cloudflare ignore patterns only when selected", () => {
     const patterns = getVitePlusIgnorePatterns(
       configWith({
-        frontend: ["native-unistyles"],
+        frontend: ["none"],
         runtime: "workers",
         serverDeploy: "cloudflare",
       }),
     );
 
-    expect(patterns).toContain("apps/native/.expo/**");
-    expect(patterns).toContain("apps/native/ios/**");
-    expect(patterns).toContain("apps/native/android/**");
     expect(patterns).toContain(".alchemy/**");
     expect(patterns).toContain(".wrangler/**");
   });

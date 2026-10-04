@@ -36,7 +36,6 @@ const PACKAGE_PATHS = [
   ".",
   "apps/server",
   "apps/web",
-  "apps/native",
   "apps/desktop",
   "apps/fumadocs",
   "apps/docs",

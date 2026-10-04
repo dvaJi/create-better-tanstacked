@@ -40,21 +40,21 @@ generated commands.
 
 ## Features
 
-| Category                 | Options                                                                                                   |
-| ------------------------ | --------------------------------------------------------------------------------------------------------- |
-| **TypeScript**           | End-to-end type safety across the generated application                                                   |
-| **Frontend**             | TanStack Router, TanStack Start, Expo Bare, Expo Uniwind, Expo Unistyles, or none                         |
-| **Backend**              | Hono, Elysia, TanStack Start fullstack, or none                                                           |
-| **API Layer**            | tRPC, oRPC, or none                                                                                       |
-| **Runtime**              | Bun, Node.js, Cloudflare Workers, or none                                                                 |
-| **Database**             | SQLite, PostgreSQL, or none                                                                               |
-| **ORM**                  | Drizzle or none                                                                                           |
-| **Database Setup**       | Turso, Cloudflare D1, Neon, Supabase, Prisma Postgres, PlanetScale, Docker, or none                       |
-| **Authentication**       | Better Auth, Clerk, or none                                                                               |
-| **Styling**              | Tailwind CSS with a shared shadcn/ui package for React web apps                                           |
-| **Addons**               | PWA, Tauri, Electrobun, Fumadocs, Oxlint, Lefthook, Turborepo, Vite+, evlog, MCP, Skills, OpenTUI, or WXT |
-| **Examples**             | Todo app or AI chat interface (Vercel AI SDK)                                                             |
-| **Developer Experience** | Git initialization, package manager choice (npm, pnpm, bun), and automatic dependency installation        |
+| Category                 | Options                                                                                              |
+| ------------------------ | ---------------------------------------------------------------------------------------------------- |
+| **TypeScript**           | End-to-end type safety across the generated application                                              |
+| **Frontend**             | TanStack Router, TanStack Start, or none                                                             |
+| **Backend**              | Hono, Elysia, TanStack Start fullstack, or none                                                      |
+| **API Layer**            | tRPC, oRPC, or none                                                                                  |
+| **Runtime**              | Bun, Node.js, Cloudflare Workers, or none                                                            |
+| **Database**             | SQLite, PostgreSQL, or none                                                                          |
+| **ORM**                  | Drizzle or none                                                                                      |
+| **Database Setup**       | Turso, Cloudflare D1, Neon, Supabase, Prisma Postgres, PlanetScale, Docker, or none                  |
+| **Authentication**       | Better Auth, Clerk, or none                                                                          |
+| **Styling**              | Tailwind CSS with a shared shadcn/ui package for React web apps                                      |
+| **Addons**               | PWA, Tauri, Electrobun, Fumadocs, Oxlint, Lefthook, Turborepo, Vite+, evlog, MCP, Skills, or OpenTUI |
+| **Examples**             | Todo app or AI chat interface (Vercel AI SDK)                                                        |
+| **Developer Experience** | Git initialization, package manager choice (npm, pnpm, bun), and automatic dependency installation   |
 
 ## Usage
 
@@ -70,8 +70,8 @@ Options:
   --dry-run                       Validate configuration without writing files
   --auth <provider>               Authentication (better-auth, clerk, none)
   --payments <provider>           Payments provider (polar, none)
-  --frontend <types...>           Frontend types (tanstack-router, tanstack-start, native-bare, native-uniwind, native-unistyles, none)
-  --addons <types...>             Additional addons (pwa, tauri, electrobun, lefthook, mcp, turborepo, vite-plus, fumadocs, oxlint, opentui, wxt, skills, evlog, none)
+  --frontend <type>               Frontend (tanstack-router, tanstack-start, none)
+  --addons <types...>             Additional addons (pwa, tauri, electrobun, lefthook, mcp, turborepo, vite-plus, fumadocs, oxlint, opentui, skills, evlog, none)
   --examples <types...>           Examples to include (todo, ai, none)
   --git                           Initialize git repository
   --no-git                        Skip git initialization
@@ -95,7 +95,7 @@ Options:
 ```bash
 # Raw JSON payload input (agent-friendly)
 create-better-tanstacked create-json --input '{"projectName":"my-app","yes":true,"dryRun":true}'
-create-better-tanstacked add-json --input '{"projectDir":"./my-app","addons":["wxt"],"addonOptions":{"wxt":{"template":"react"}}}'
+create-better-tanstacked add-json --input '{"projectDir":"./my-app","addons":["opentui"],"addonOptions":{"opentui":{"template":"core"}}}'
 create-better-tanstacked create-json --input '{"projectName":"db-app","database":"postgres","orm":"drizzle","dbSetup":"neon","dbSetupOptions":{"mode":"manual"}}'
 
 # Runtime schema/introspection output
@@ -174,10 +174,10 @@ Create a project with Elysia backend and Node.js runtime:
 npx create-better-tanstacked --backend elysia --runtime node
 ```
 
-Create a project with multiple frontend options (one web + one native):
+Create a project with a TanStack Start frontend:
 
 ```bash
-npx create-better-tanstacked --frontend tanstack-router native-bare
+npx create-better-tanstacked --frontend tanstack-start
 ```
 
 Create a project with examples:
@@ -256,7 +256,7 @@ npx create-better-tanstacked --frontend none --backend hono --api trpc --databas
 
 - **Backend `self`** uses TanStack Start server routes and requires the TanStack Start frontend.
 - **Backend `none`** disables API, ORM, database, authentication, and runtime setup.
-- **Frontend `none`** creates a backend-only project. Expo can be selected alongside a TanStack web frontend.
+- **Frontend `none`** creates a backend-only project.
 - **API `none`** disables tRPC and oRPC setup.
 - **Database `none`** disables database setup and requires ORM `none`.
 - **Runtime `none`** is available with backend `none` or `self`.
@@ -274,7 +274,6 @@ my-better-t-app/
 ├── apps/
 │   ├── web/          # Frontend application
 │   ├── server/       # Backend API
-│   ├── native/       # (optional) Mobile application
 │   └── docs/         # (optional) Documentation site
 ├── packages/         # Shared packages
 └── README.md         # Auto-generated project documentation

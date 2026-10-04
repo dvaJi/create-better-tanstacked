@@ -11,7 +11,6 @@ import { setupOxlint } from "./oxlint-setup";
 import { setupSkills } from "./skills-setup";
 import { setupTauri } from "./tauri-setup";
 import { setupTui } from "./tui-setup";
-import { setupWxt } from "./wxt-setup";
 
 const runSetup = <T>(setupFn: () => Promise<Result<T, AddonSetupError | UserCancelledError>>) =>
   runOptionalStep(setupFn, "Addon setup cancelled.");
@@ -43,10 +42,6 @@ export async function setupAddons(config: ProjectConfig): Promise<void> {
 
   if (addons.includes("opentui")) {
     await runSetup(() => setupTui(config));
-  }
-
-  if (addons.includes("wxt")) {
-    await runSetup(() => setupWxt(config));
   }
 
   if (addons.includes("skills")) {

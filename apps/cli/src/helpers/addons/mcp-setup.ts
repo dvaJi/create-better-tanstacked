@@ -69,14 +69,6 @@ function hasReactBasedFrontend(frontend: ProjectConfig["frontend"]): boolean {
   return frontend.includes("tanstack-router") || frontend.includes("tanstack-start");
 }
 
-function hasNativeFrontend(frontend: ProjectConfig["frontend"]): boolean {
-  return (
-    frontend.includes("native-bare") ||
-    frontend.includes("native-uniwind") ||
-    frontend.includes("native-unistyles")
-  );
-}
-
 function getAllMcpServers(config: ProjectConfig): McpServerDef[] {
   return [
     {
@@ -137,12 +129,6 @@ function getAllMcpServers(config: ProjectConfig): McpServerDef[] {
       target: "https://mcp.clerk.com/mcp",
     },
     {
-      key: "expo",
-      label: "Expo",
-      name: "expo-mcp",
-      target: "https://mcp.expo.dev/mcp",
-    },
-    {
       key: "polar",
       label: "Polar",
       name: "polar",
@@ -188,10 +174,6 @@ export function getRecommendedMcpServers(
 
   if (config.auth === "clerk") {
     recommendedServerKeys.push("clerk");
-  }
-
-  if (hasNativeFrontend(config.frontend)) {
-    recommendedServerKeys.push("expo");
   }
 
   if (config.payments === "polar") {

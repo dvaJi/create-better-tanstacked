@@ -5,10 +5,7 @@ import {
   SERVER_DEPLOY_VALUES,
   WEB_DEPLOY_VALUES,
 } from "../../../packages/types/src/schemas";
-import {
-  getSelectedTechRemovalUpdate,
-  getTechSelectionUpdate,
-} from "../src/app/(home)/new/_components/stack-builder/use-stack-builder";
+import { getTechSelectionUpdate } from "../src/app/(home)/new/_components/stack-builder/use-stack-builder";
 import { DEFAULT_STACK, type StackState, TECH_OPTIONS } from "../src/lib/constant";
 import { sanitizeAddons } from "../src/lib/sanitize-stack-addons";
 import { applyStackUpdate, resolveStackCompatibility } from "../src/lib/stack-compatibility";
@@ -20,38 +17,35 @@ function createStack(overrides: Partial<StackState> = {}): StackState {
     ...DEFAULT_STACK,
     ...overrides,
     webFrontend: [...(overrides.webFrontend ?? DEFAULT_STACK.webFrontend)],
-    nativeFrontend: [...(overrides.nativeFrontend ?? DEFAULT_STACK.nativeFrontend)],
     addons: [...(overrides.addons ?? DEFAULT_STACK.addons)],
     examples: [...(overrides.examples ?? DEFAULT_STACK.examples)],
   };
 }
 
 describe("stack builder D1 compatibility", () => {
-  test("supports Solid 2 as a self-hosted fullstack backend", () => {
+  test("supports TanStack Start as the self-hosted fullstack backend", () => {
     const stack = createStack({
-      webFrontend: ["solid"],
-      backend: "self-solid",
+      webFrontend: ["tanstack-start"],
+      backend: "self-tanstack-start",
       runtime: "none",
       api: "orpc",
       serverDeploy: "none",
     });
 
-    expect(getDisabledReason(stack, "backend", "self-solid")).toBeNull();
-    expect(getDisabledReason(stack, "api", "trpc")).toBe(
-      "tRPC is not compatible with Solid (use oRPC)",
-    );
-    expect(getDisabledReason(stack, "addons", "evlog")).toContain("observability");
+    expect(getDisabledReason(stack, "backend", "self-tanstack-start")).toBeNull();
+    expect(getDisabledReason(stack, "api", "trpc")).toBeNull();
+    expect(getDisabledReason(stack, "addons", "evlog")).toBeNull();
     expect(analyzeStackCompatibility(stack).adjustedStack).toBeNull();
 
     const command = generateStackCommand(stack);
-    expect(command).toContain("--frontend solid");
+    expect(command).toContain("--frontend tanstack-start");
     expect(command).toContain("--backend self");
   });
 
   test("keeps self fullstack backends on the D1 + Cloudflare path", () => {
     const stack = createStack({
-      backend: "self-next",
-      webFrontend: ["next"],
+      backend: "self-tanstack-start",
+      webFrontend: ["tanstack-start"],
       runtime: "none",
       database: "sqlite",
       orm: "drizzle",
@@ -63,7 +57,7 @@ describe("stack builder D1 compatibility", () => {
     const result = analyzeStackCompatibility(stack);
 
     expect(result.adjustedStack).toMatchObject({
-      backend: "self-next",
+      backend: "self-tanstack-start",
       runtime: "none",
       database: "sqlite",
       dbSetup: "d1",
@@ -95,8 +89,8 @@ describe("stack builder D1 compatibility", () => {
 
   test("allows selecting D1 for self fullstack backends", () => {
     const stack = createStack({
-      backend: "self-next",
-      webFrontend: ["next"],
+      backend: "self-tanstack-start",
+      webFrontend: ["tanstack-start"],
       runtime: "none",
       database: "sqlite",
     });
@@ -106,8 +100,8 @@ describe("stack builder D1 compatibility", () => {
 
   test("blocks non-cloudflare web deployment for self fullstack D1 stacks", () => {
     const stack = createStack({
-      backend: "self-next",
-      webFrontend: ["next"],
+      backend: "self-tanstack-start",
+      webFrontend: ["tanstack-start"],
       runtime: "none",
       database: "sqlite",
       dbSetup: "d1",
@@ -166,8 +160,8 @@ describe("stack builder D1 compatibility", () => {
 
   test("reapplies the same D1 adjustment after leaving and returning to it", () => {
     const initialRawD1Stack = createStack({
-      backend: "self-next",
-      webFrontend: ["next"],
+      backend: "self-tanstack-start",
+      webFrontend: ["tanstack-start"],
       runtime: "none",
       database: "sqlite",
       dbSetup: "d1",
@@ -193,7 +187,6 @@ describe("stack builder D1 compatibility", () => {
   test("allows Polar when there is no frontend at all", () => {
     const stack = createStack({
       webFrontend: ["none"],
-      nativeFrontend: ["none"],
       backend: "hono",
       auth: "better-auth",
     });
@@ -201,21 +194,9 @@ describe("stack builder D1 compatibility", () => {
     expect(getDisabledReason(stack, "payments", "polar")).toBeNull();
   });
 
-  test("allows Polar for native-only stacks", () => {
-    const stack = createStack({
-      webFrontend: ["none"],
-      nativeFrontend: ["native-bare"],
-      backend: "hono",
-      auth: "better-auth",
-    });
-
-    expect(getDisabledReason(stack, "payments", "polar")).toBeNull();
-  });
-
-  test("allows Polar for mixed web and native stacks", () => {
+  test("allows Polar for TanStack Router stacks", () => {
     const stack = createStack({
       webFrontend: ["tanstack-router"],
-      nativeFrontend: ["native-bare"],
       backend: "hono",
       runtime: "bun",
       auth: "better-auth",
@@ -226,14 +207,13 @@ describe("stack builder D1 compatibility", () => {
     expect(analyzeStackCompatibility(stack).adjustedStack).toBeNull();
 
     const command = generateStackCommand(stack);
-    expect(command).toContain("--frontend tanstack-router native-bare");
+    expect(command).toContain("--frontend tanstack-router");
     expect(command).toContain("--payments polar");
   });
 
-  test("allows Polar for mixed Convex Better Auth web and native stacks", () => {
+  test("allows Polar for Convex Better Auth with TanStack Start", () => {
     const stack = createStack({
-      webFrontend: ["next"],
-      nativeFrontend: ["native-bare"],
+      webFrontend: ["tanstack-start"],
       backend: "convex",
       runtime: "none",
       database: "none",
@@ -249,47 +229,9 @@ describe("stack builder D1 compatibility", () => {
     expect(analyzeStackCompatibility(stack).adjustedStack).toBeNull();
 
     const command = generateStackCommand(stack);
-    expect(command).toContain("--frontend next native-bare");
+    expect(command).toContain("--frontend tanstack-start");
     expect(command).toContain("--backend convex");
     expect(command).toContain("--payments polar");
-  });
-
-  test("keeps Expo selected when Nuxt switches the API to oRPC", () => {
-    const nuxtStack = applyStackUpdate(createStack(), (currentStack) =>
-      getTechSelectionUpdate(currentStack, "webFrontend", "nuxt"),
-    ).stack;
-    const nuxtAndExpoStack = applyStackUpdate(nuxtStack, (currentStack) =>
-      getTechSelectionUpdate(currentStack, "nativeFrontend", "native-bare"),
-    ).stack;
-
-    expect(nuxtAndExpoStack).toMatchObject({
-      webFrontend: ["nuxt"],
-      nativeFrontend: ["native-bare"],
-      api: "orpc",
-    });
-    expect(getDisabledReason(nuxtAndExpoStack, "nativeFrontend", "native-bare")).toBeNull();
-    expect(generateStackCommand(nuxtAndExpoStack)).toContain("--frontend nuxt native-bare");
-  });
-
-  test("removes a compatibility-adjusted badge against the effective stack", () => {
-    const rawStack = createStack({
-      webFrontend: ["nuxt"],
-      nativeFrontend: ["native-bare"],
-      api: "trpc",
-    });
-
-    expect(analyzeStackCompatibility(rawStack).adjustedStack?.api).toBe("orpc");
-    expect(getSelectedTechRemovalUpdate(rawStack, "api", "orpc")).toEqual({ api: "none" });
-
-    const adjustedStack = applyStackUpdate(rawStack, (currentStack) =>
-      getSelectedTechRemovalUpdate(currentStack, "api", "orpc"),
-    ).stack;
-
-    expect(adjustedStack).toMatchObject({
-      webFrontend: ["nuxt"],
-      nativeFrontend: ["native-bare"],
-      api: "none",
-    });
   });
 
   test("matches the CLI by disabling every ORM when no database is selected", () => {
@@ -303,29 +245,26 @@ describe("stack builder D1 compatibility", () => {
     expect(getDisabledReason(stack, "orm", "none")).toBeNull();
   });
 
-  test("blocks the AI example for Astro frontends", () => {
+  test("allows the AI example for TanStack Start", () => {
     const stack = createStack({
-      webFrontend: ["astro"],
-      backend: "self-astro",
+      webFrontend: ["tanstack-router"],
+      backend: "self-tanstack-start",
       api: "orpc",
     });
 
-    expect(getDisabledReason(stack, "examples", "ai")).toBe(
-      "AI example not compatible with Solid or Astro frontend",
-    );
+    expect(getDisabledReason(stack, "examples", "ai")).toBeNull();
 
     const result = analyzeStackCompatibility({
       ...stack,
       examples: ["ai"],
     });
 
-    expect(result.adjustedStack?.examples).toEqual(["none"]);
+    expect(result.adjustedStack).toBeNull();
   });
 
   test("blocks Evlog for Convex stacks", () => {
     const stack = createStack({
       webFrontend: ["tanstack-start"],
-      nativeFrontend: ["native-uniwind"],
       backend: "convex",
       runtime: "none",
       addons: ["turborepo"],
@@ -337,7 +276,6 @@ describe("stack builder D1 compatibility", () => {
   test("removes Evlog when a selected stack switches to Convex", () => {
     const stack = createStack({
       webFrontend: ["tanstack-start"],
-      nativeFrontend: ["native-uniwind"],
       backend: "convex",
       runtime: "none",
       addons: ["turborepo", "evlog"],
@@ -369,24 +307,20 @@ describe("stack builder D1 compatibility", () => {
     expect(getDisabledReason(fullstackStack, "addons", "evlog")).toBeNull();
   });
 
-  test("does not let a native frontend hide Clerk-incompatible web frontends", () => {
+  test("allows Clerk with TanStack Router", () => {
     const stack = createStack({
-      webFrontend: ["nuxt"],
-      nativeFrontend: ["native-bare"],
+      webFrontend: ["tanstack-router"],
       auth: "none",
       api: "orpc",
     });
 
-    expect(getDisabledReason(stack, "auth", "clerk")).toBe(
-      "Clerk requires React Router, TanStack Router, TanStack Start, Next.js, or React Native",
-    );
-    expect(resolveStackCompatibility({ ...stack, auth: "clerk" }).stack.auth).toBe("none");
+    expect(getDisabledReason(stack, "auth", "clerk")).toBeNull();
+    expect(resolveStackCompatibility({ ...stack, auth: "clerk" }).stack.auth).toBe("clerk");
   });
 
-  test("does not let a native frontend hide Convex Better Auth incompatibilities", () => {
+  test("allows Convex Better Auth with TanStack Router", () => {
     const stack = createStack({
-      webFrontend: ["nuxt"],
-      nativeFrontend: ["native-uniwind"],
+      webFrontend: ["tanstack-router"],
       backend: "convex",
       runtime: "none",
       database: "none",
@@ -396,10 +330,10 @@ describe("stack builder D1 compatibility", () => {
       auth: "none",
     });
 
-    expect(getDisabledReason(stack, "auth", "better-auth")).toBe(
-      "Better-Auth with Convex requires React Router, TanStack Router, TanStack Start, Next.js, or React Native",
+    expect(getDisabledReason(stack, "auth", "better-auth")).toBeNull();
+    expect(resolveStackCompatibility({ ...stack, auth: "better-auth" }).stack.auth).toBe(
+      "better-auth",
     );
-    expect(resolveStackCompatibility({ ...stack, auth: "better-auth" }).stack.auth).toBe("none");
   });
 });
 
@@ -459,8 +393,8 @@ describe("stack builder Docker deployment compatibility", () => {
 
   test("clears Docker server deploy for backends without a server app", () => {
     const stack = createStack({
-      webFrontend: ["next"],
-      backend: "self-next",
+      webFrontend: ["tanstack-start"],
+      backend: "self-tanstack-start",
       runtime: "none",
       serverDeploy: "docker",
     });
@@ -474,7 +408,7 @@ describe("stack builder Docker deployment compatibility", () => {
 
   test("blocks Docker web deploy when desktop addons require static server output", () => {
     const stack = createStack({
-      webFrontend: ["next"],
+      webFrontend: ["tanstack-start"],
       addons: ["electrobun"],
       webDeploy: "none",
     });
@@ -487,9 +421,9 @@ describe("stack builder Docker deployment compatibility", () => {
     );
   });
 
-  test("keeps the CLI exception for Convex Better Auth with Next.js and Electrobun", () => {
+  test("keeps the CLI exception for Convex Better Auth with TanStack Start and Electrobun", () => {
     const stack = createStack({
-      webFrontend: ["next"],
+      webFrontend: ["tanstack-start"],
       backend: "convex",
       runtime: "none",
       database: "none",
@@ -570,8 +504,8 @@ describe("stack builder Vercel deployment compatibility", () => {
 
   test("clears Vercel server deploy for backends without a server app", () => {
     const stack = createStack({
-      webFrontend: ["next"],
-      backend: "self-next",
+      webFrontend: ["tanstack-start"],
+      backend: "self-tanstack-start",
       runtime: "none",
       serverDeploy: "vercel",
     });
@@ -612,16 +546,7 @@ describe("stack builder option parity", () => {
 
 describe("stack builder Prisma deployment compatibility", () => {
   test("allows Prisma web deployment for supported server and SPA frontends", () => {
-    for (const frontend of [
-      "tanstack-router",
-      "next",
-      "nuxt",
-      "astro",
-      "react-router",
-      "tanstack-start",
-      "svelte",
-      "solid",
-    ] as const) {
+    for (const frontend of ["tanstack-router", "tanstack-start"] as const) {
       expect(
         getDisabledReason(createStack({ webFrontend: [frontend] }), "webDeploy", "prisma"),
       ).toBeNull();
@@ -630,13 +555,13 @@ describe("stack builder Prisma deployment compatibility", () => {
 
   test("blocks Prisma web deploy when desktop addons replace its server artifact", () => {
     const stack = createStack({
-      webFrontend: ["react-router"],
+      webFrontend: ["tanstack-router"],
       addons: ["tauri"],
       webDeploy: "none",
     });
 
     expect(getDisabledReason(stack, "webDeploy", "prisma")).toBe(
-      "Prisma cannot deploy the static output required by tauri on react-router",
+      "Prisma cannot deploy the static output required by tauri on tanstack-router",
     );
     expect(resolveStackCompatibility({ ...stack, webDeploy: "prisma" }).stack.webDeploy).toBe(
       "none",
@@ -646,7 +571,7 @@ describe("stack builder Prisma deployment compatibility", () => {
   test("generates Prisma web and server deployment flags", () => {
     const command = generateStackCommand(
       createStack({
-        webFrontend: ["next"],
+        webFrontend: ["tanstack-start"],
         backend: "hono",
         runtime: "bun",
         webDeploy: "prisma",
@@ -691,19 +616,17 @@ describe("stack builder Prisma deployment compatibility", () => {
     ).toBe("cloudflare");
   });
 
-  test("blocks the known Next.js Cloudflare PostgreSQL conflict", () => {
+  test("allows Cloudflare web deployment for TanStack Start with Postgres", () => {
     const postgresStack = createStack({
-      webFrontend: ["next"],
-      backend: "self-next",
+      webFrontend: ["tanstack-start"],
+      backend: "self-tanstack-start",
       runtime: "none",
       database: "postgres",
       orm: "prisma",
       dbSetup: "none",
     });
 
-    expect(getDisabledReason(postgresStack, "webDeploy", "cloudflare")).toBe(
-      "This Prisma PostgreSQL setup with Next.js is temporarily unavailable on Cloudflare",
-    );
+    expect(getDisabledReason(postgresStack, "webDeploy", "cloudflare")).toBeNull();
   });
 });
 
@@ -724,6 +647,6 @@ test("changing one builder field preserves unrelated settings", () => {
 });
 
 test("ignores option IDs belonging to a different builder category", () => {
-  expect(getTechSelectionUpdate(DEFAULT_STACK, "runtime", "next")).toEqual({});
+  expect(getTechSelectionUpdate(DEFAULT_STACK, "runtime", "unsupported-runtime")).toEqual({});
   expect(getTechSelectionUpdate(DEFAULT_STACK, "addons", "postgres")).toEqual({});
 });

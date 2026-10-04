@@ -36,12 +36,9 @@ export function validateProjectName(name: string): string | undefined {
 
 const clerkBackendRequirementMessage =
   "Clerk requires Hono, Elysia, or a TanStack Start fullstack backend";
-const clerkFrontendRequirementMessage =
-  "Clerk requires TanStack Router, TanStack Start, or an Expo app";
-const isClerkFrontendSelectionCompatible = (
-  web: StackState["webFrontend"],
-  native: StackState["nativeFrontend"],
-) => supportsClerkFrontend([...web, ...native]);
+const clerkFrontendRequirementMessage = "Clerk requires TanStack Router or TanStack Start";
+const isClerkFrontendSelectionCompatible = (web: StackState["webFrontend"]) =>
+  supportsClerkFrontend(web);
 
 const getDockerDesktopConflict = (
   addons: StackState["addons"],
@@ -269,9 +266,7 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
         category: "auth",
         message: `Auth set to 'None' (${clerkBackendRequirementMessage})`,
       });
-    } else if (
-      !isClerkFrontendSelectionCompatible(nextStack.webFrontend, nextStack.nativeFrontend)
-    ) {
+    } else if (!isClerkFrontendSelectionCompatible(nextStack.webFrontend)) {
       nextStack.auth = "none";
       changed = true;
       changes.push({
@@ -325,7 +320,7 @@ export const analyzeStackCompatibility = (stack: StackState): CompatibilityResul
     }
   }
 
-  // AI examples are supported by TanStack web and Expo frontends.
+  // AI examples are supported by TanStack web frontends.
 
   if (nextStack.webDeploy !== "none" && !nextStack.webFrontend.some((f) => f !== "none")) {
     nextStack.webDeploy = "none";
@@ -506,9 +501,7 @@ export const getDisabledReason = (
       if (!supportsClerkBackend(getStackBackend(currentStack.backend), currentStack.webFrontend)) {
         return clerkBackendRequirementMessage;
       }
-      if (
-        !isClerkFrontendSelectionCompatible(currentStack.webFrontend, currentStack.nativeFrontend)
-      ) {
+      if (!isClerkFrontendSelectionCompatible(currentStack.webFrontend)) {
         return clerkFrontendRequirementMessage;
       }
     }

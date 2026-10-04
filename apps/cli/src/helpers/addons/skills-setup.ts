@@ -41,9 +41,6 @@ const SKILL_SOURCES = {
   "honojs/skills": {
     label: "Hono Backend",
   },
-  "heroui-inc/heroui": {
-    label: "HeroUI Native",
-  },
   "shadcn/ui": {
     label: "shadcn/ui",
   },
@@ -61,9 +58,6 @@ const SKILL_SOURCES = {
   },
   "planetscale/database-skills": {
     label: "PlanetScale",
-  },
-  "expo/skills": {
-    label: "Expo",
   },
   "elysiajs/skills": {
     label: "ElysiaJS",
@@ -213,14 +207,6 @@ function hasReactBasedFrontend(frontend: ProjectConfig["frontend"]): boolean {
   return frontend.includes("tanstack-router") || frontend.includes("tanstack-start");
 }
 
-function hasNativeFrontend(frontend: ProjectConfig["frontend"]): boolean {
-  return (
-    frontend.includes("native-bare") ||
-    frontend.includes("native-uniwind") ||
-    frontend.includes("native-unistyles")
-  );
-}
-
 function getRecommendedSourceKeys(config: ProjectConfig): SourceKey[] {
   const sources: SourceKey[] = [];
   const { frontend, backend, dbSetup, auth, examples, addons, webDeploy, serverDeploy } = config;
@@ -235,14 +221,6 @@ function getRecommendedSourceKeys(config: ProjectConfig): SourceKey[] {
     !sources.includes("vercel-labs/agent-skills")
   ) {
     sources.push("vercel-labs/agent-skills");
-  }
-
-  if (frontend.includes("native-uniwind")) {
-    sources.push("heroui-inc/heroui");
-  }
-
-  if (hasNativeFrontend(frontend)) {
-    sources.push("expo/skills");
   }
 
   if (auth === "better-auth") {
@@ -302,9 +280,6 @@ const CURATED_SKILLS_BY_SOURCE = {
         "vercel-react-best-practices",
       );
     }
-    if (hasNativeFrontend(config.frontend)) {
-      skills.push("vercel-react-native-skills");
-    }
     if (config.webDeploy === "vercel" || config.serverDeploy === "vercel") {
       skills.push("deploy-to-vercel");
     }
@@ -313,7 +288,6 @@ const CURATED_SKILLS_BY_SOURCE = {
   "vercel/ai": () => ["ai-sdk"],
   "vercel/turborepo": () => ["turborepo"],
   "honojs/skills": () => ["hono"],
-  "heroui-inc/heroui": () => ["heroui-native"],
   "shadcn/ui": () => ["shadcn"],
   "better-auth/skills": () => [
     "better-auth-best-practices",
@@ -332,8 +306,6 @@ const CURATED_SKILLS_BY_SOURCE = {
 
     if (config.frontend.includes("tanstack-start")) skills.push("clerk-tanstack-patterns");
     if (config.frontend.includes("tanstack-router")) skills.push("clerk-react-patterns");
-    if (hasNativeFrontend(config.frontend)) skills.push("clerk-expo");
-
     return skills;
   },
   "neondatabase/agent-skills": () => ["neon-postgres"],
@@ -348,21 +320,6 @@ const CURATED_SKILLS_BY_SOURCE = {
     }
 
     return config.database === "postgres" ? ["postgres", "neki"] : [];
-  },
-  "expo/skills": (config) => {
-    const skills = [
-      "expo-overview",
-      "expo-router",
-      "expo-dev-client",
-      "expo-native-ui",
-      "expo-data-fetching",
-      "eas-app-stores",
-      "eas-workflows",
-    ];
-    if (config.frontend.includes("native-uniwind")) {
-      skills.push("expo-tailwind-setup");
-    }
-    return skills;
   },
   "elysiajs/skills": () => ["elysiajs"],
   "msmps/opentui-skill": () => ["opentui"],

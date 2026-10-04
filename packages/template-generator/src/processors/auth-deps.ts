@@ -10,12 +10,7 @@ export function processAuthDeps(vfs: VirtualFileSystem, config: ProjectConfig): 
   const authPath = "packages/auth/package.json";
   const apiPath = "packages/api/package.json";
   const webPath = "apps/web/package.json";
-  const nativePath = "apps/native/package.json";
   const serverPath = "apps/server/package.json";
-  const hasNative = frontend.some(
-    (value) =>
-      value === "native-bare" || value === "native-uniwind" || value === "native-unistyles",
-  );
   const webFrontend = frontend.find(
     (value) => value === "tanstack-router" || value === "tanstack-start",
   );
@@ -28,9 +23,6 @@ export function processAuthDeps(vfs: VirtualFileSystem, config: ProjectConfig): 
         dependencies:
           webFrontend === "tanstack-start" ? ["@clerk/tanstack-react-start"] : ["@clerk/react"],
       });
-    }
-    if (hasNative && vfs.exists(nativePath)) {
-      addPackageDependency({ vfs, packagePath: nativePath, dependencies: ["@clerk/expo"] });
     }
     if (vfs.exists(apiPath)) {
       addPackageDependency({ vfs, packagePath: apiPath, dependencies: ["@clerk/backend"] });
@@ -49,7 +41,6 @@ export function processAuthDeps(vfs: VirtualFileSystem, config: ProjectConfig): 
   if (vfs.exists(authPath)) {
     const dependencies: AvailableDependencies[] = ["better-auth"];
     if (orm === "drizzle") dependencies.push("@better-auth/drizzle-adapter", "drizzle-orm");
-    if (hasNative) dependencies.push("@better-auth/expo");
     addPackageDependency({ vfs, packagePath: authPath, dependencies });
   }
 
@@ -58,14 +49,6 @@ export function processAuthDeps(vfs: VirtualFileSystem, config: ProjectConfig): 
       vfs,
       packagePath: webPath,
       dependencies: ["better-auth", "@tanstack/react-form"],
-    });
-  }
-
-  if (hasNative && vfs.exists(nativePath)) {
-    addPackageDependency({
-      vfs,
-      packagePath: nativePath,
-      dependencies: ["better-auth", "@better-auth/expo", "@tanstack/react-form"],
     });
   }
 }

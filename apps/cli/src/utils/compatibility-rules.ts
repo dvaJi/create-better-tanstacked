@@ -57,29 +57,11 @@ export function isWebFrontend(value: Frontend) {
   return WEB_FRAMEWORKS.includes(value);
 }
 
-export interface SplitFrontendsResult {
-  web: Frontend[];
-  native: Frontend[];
-}
-
-export function splitFrontends(values: Frontend[] = []): SplitFrontendsResult {
-  const web = values.filter((f) => isWebFrontend(f));
-  const native = values.filter(
-    (f) => f === "native-bare" || f === "native-uniwind" || f === "native-unistyles",
-  );
-  return { web, native };
-}
-
-export function ensureSingleWebAndNative(frontends: Frontend[]): ValidationResult {
-  const { web, native } = splitFrontends(frontends);
+export function ensureSingleFrontend(frontends: Frontend[]): ValidationResult {
+  const web = frontends.filter((frontend) => isWebFrontend(frontend));
   if (web.length > 1) {
     return validationErr(
       "Cannot select multiple web frameworks. Choose only one of: tanstack-router, tanstack-start",
-    );
-  }
-  if (native.length > 1) {
-    return validationErr(
-      "Cannot select multiple native frameworks. Choose only one of: native-bare, native-uniwind, native-unistyles",
     );
   }
   return Result.ok(undefined);
@@ -94,19 +76,13 @@ export function validateSelfBackendCompatibility(
   const frontends = config.frontend || options.frontend || [];
 
   if (backend === "self") {
-    const { web, native } = splitFrontends(frontends);
+    const web = frontends.filter((frontend) => isWebFrontend(frontend));
     const hasSupportedWeb =
       web.length === 1 && FULLSTACK_FRONTENDS.some((frontend) => frontend === web[0]);
 
     if (!hasSupportedWeb) {
       return validationErr(
         "Backend 'self' (fullstack) requires the TanStack Start frontend. Please use --frontend tanstack-start.",
-      );
-    }
-
-    if (native.length > 1) {
-      return validationErr(
-        "Cannot select multiple native frameworks. Choose only one of: native-bare, native-uniwind, native-unistyles",
       );
     }
   }

@@ -67,9 +67,6 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
   const scripts = pkgJson.scripts;
   const { projectName, packageManager, backend, database, orm, dbSetup, addons, frontend } = config;
   const hasWebApp = frontend.some((item) => (webFrontends as readonly string[]).includes(item));
-  const hasNativeApp = frontend.some((item) =>
-    ["native-bare", "native-uniwind", "native-unistyles"].includes(item),
-  );
 
   const backendPackageName = "server";
   const dbPackageName = `@${projectName}/db`;
@@ -98,10 +95,6 @@ function updateRootPackageJson(vfs: VirtualFileSystem, config: ProjectConfig): v
     } else {
       delete scripts["hooks:setup"];
     }
-  }
-
-  if (hasNativeApp) {
-    scripts["dev:native"] = pmConfig.filter("native", "dev");
   }
 
   if (hasWebApp) {

@@ -84,11 +84,6 @@ function getNodeToolingRequirements(config: RequirementConfig): VersionRequireme
       case "tanstack-start":
         addNodeRequirement(requirements, "^20.19.0 || >=22.12.0", "Vite 8");
         break;
-      case "native-bare":
-      case "native-uniwind":
-      case "native-unistyles":
-        addNodeRequirement(requirements, "^22.13.0 || ^24.3.0 || >=26.0.0", "React Native 0.86");
-        break;
     }
   }
 
@@ -110,10 +105,6 @@ function getNodeToolingRequirements(config: RequirementConfig): VersionRequireme
 
   if (config.addons.includes("vite-plus")) {
     addNodeRequirement(requirements, "^20.19.0 || ^22.18.0 || >=24.11.0", "Vite+");
-  }
-
-  if (config.addons.includes("wxt")) {
-    addNodeRequirement(requirements, ">=22.0.0", "WXT");
   }
 
   if (config.webDeploy === "cloudflare" || config.serverDeploy === "cloudflare") {

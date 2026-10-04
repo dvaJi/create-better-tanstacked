@@ -59,7 +59,6 @@ function randomStack(rand: () => number): StackState {
     ...DEFAULT_STACK,
     projectName: "invariant-test",
     webFrontend: [pick(rand, ids("webFrontend"))],
-    nativeFrontend: [pick(rand, ids("nativeFrontend"))],
     runtime: pick(rand, ids("runtime")) as StackState["runtime"],
     backend: pick(rand, ids("backend")) as StackState["backend"],
     api: pick(rand, ids("api")) as StackState["api"],
@@ -192,7 +191,6 @@ describe("compatibility adjustment invariants", () => {
     const stack = resolveStackCompatibility({
       ...DEFAULT_STACK,
       webFrontend: ["none"],
-      nativeFrontend: ["none"],
       backend: "hono",
       auth: "clerk",
     }).stack;
@@ -202,10 +200,10 @@ describe("compatibility adjustment invariants", () => {
     expect(stackStateToConfig(stack).frontend).toEqual(["none"]);
   });
 
-  test("tauri is removed when Convex Better Auth targets Next.js or TanStack Start", () => {
+  test("tauri is removed when Convex Better Auth targets TanStack Start", () => {
     const stack = sanitizeStackState({
       ...DEFAULT_STACK,
-      webFrontend: ["next"],
+      webFrontend: ["tanstack-start"],
       backend: "convex",
       auth: "better-auth",
       addons: ["tauri", "turborepo"],

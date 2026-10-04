@@ -90,13 +90,6 @@ export async function displayPostInstallInstructions(
     ? getVitePlusNativeHooksInstructions(runCmd)
     : "";
   const lintingInstructions = hasGitHooksOrLinting ? getLintingInstructions(runCmd) : "";
-  const nativeInstructions =
-    (frontend?.includes("native-bare") ||
-      frontend?.includes("native-uniwind") ||
-      frontend?.includes("native-unistyles")) &&
-    backend !== "none"
-      ? getNativeInstructions(isBackendSelf, frontend || [], runCmd)
-      : "";
   const pwaInstructions =
     addons?.includes("pwa") && frontend?.includes("tanstack-router") ? getPwaInstructions() : "";
   const clerkInstructions =
@@ -112,10 +105,6 @@ export async function displayPostInstallInstructions(
   );
 
   const hasWeb = frontend?.some((f) => (webFrontends as readonly string[]).includes(f));
-  const hasNative =
-    frontend?.includes("native-bare") ||
-    frontend?.includes("native-uniwind") ||
-    frontend?.includes("native-unistyles");
 
   const webPort = "3001";
   const polarInstructions =
@@ -123,8 +112,6 @@ export async function displayPostInstallInstructions(
       ? getPolarInstructions(backend)
       : "";
 
-  const bunWebNativeWarning =
-    packageManager === "bun" && hasNative && hasWeb ? getBunWebNativeWarning() : "";
   const noOrmWarning = database !== "none" && orm === "none" ? getNoOrmWarning() : "";
 
   let output = `${pc.cyan("1.")} ${cdCmd}\n`;
@@ -168,7 +155,7 @@ export async function displayPostInstallInstructions(
 
     if (hasWeb) {
       localServices.push({ label: "Frontend", url: `http://localhost:${webPort}` });
-    } else if (!hasNative) {
+    } else {
       localDevelopmentNote = "Backend-only app — no frontend selected";
     }
 
@@ -208,7 +195,6 @@ export async function displayPostInstallInstructions(
     }
   }
 
-  if (nativeInstructions) output += `\n${nativeInstructions.trim()}\n`;
   if (databaseInstructions) output += `\n${databaseInstructions.trim()}\n`;
   if (tauriInstructions) output += `\n${tauriInstructions.trim()}\n`;
   if (electrobunInstructions) output += `\n${electrobunInstructions.trim()}\n`;
@@ -222,7 +208,6 @@ export async function displayPostInstallInstructions(
   if (alchemyDeployInstructions) output += `\n${alchemyDeployInstructions.trim()}\n`;
 
   if (noOrmWarning) output += `\n${noOrmWarning.trim()}\n`;
-  if (bunWebNativeWarning) output += `\n${bunWebNativeWarning.trim()}\n`;
 
   const sponsorsResult = await fetchSponsorsQuietly();
   const specialSponsorsSection = sponsorsResult.isOk()
@@ -246,25 +231,6 @@ export async function displayPostInstallInstructions(
       "https://github.com/dvaJi/create-better-tanstacked",
     )}`,
   );
-}
-
-function getNativeInstructions(isBackendSelf: boolean, frontend: Frontend[], runCmd: string) {
-  const envVar = "EXPO_PUBLIC_SERVER_URL";
-  const exampleUrl = isBackendSelf ? "http://<YOUR_LOCAL_IP>:3001" : "http://<YOUR_LOCAL_IP>:3000";
-  const envFileName = ".env";
-  const ipNote = "your local IP address";
-
-  let instructions = `${pc.yellow(
-    "NOTE:",
-  )} For Expo connectivity issues, update\n   apps/native/${envFileName} with ${ipNote}:\n   ${`${envVar}=${exampleUrl}`}\n`;
-
-  if (frontend.includes("native-unistyles")) {
-    instructions += `\n${pc.yellow(
-      "NOTE:",
-    )} Unistyles requires a development build.\n   cd apps/native and run ${runCmd} android or ${runCmd} ios\n`;
-  }
-
-  return instructions;
 }
 
 function getLintingInstructions(runCmd: string) {
@@ -406,25 +372,12 @@ function getNoOrmWarning() {
   )} Database selected without an ORM. Features requiring\n   database access (e.g., examples, auth) need manual setup.`;
 }
 
-function getBunWebNativeWarning() {
-  return `\n${pc.yellow(
-    "WARNING:",
-  )} 'bun' might cause issues with web + native apps in a monorepo.\n   Use 'pnpm' if problems arise.`;
-}
-
 function getClerkQuickstartUrl(frontend: Frontend[]) {
   if (frontend.includes("tanstack-start")) {
     return "https://clerk.com/docs/tanstack-react-start/getting-started/quickstart";
   }
   if (frontend.includes("tanstack-router")) {
     return "https://clerk.com/docs/react/getting-started/quickstart";
-  }
-  if (
-    frontend.includes("native-bare") ||
-    frontend.includes("native-uniwind") ||
-    frontend.includes("native-unistyles")
-  ) {
-    return "https://clerk.com/docs/expo/getting-started/quickstart";
   }
   return "https://clerk.com/docs";
 }
@@ -435,15 +388,8 @@ function getClerkInstructionLines(
   api: ProjectConfig["api"],
 ) {
   const lines: string[] = [];
-  const hasNativeFrontend = frontend.some((value) =>
-    ["native-bare", "native-uniwind", "native-unistyles"].includes(value),
-  );
-
   if (frontend.some((value) => ["tanstack-router", "tanstack-start"].includes(value))) {
     lines.push("Set VITE_CLERK_PUBLISHABLE_KEY in apps/web/.env");
-  }
-  if (hasNativeFrontend) {
-    lines.push("Set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in apps/native/.env");
   }
 
   const hasClerkServerFrontend = frontend.includes("tanstack-start");

@@ -99,24 +99,6 @@ function buildClientVars(
   return vars;
 }
 
-function buildNativeVars(
-  frontend: SupportedProjectConfig["frontend"],
-  backend: SupportedProjectConfig["backend"],
-  auth: SupportedProjectConfig["auth"],
-): EnvVariable[] {
-  const vars: EnvVariable[] = [
-    {
-      key: "EXPO_PUBLIC_SERVER_URL",
-      value: backend === "self" ? "http://localhost:3001" : "http://localhost:3000",
-      condition: true,
-    },
-  ];
-  if (auth === "clerk" && frontend.some((value) => value.startsWith("native-"))) {
-    vars.push({ key: "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY", value: "", condition: true });
-  }
-  return vars;
-}
-
 function buildServerVars(config: SupportedProjectConfig): EnvVariable[] {
   const {
     backend,
@@ -131,14 +113,12 @@ function buildServerVars(config: SupportedProjectConfig): EnvVariable[] {
     payments,
     examples,
   } = config;
-  const hasNative = frontend.some((value) => value.startsWith("native-"));
   const hasWeb = frontend.some((value) => ["tanstack-router", "tanstack-start"].includes(value));
   const corsOrigin = "http://localhost:3001";
   const betterAuthUrl = backend === "self" ? "http://localhost:3001" : "http://localhost:3000";
-  const polarSuccessUrl =
-    hasNative && !hasWeb
-      ? `${betterAuthUrl}/polar/success`
-      : `${corsOrigin}/success?checkout_id={CHECKOUT_ID}`;
+  const polarSuccessUrl = hasWeb
+    ? `${corsOrigin}/success?checkout_id={CHECKOUT_ID}`
+    : `${betterAuthUrl}/polar/success`;
 
   let databaseUrl: string | null = null;
   if (database !== "none" && dbSetup === "none") {
@@ -201,10 +181,6 @@ export function processEnvVariables(vfs: VirtualFileSystem, config: SupportedPro
         comment: "Baked into the web image at docker compose build time",
       },
     ]);
-  }
-
-  if (frontend.some((value) => value.startsWith("native-")) && vfs.directoryExists("apps/native")) {
-    writeEnvFile(vfs, "apps/native/.env", buildNativeVars(frontend, backend, auth));
   }
 
   const serverVars = buildServerVars(config);

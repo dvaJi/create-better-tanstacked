@@ -28,8 +28,6 @@ const SKIP_KEYS = new Set([
 ]);
 const OVERRIDE_KEYS = new Map([
 {{#if (and (eq webDeploy "vercel") (eq serverDeploy "vercel") (ne backend "self") (ne backend "none") (ne backend "convex"))}}
-	["NEXT_PUBLIC_SERVER_URL", "/api"],
-	["NUXT_PUBLIC_SERVER_URL", "/api"],
 	["PUBLIC_SERVER_URL", "/api"],
 	["VITE_SERVER_URL", "/api"],
 {{/if}}

@@ -128,9 +128,7 @@ describe("stackSnapshot", () => {
     const snapshot = stackSnapshot(DEFAULT_STACK);
     expect(snapshot.isDefault).toBe(true);
     expect(snapshot.frontend).toBe(
-      [...DEFAULT_STACK.webFrontend, ...DEFAULT_STACK.nativeFrontend]
-        .filter((value) => value !== "none")
-        .join("+") || "none",
+      [...DEFAULT_STACK.webFrontend].filter((value) => value !== "none").join("+") || "none",
     );
     expect(snapshot.git).toBe(DEFAULT_STACK.git !== "false");
   });

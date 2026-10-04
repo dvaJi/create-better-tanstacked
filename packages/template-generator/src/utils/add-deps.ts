@@ -17,12 +17,10 @@ export const dependencyVersionMap = {
 
   "better-auth": "1.7.7",
   "@better-auth/drizzle-adapter": "1.7.7",
-  "@better-auth/expo": "1.7.7",
 
   "@clerk/backend": "^3.22.0",
   "@clerk/react": "^6.17.5",
   "@clerk/tanstack-react-start": "^1.6.4",
-  "@clerk/expo": "^4.8.0",
 
   "drizzle-orm": "1.0.0-rc.5-ab785fc",
   "drizzle-kit": "1.0.0-rc.5-ab785fc",
@@ -99,15 +97,12 @@ export const dependencyVersionMap = {
   "@effect/platform-node": "4.0.0",
   "@effect/platform-bun": "4.0.0",
 
-  "babel-preset-expo": "~57.0.13",
   varlock: "1.21.1",
   "@varlock/vite-integration": "1.5.2",
-  "@varlock/expo-integration": "1.2.1",
   tsdown: "^0.23.0",
   zod: "^4.6.5",
 
   "@polar-sh/better-auth": "^2.0.1",
-  "@polar-sh/checkout": "^0.4.2",
   // Peer range required by @polar-sh/better-auth; update together.
   "@polar-sh/sdk": "^1.0.2",
   "@stripe/react-stripe-js": "^7.0.0",

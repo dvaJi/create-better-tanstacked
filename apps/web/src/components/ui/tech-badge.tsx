@@ -15,7 +15,6 @@ interface TechBadgeProps {
 const getBadgeColors = (category: string): string => {
   switch (category) {
     case "webFrontend":
-    case "nativeFrontend":
       return "border-blue-300 bg-blue-100 text-blue-800 dark:border-blue-700/30 dark:bg-blue-900/30 dark:text-blue-300";
     case "runtime":
       return "border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-700/30 dark:bg-amber-900/30 dark:text-amber-300";

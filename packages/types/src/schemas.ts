@@ -29,30 +29,8 @@ export const RuntimeSchema = z
   .enum(["bun", "node", "workers", "none"])
   .describe("Runtime environment");
 
-const LegacyFrontendSchema = z.enum([
-  "tanstack-router",
-  "react-router",
-  "tanstack-start",
-  "next",
-  "nuxt",
-  "native-bare",
-  "native-uniwind",
-  "native-unistyles",
-  "svelte",
-  "solid",
-  "astro",
-  "none",
-]);
 export const FrontendSchema = z
-  .enum([
-    "tanstack-router",
-    "tanstack-start",
-    "native-bare",
-    "native-uniwind",
-    "native-unistyles",
-    "none",
-  ])
-  .pipe(LegacyFrontendSchema)
+  .enum(["tanstack-router", "tanstack-start", "none"])
   .describe("Frontend framework");
 
 const LegacyAddonsSchema = z.enum([
@@ -71,7 +49,6 @@ const LegacyAddonsSchema = z.enum([
   "ultracite",
   "oxlint",
   "opentui",
-  "wxt",
   "skills",
   "evlog",
   "axiom",
@@ -89,7 +66,6 @@ export const AddonsSchema = z
     "fumadocs",
     "oxlint",
     "opentui",
-    "wxt",
     "skills",
     "evlog",
     "axiom",
@@ -158,15 +134,7 @@ export const DirectoryConflictSchema = z
   .enum(["merge", "overwrite", "increment", "error"])
   .describe("How to handle existing directory conflicts");
 
-const LegacyTemplateSchema = z.enum(["mern", "pern", "t3", "uniwind", "none"]);
-export const TemplateSchema = z
-  .enum(["uniwind", "none"])
-  .pipe(LegacyTemplateSchema)
-  .describe("Predefined project template");
-
-export const WxtTemplateSchema = z
-  .enum(["vanilla", "vue", "react", "solid", "svelte"])
-  .describe("WXT template");
+export const TemplateSchema = z.enum(["none"]).describe("Predefined project template");
 
 export const TuiTemplateSchema = z.enum(["core", "react", "solid"]).describe("OpenTUI template");
 
@@ -197,7 +165,6 @@ export const McpServerSchema = z
     "supabase",
     "better-auth",
     "clerk",
-    "expo",
     "polar",
   ])
   .describe("MCP server to install");
@@ -233,14 +200,12 @@ export const SkillsSourceSchema = z
     "vercel/ai",
     "vercel/turborepo",
     "honojs/skills",
-    "heroui-inc/heroui",
     "shadcn/ui",
     "better-auth/skills",
     "clerk/skills",
     "neondatabase/agent-skills",
     "supabase/agent-skills",
     "planetscale/database-skills",
-    "expo/skills",
     "elysiajs/skills",
     "msmps/opentui-skill",
     "https://www.evlog.dev",
@@ -346,13 +311,6 @@ export const NeonSetupMethodSchema = z
   .describe("Neon database provisioning method");
 
 const addonOptionsFields = {
-  wxt: z
-    .strictObject({
-      template: WxtTemplateSchema,
-      devPort: z.number().int().min(1).max(65535).optional().describe("WXT dev server port"),
-    })
-    .optional()
-    .describe("Options for the WXT addon"),
   fumadocs: z
     .strictObject({
       template: FumadocsTemplateSchema,
@@ -390,7 +348,6 @@ const addonOptionsFields = {
 const LegacyAddonOptionsSchema = z.strictObject(addonOptionsFields);
 export const AddonOptionsSchema = z
   .strictObject({
-    wxt: addonOptionsFields.wxt,
     fumadocs: addonOptionsFields.fumadocs,
     opentui: addonOptionsFields.opentui,
     mcp: addonOptionsFields.mcp,
@@ -585,14 +542,7 @@ export const DATABASE_VALUES = ["none", "sqlite", "postgres"] as const;
 export const ORM_VALUES = ["drizzle", "none"] as const;
 export const BACKEND_VALUES = ["hono", "elysia", "self", "none"] as const;
 export const RUNTIME_VALUES = RuntimeSchema.options;
-export const FRONTEND_VALUES = [
-  "tanstack-router",
-  "tanstack-start",
-  "native-bare",
-  "native-uniwind",
-  "native-unistyles",
-  "none",
-] as const;
+export const FRONTEND_VALUES = FrontendSchema.options;
 export const ADDONS_VALUES = [
   "pwa",
   "tauri",
@@ -604,7 +554,6 @@ export const ADDONS_VALUES = [
   "fumadocs",
   "oxlint",
   "opentui",
-  "wxt",
   "skills",
   "evlog",
   "axiom",
@@ -628,4 +577,4 @@ export const PAYMENTS_VALUES = PaymentsSchema.options;
 export const WEB_DEPLOY_VALUES = WebDeploySchema.options;
 export const SERVER_DEPLOY_VALUES = ServerDeploySchema.options;
 export const DIRECTORY_CONFLICT_VALUES = DirectoryConflictSchema.options;
-export const TEMPLATE_VALUES = ["uniwind", "none"] as const;
+export const TEMPLATE_VALUES = TemplateSchema.options;

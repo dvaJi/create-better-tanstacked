@@ -3,7 +3,6 @@ import { TASK_RUNNER_ADDONS, OBSERVABILITY_ADDONS, type Addons } from "@better-t
 import { DEFAULT_STACK, type StackState, TECH_OPTIONS } from "./constant";
 
 const validWebFrontendIds = TECH_OPTIONS.webFrontend.map((option) => option.id);
-const validNativeFrontendIds = TECH_OPTIONS.nativeFrontend.map((option) => option.id);
 const validAddonIds = ["none" as const, ...TECH_OPTIONS.addons.map((option) => option.id)];
 const validExampleIds = ["none" as const, ...TECH_OPTIONS.examples.map((option) => option.id)];
 
@@ -74,20 +73,8 @@ export function sanitizeWebFrontends(webFrontend: readonly string[] | null | und
   return sanitizeSingleSelection(webFrontend, validWebFrontendIds, DEFAULT_STACK.webFrontend);
 }
 
-export function sanitizeNativeFrontends(nativeFrontend: readonly string[] | null | undefined) {
-  return sanitizeSingleSelection(
-    nativeFrontend,
-    validNativeFrontendIds,
-    DEFAULT_STACK.nativeFrontend,
-  );
-}
-
-export type RawStackLists = Omit<
-  StackState,
-  "webFrontend" | "nativeFrontend" | "addons" | "examples"
-> & {
+export type RawStackLists = Omit<StackState, "webFrontend" | "addons" | "examples"> & {
   webFrontend: string[];
-  nativeFrontend: string[];
   addons: string[];
   examples: string[];
 };
@@ -96,7 +83,6 @@ export function sanitizeStackState(stack: RawStackLists): StackState {
   return {
     ...stack,
     webFrontend: sanitizeWebFrontends(stack.webFrontend),
-    nativeFrontend: sanitizeNativeFrontends(stack.nativeFrontend),
     addons: sanitizeAddons(stack.addons),
     examples: sanitizeExamples(stack.examples),
   };

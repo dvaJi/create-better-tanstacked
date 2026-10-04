@@ -20,9 +20,6 @@ function getClerkQuickstartUrl(frontend: SupportedProjectConfig["frontend"]): st
   if (frontend.includes("tanstack-router")) {
     return "https://clerk.com/docs/react/getting-started/quickstart";
   }
-  if (hasNativeFrontend(frontend)) {
-    return "https://clerk.com/docs/expo/getting-started/quickstart";
-  }
   return "https://clerk.com/docs";
 }
 
@@ -34,9 +31,6 @@ function getClerkSetupLines(
   const lines: string[] = [];
   if (hasWebFrontend(frontend)) {
     lines.push("- Set `VITE_CLERK_PUBLISHABLE_KEY` in `apps/web/.env`");
-  }
-  if (hasNativeFrontend(frontend)) {
-    lines.push("- Set `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` in `apps/native/.env`");
   }
 
   const hasClerkServerFrontend = frontend.includes("tanstack-start");
@@ -59,12 +53,6 @@ function getClerkSetupLines(
     );
   }
   return lines;
-}
-
-function hasNativeFrontend(frontend: SupportedProjectConfig["frontend"]): boolean {
-  return frontend.some((value) =>
-    ["native-bare", "native-uniwind", "native-unistyles"].includes(value),
-  );
 }
 
 function hasWebFrontend(frontend: SupportedProjectConfig["frontend"]): boolean {
@@ -94,7 +82,6 @@ function generateReadmeContent(options: SupportedProjectConfig): string {
     webDeploy,
     serverDeploy,
   } = options;
-  const hasNative = hasNativeFrontend(frontend);
   const hasWeb = hasWebFrontend(frontend);
   const webPort = "3001";
   const packageManagerRunCmd = `${packageManager} run`;
@@ -123,7 +110,7 @@ Run the development server:
 ${packageManagerRunCmd} dev
 \`\`\`
 
-${generateRunningInstructions(frontend, backend, webPort, hasNative)}
+${generateRunningInstructions(frontend, backend, webPort)}
 ${generateReactUiSection(hasWeb, projectName)}
 ## Environment Configuration
 
@@ -147,7 +134,7 @@ ${generateProjectStructure(options)}
 
 ## Available Scripts
 
-${generateScriptsList(packageManagerRunCmd, options, hasNative)}
+${generateScriptsList(packageManagerRunCmd, options)}
 `;
 }
 
@@ -160,9 +147,7 @@ function generateStackDescription(
     ? "React, TanStack Router"
     : frontend.includes("tanstack-start")
       ? "React, TanStack Start"
-      : hasNativeFrontend(frontend)
-        ? "React Native, Expo"
-        : "";
+      : "";
   const parts = frontendName ? [frontendName] : [];
   if (backend !== "none") parts.push(backend === "self" ? "TanStack Start" : backend.toUpperCase());
   if (api !== "none") parts.push(api.toUpperCase());
@@ -173,7 +158,6 @@ function generateRunningInstructions(
   frontend: SupportedProjectConfig["frontend"],
   backend: SupportedProjectConfig["backend"],
   webPort: string,
-  hasNative: boolean,
 ): string {
   const instructions: string[] = [];
   if (hasWebFrontend(frontend)) {
@@ -182,7 +166,6 @@ function generateRunningInstructions(
       `Open [http://localhost:${webPort}](http://localhost:${webPort}) in your browser to see the ${desc}.`,
     );
   }
-  if (hasNative) instructions.push("Use the Expo Go app to run the mobile application.");
   if (backend !== "none" && backend !== "self") {
     instructions.push("The API is running at [http://localhost:3000](http://localhost:3000).");
   }
@@ -225,7 +208,6 @@ function generateProjectStructure(config: SupportedProjectConfig): string {
   const structure: string[] = [`${projectName}/`, "├── apps/"];
   const isBackendSelf = backend === "self";
   const hasWeb = hasWebFrontend(frontend);
-  const hasNative = hasNativeFrontend(frontend);
   const hasSharedUi = hasWeb;
   const hasDbPackage = database !== "none" && orm !== "none";
 
@@ -235,7 +217,6 @@ function generateProjectStructure(config: SupportedProjectConfig): string {
       `│   ${isBackendSelf ? "└──" : "├──"} web/         # ${isBackendSelf ? "Fullstack" : "Frontend"} application (${frontendType})`,
     );
   }
-  if (hasNative) structure.push("│   ├── native/      # Mobile application (React Native, Expo)");
   if (addons.includes("fumadocs"))
     structure.push("│   ├── docs/        # Fumadocs documentation site");
   if (!isBackendSelf && backend !== "none") {
@@ -263,7 +244,6 @@ function generateProjectStructure(config: SupportedProjectConfig): string {
 
 function generateFeaturesList(config: SupportedProjectConfig): string {
   const { database, auth, addons, orm, runtime, frontend, backend, api, dbSetup } = config;
-  const hasNative = hasNativeFrontend(frontend);
   const hasWeb = hasWebFrontend(frontend);
   const features = ["- **TypeScript** - For type safety and improved developer experience"];
 
@@ -271,14 +251,7 @@ function generateFeaturesList(config: SupportedProjectConfig): string {
     features.push("- **TanStack Router** - File-based routing with full type safety");
   if (frontend.includes("tanstack-start"))
     features.push("- **TanStack Start** - SSR framework with TanStack Router");
-  if (hasNative) {
-    features.push(
-      "- **React Native** - Build mobile apps using React",
-      "- **Expo** - Tools for React Native development",
-    );
-  }
-  if (hasWeb || frontend.includes("native-uniwind"))
-    features.push("- **TailwindCSS** - Utility-first CSS for rapid UI development");
+  if (hasWeb) features.push("- **TailwindCSS** - Utility-first CSS for rapid UI development");
   if (hasWeb) features.push("- **Shared UI package** - shadcn/ui primitives live in `packages/ui`");
   if (backend === "hono" || backend === "elysia") {
     features.push(`- **${backend === "hono" ? "Hono" : "Elysia"}** - Server framework`);
@@ -310,7 +283,6 @@ function generateFeaturesList(config: SupportedProjectConfig): string {
       "- **Vite+** - Unified Vite toolchain, workspace task runner, linting, and formatting",
     ],
     ["fumadocs", "- **Fumadocs** - Documentation site"],
-    ["wxt", "- **WXT** - Browser extension toolkit"],
     ["opentui", "- **OpenTUI** - Terminal UI toolkit"],
     ["mcp", "- **MCP** - Model Context Protocol server integrations"],
     ["skills", "- **Agent Skills** - Install skills for supported coding agents"],
@@ -383,11 +355,7 @@ function generateDatabaseSetup(
   }
   return `${setup}\n`;
 }
-function generateScriptsList(
-  packageManagerRunCmd: string,
-  config: SupportedProjectConfig,
-  hasNative: boolean,
-): string {
+function generateScriptsList(packageManagerRunCmd: string, config: SupportedProjectConfig): string {
   const { database, addons, backend, dbSetup, frontend, webDeploy, serverDeploy } = config;
   const hasWeb = hasWebFrontend(frontend);
   const dbSupport = getDbScriptSupport(config);
@@ -404,10 +372,6 @@ function generateScriptsList(
     scripts += `\n- \`${packageManagerRunCmd} dev:server\`: Start only the server`;
   }
   scripts += `\n- \`${packageManagerRunCmd} check-types\`: Check TypeScript types across all apps`;
-  if (hasNative) {
-    scripts += `\n- \`${packageManagerRunCmd} dev:native\`: Start the React Native/Expo development server`;
-  }
-
   if (dbSupport.hasDbScripts) {
     if (dbSupport.hasDbPush)
       scripts += `\n- \`${packageManagerRunCmd} db:push\`: Push schema changes to database`;

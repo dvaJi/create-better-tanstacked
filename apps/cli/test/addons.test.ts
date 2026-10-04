@@ -442,7 +442,7 @@ describe("Addon Configurations", () => {
       expect(rootViteConfig).not.toContain('"packages/db/prisma/**/*.db*"');
       expect(rootViteConfig).not.toContain('".wrangler/**"');
       expect(rootViteConfig).toContain("typeCheck: false");
-      expect(rootViteConfig).toContain('"*.{js,ts,jsx,tsx,vue,svelte,json,jsonc,css,md}":');
+      expect(rootViteConfig).toContain('"*.{js,ts,jsx,tsx,json,jsonc,css,md}":');
       expect(rootViteConfig).toContain('"vp check --fix"');
     });
 
@@ -460,7 +460,7 @@ describe("Addon Configurations", () => {
       const lefthookConfig = await readFile(join(projectDir!, "lefthook.yml"), "utf8");
 
       expect(rootPackageJson["lint-staged"]).toEqual({
-        "*.{js,ts,jsx,tsx,vue,svelte,json,jsonc,css,md}": ["vp check --fix"],
+        "*.{js,ts,jsx,tsx,json,jsonc,css,md}": ["vp check --fix"],
       });
       expect(rootPackageJson.scripts["hooks:setup"]).toBeUndefined();
       expect(lefthookConfig).toContain("name: vite-plus");
@@ -653,7 +653,7 @@ describe("Addon Configurations", () => {
 
       expect(rootPackageJson.scripts["hooks:setup"]).toBeUndefined();
       expect(rootPackageJson["lint-staged"]).toEqual({
-        "*.{js,ts,jsx,tsx,vue,svelte,json,jsonc,css,md}": ["vp check --fix"],
+        "*.{js,ts,jsx,tsx,json,jsonc,css,md}": ["vp check --fix"],
       });
       expect(lefthookConfig).toContain("name: vite-plus");
       expect(lefthookConfig).toContain("run: bun vp staged");
@@ -682,7 +682,7 @@ describe("Addon Configurations", () => {
 
       expect(rootPackageJson.scripts["hooks:setup"]).toBeUndefined();
       expect(rootPackageJson["lint-staged"]).toEqual({
-        "*.{js,ts,jsx,tsx,vue,svelte,json,jsonc,css,md}": ["vp check --fix"],
+        "*.{js,ts,jsx,tsx,json,jsonc,css,md}": ["vp check --fix"],
       });
       expect(lefthookConfig).toContain("name: vite-plus");
       expect(lefthookConfig).toContain("run: bun vp staged");

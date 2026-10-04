@@ -1,13 +1,5 @@
 import type { ProjectConfig } from "@better-t-stack/types";
 
-const NATIVE_GENERATED_PATTERNS = [
-  "apps/native/.expo/**",
-  "apps/native/dist/**",
-  "apps/native/web-build/**",
-  "apps/native/ios/**",
-  "apps/native/android/**",
-] as const;
-
 const FRONTEND_GENERATED_PATTERNS = {
   "tanstack-router": ["apps/web/dist/**", "apps/web/.tanstack/**", "apps/web/src/routeTree.gen.ts"],
   "tanstack-start": [
@@ -16,9 +8,6 @@ const FRONTEND_GENERATED_PATTERNS = {
     "apps/web/.tanstack/**",
     "apps/web/src/routeTree.gen.ts",
   ],
-  "native-bare": NATIVE_GENERATED_PATTERNS,
-  "native-uniwind": NATIVE_GENERATED_PATTERNS,
-  "native-unistyles": NATIVE_GENERATED_PATTERNS,
   none: [],
 } as const satisfies Partial<Record<ProjectConfig["frontend"][number], readonly string[]>>;
 

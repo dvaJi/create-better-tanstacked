@@ -55,7 +55,6 @@ const ADD_PACKAGE_JSON_PATHS = [
   "package.json",
   "apps/server/package.json",
   "apps/web/package.json",
-  "apps/native/package.json",
   "apps/desktop/package.json",
   "apps/fumadocs/package.json",
   "packages/api/package.json",
@@ -213,7 +212,6 @@ function mergeAddonOptions(
   };
 
   const mergedAddonOptions: AddonOptions = {
-    wxt: mergeOption(existingAddonOptions?.wxt, nextAddonOptions?.wxt),
     fumadocs: mergeOption(existingAddonOptions?.fumadocs, nextAddonOptions?.fumadocs),
     opentui: mergeOption(existingAddonOptions?.opentui, nextAddonOptions?.opentui),
     mcp: mergeOption(existingAddonOptions?.mcp, nextAddonOptions?.mcp),

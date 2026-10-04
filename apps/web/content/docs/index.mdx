@@ -78,17 +78,6 @@ npm create better-tanstacked@latest my-api \
   --auth better-auth
 ```
 
-### Mobile App (Expo)
-
-```npm
-npm create better-tanstacked@latest my-native \
-  --frontend native-uniwind \
-  --backend hono \
-  --database sqlite \
-  --orm drizzle \
-  --auth better-auth
-```
-
 ### Empty Monorepo
 
 ```npm
@@ -101,7 +90,7 @@ npm create better-tanstacked@latest my-workspace \
 
 See the full list in the [CLI Reference](/docs/cli). Key flags:
 
-- `--frontend`: tanstack-router, tanstack-start, native-bare, native-uniwind, native-unistyles, none
+- `--frontend`: tanstack-router, tanstack-start, none
 - `--backend`: hono, elysia, self, none
 - `--runtime`: bun, node, workers, none
 - `--database`: sqlite, postgres, none
@@ -109,7 +98,7 @@ See the full list in the [CLI Reference](/docs/cli). Key flags:
 - `--api`: trpc, orpc, none
 - `--auth`: better-auth, clerk, none
 - `--payments`: polar, none
-- `--addons`: turborepo, vite-plus, pwa, tauri, electrobun, lefthook, fumadocs, oxlint, mcp, opentui, wxt, skills, evlog, axiom, none
+- `--addons`: turborepo, vite-plus, pwa, tauri, electrobun, lefthook, fumadocs, oxlint, mcp, opentui, skills, evlog, axiom, none
 - `--examples`: todo, ai, none
 
 ## Next Steps
@@ -122,7 +111,7 @@ See the full list in the [CLI Reference](/docs/cli). Key flags:
     Scaffold from Claude Code, Codex, opencode, and other MCP agents
   </Card>
   <Card href="/docs/project-structure" title="Project Structure">
-    See how TanStack web, server, and Expo layouts are generated
+    See how TanStack web and server layouts are generated
   </Card>
   <Card href="/docs/cli/compatibility" title="Compatibility">
     Valid combinations for backend, runtime, database, ORM, API

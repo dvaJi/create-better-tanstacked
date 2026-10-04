@@ -10,14 +10,7 @@ export async function processExtrasTemplates(
   templates: TemplateData,
   config: ProjectConfig,
 ): Promise<void> {
-  const hasNative = config.frontend.some((f) =>
-    ["native-bare", "native-uniwind", "native-unistyles"].includes(f),
-  );
   processPnpmWorkspaceConfig(vfs, config);
-
-  if (config.packageManager === "pnpm" && hasNative) {
-    processSingleTemplate(vfs, templates, "extras/_npmrc", ".npmrc", config);
-  }
 
   if (
     config.serverDeploy === "cloudflare" ||

@@ -16,9 +16,6 @@ export async function processAuthTemplates(
   const webFrontend = config.frontend.find((frontend) =>
     WEB_FRONTENDS.some((value) => value === frontend),
   );
-  const hasNative = config.frontend.some((frontend) =>
-    ["native-bare", "native-uniwind", "native-unistyles"].some((value) => value === frontend),
-  );
 
   if (config.backend !== "none") {
     processTemplatesFromPrefix(
@@ -62,30 +59,6 @@ export async function processAuthTemplates(
         templates,
         `auth/${authProvider}/fullstack/tanstack-start`,
         "apps/web",
-        config,
-      );
-    }
-  }
-
-  if (hasNative) {
-    processTemplatesFromPrefix(
-      vfs,
-      templates,
-      `auth/${authProvider}/native/base`,
-      "apps/native",
-      config,
-    );
-
-    const nativeFrontend = config.frontend.find((frontend) =>
-      ["native-bare", "native-uniwind", "native-unistyles"].some((value) => value === frontend),
-    );
-    if (nativeFrontend) {
-      const nativeTemplate = nativeFrontend.replace("native-", "");
-      processTemplatesFromPrefix(
-        vfs,
-        templates,
-        `auth/${authProvider}/native/${nativeTemplate}`,
-        "apps/native",
         config,
       );
     }

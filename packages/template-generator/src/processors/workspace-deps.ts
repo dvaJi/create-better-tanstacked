@@ -15,7 +15,6 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
     ui: vfs.exists("packages/ui/package.json"),
     server: vfs.exists("apps/server/package.json"),
     web: vfs.exists("apps/web/package.json"),
-    native: vfs.exists("apps/native/package.json"),
   };
 
   const configDep = packages.config ? { [`@${projectName}/config`]: workspaceVersion } : {};
@@ -109,18 +108,6 @@ export function processWorkspaceDeps(vfs: VirtualFileSystem, config: ProjectConf
       vfs,
       packagePath: "packages/ui/package.json",
       devDependencies: ["typescript"],
-      customDevDependencies: configDep,
-    });
-  }
-
-  if (packages.native) {
-    const nativeDeps: Record<string, string> = {};
-    if (api !== "none" && packages.api) nativeDeps[`@${projectName}/api`] = workspaceVersion;
-    addPackageDependency({
-      vfs,
-      packagePath: "apps/native/package.json",
-      dependencies: commonDeps,
-      customDependencies: nativeDeps,
       customDevDependencies: configDep,
     });
   }

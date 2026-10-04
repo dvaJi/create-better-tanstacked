@@ -14,12 +14,10 @@ export function processPaymentsDeps(vfs: VirtualFileSystem, config: ProjectConfi
     });
   }
 
-  for (const app of ["apps/native", "apps/web"]) {
-    const packagePath = `${app}/package.json`;
-    if (!vfs.exists(packagePath)) continue;
+  if (vfs.exists("apps/web/package.json")) {
     addPackageDependency({
       vfs,
-      packagePath,
+      packagePath: "apps/web/package.json",
       dependencies: ["@polar-sh/better-auth"],
     });
   }

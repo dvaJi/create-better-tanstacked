@@ -11,7 +11,6 @@ const option = <K extends keyof typeof TECH_OPTIONS>(category: K) =>
 const stackFields = {
   projectName: z.string().nullable(),
   webFrontend: z.array(option("webFrontend")),
-  nativeFrontend: z.array(option("nativeFrontend")),
   runtime: option("runtime"),
   backend: option("backend"),
   database: option("database"),
@@ -35,7 +34,6 @@ export const StackUpdateSchema = z.object(stackFields).partial();
 export const StackStateSchema = z.object({
   projectName: stackFields.projectName.default(DEFAULT_STACK.projectName),
   webFrontend: stackFields.webFrontend.default(DEFAULT_STACK.webFrontend),
-  nativeFrontend: stackFields.nativeFrontend.default(DEFAULT_STACK.nativeFrontend),
   runtime: stackFields.runtime.default(DEFAULT_STACK.runtime),
   backend: stackFields.backend.default(DEFAULT_STACK.backend),
   database: stackFields.database.default(DEFAULT_STACK.database),

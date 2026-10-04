@@ -6,7 +6,6 @@ import { getStackBackend, getStackFrontends, isSelfHostedFullstackBackend } from
 
 const CATEGORY_ORDER: Array<keyof typeof TECH_OPTIONS> = [
   "webFrontend",
-  "nativeFrontend",
   "backend",
   "runtime",
   "api",

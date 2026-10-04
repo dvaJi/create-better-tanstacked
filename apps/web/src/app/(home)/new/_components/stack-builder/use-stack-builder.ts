@@ -80,10 +80,6 @@ export function getTechSelectionUpdate(
   const choice = candidate.data;
   if (choice.webFrontend)
     return { webFrontend: toggleSingle(effectiveStack.webFrontend, choice.webFrontend[0]) };
-  if (choice.nativeFrontend)
-    return {
-      nativeFrontend: toggleSingle(effectiveStack.nativeFrontend, choice.nativeFrontend[0]),
-    };
   if (choice.addons)
     return { addons: sanitizeAddons(toggleMulti(effectiveStack.addons, choice.addons[0])).sort() };
   if (choice.examples)
@@ -252,7 +248,7 @@ export function useStackBuilder() {
         return [category, ids.length ? ids : ["none"]];
       }
       const id = options[Math.floor(Math.random() * options.length)].id;
-      return [category, category === "webFrontend" || category === "nativeFrontend" ? [id] : id];
+      return [category, category === "webFrontend" ? [id] : id];
     });
     const randomStack = StackStateSchema.parse(Object.fromEntries(entries));
 

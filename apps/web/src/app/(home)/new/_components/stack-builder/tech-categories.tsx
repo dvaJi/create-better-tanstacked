@@ -25,12 +25,7 @@ type TechCategoriesProps = {
 function getIsSelected(stack: StackState, category: keyof StackState, techId: string) {
   const currentValue = stack[category];
 
-  if (
-    category === "addons" ||
-    category === "examples" ||
-    category === "webFrontend" ||
-    category === "nativeFrontend"
-  ) {
+  if (category === "addons" || category === "examples" || category === "webFrontend") {
     return ((currentValue as string[]) || []).includes(techId);
   }
 

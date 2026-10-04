@@ -1,10 +1,4 @@
-import type {
-  Backend,
-  FullstackFrontend,
-  NativeFrontend,
-  ProjectConfig,
-  WebFrontend,
-} from "@better-t-stack/types";
+import type { Backend, FullstackFrontend, ProjectConfig, WebFrontend } from "@better-t-stack/types";
 
 export type StackState = Pick<
   ProjectConfig,
@@ -23,7 +17,6 @@ export type StackState = Pick<
 > & {
   projectName: string | null;
   webFrontend: WebFrontend[];
-  nativeFrontend: NativeFrontend[];
   backend: Exclude<Backend, "self"> | `self-${FullstackFrontend}`;
   git: "true" | "false";
   install: "true" | "false";

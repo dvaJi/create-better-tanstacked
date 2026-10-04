@@ -16,9 +16,6 @@ import { sanitizeStackState } from "./sanitize-stack-addons";
 const serverStackParsers = {
   projectName: parseAsStringServer.withDefault(DEFAULT_STACK.projectName || "my-better-t-app"),
   webFrontend: parseAsArrayOfServer(parseAsStringServer).withDefault(DEFAULT_STACK.webFrontend),
-  nativeFrontend: parseAsArrayOfServer(parseAsStringServer).withDefault(
-    DEFAULT_STACK.nativeFrontend,
-  ),
   runtime: parseAsStringEnumServer<StackState["runtime"]>(getStackOptionIds("runtime")).withDefault(
     DEFAULT_STACK.runtime,
   ),

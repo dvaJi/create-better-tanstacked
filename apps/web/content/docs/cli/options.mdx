@@ -18,7 +18,6 @@ create-better-tanstacked --yes
 Use a predefined project template:
 
 - `none`: No template (default)
-- `uniwind`: UniWind React Native template
 
 ```bash
 create-better-tanstacked --template uniwind
@@ -232,29 +231,23 @@ create-better-tanstacked --api trpc
 
 ### `--frontend <types...>`
 
-Frontend frameworks (can specify multiple):
+Choose a TanStack React frontend or create a backend-only project:
 
 **Web Frameworks:**
 
 - `tanstack-router`: React with TanStack Router
 - `tanstack-start`: React with TanStack Start (SSR)
 
-**Native Frameworks:**
-
-- `native-bare`: React Native (bare setup)
-- `native-uniwind`: React Native with UniWind (NativeWind alternative)
-- `native-unistyles`: React Native with Unistyles
-
 **No Frontend:**
 
 - `none`: Backend-only project
 
 ```bash
-# Single web frontend
+# TanStack Router
 create-better-tanstacked --frontend tanstack-router
 
-# TanStack web + Expo native
-create-better-tanstacked --frontend tanstack-start native-uniwind
+# TanStack Start
+create-better-tanstacked --frontend tanstack-start
 
 # Backend-only
 create-better-tanstacked --frontend none
@@ -316,7 +309,6 @@ Additional features to include:
 - `oxlint`: Oxlint + Oxfmt (linting & formatting)
 - `mcp`: Install MCP servers, including Better T Stack itself, with add-mcp
 - `opentui`: OpenTUI components
-- `wxt`: WXT browser extension framework
 - `skills`: Install AI agent skills for coding assistants (Cursor, Claude Code, GitHub Copilot, etc.)
 - `evlog`: Structured request logging for Hono, Elysia, or TanStack Start fullstack backends
 - `axiom`: Managed Axiom observability through Evlog and Alchemy (select during project creation)

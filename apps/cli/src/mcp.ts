@@ -41,7 +41,7 @@ const McpCreateProjectInputSchema = CreateInputSchema.safeExtend({
   projectName: z.string().describe("Project name or relative path"),
   frontend: z
     .array(FrontendSchema)
-    .describe("Explicit frontend app surfaces. Do not use native frontends as styling options."),
+    .describe("Explicit TanStack React frontend choices, or an empty array for no frontend."),
   backend: BackendSchema.describe("Explicit backend framework"),
   runtime: RuntimeSchema.describe("Explicit runtime environment"),
   database: DatabaseSchema.describe("Explicit database choice"),
@@ -154,7 +154,7 @@ function getStackGuidance() {
     },
     fieldNotes: {
       frontend:
-        "frontend is for app surfaces only. Choose TanStack Router, TanStack Start, an Expo setup, or none.",
+        "frontend is for app surfaces only. Choose TanStack Router, TanStack Start, or none.",
       addons: "addons must be an explicit array. Use [] when no addons are requested.",
       examples: "examples must be an explicit array. Use [] when no examples are requested.",
       dbSetup:

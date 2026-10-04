@@ -54,43 +54,6 @@ export const TECH_OPTIONS: TechOptions = {
       default: false,
     },
   ],
-  nativeFrontend: [
-    {
-      id: "native-bare",
-      name: "Expo + Bare",
-      description: "Expo with StyleSheet (no styling library)",
-      icon: `${ICON_BASE_URL}/expo.svg`,
-      color: "from-blue-400 to-blue-600",
-      className: "invert-0 dark:invert",
-      default: true,
-    },
-    {
-      id: "native-uniwind",
-      name: "Expo + Uniwind",
-      description: "Fastest Tailwind bindings for React Native with HeroUI Native",
-      icon: `${ICON_BASE_URL}/expo.svg`,
-      color: "from-purple-400 to-purple-600",
-      className: "invert-0 dark:invert",
-      default: false,
-    },
-    {
-      id: "native-unistyles",
-      name: "Expo + Unistyles",
-      description: "Expo with Unistyles (type-safe styling)",
-      icon: `${ICON_BASE_URL}/expo.svg`,
-      color: "from-pink-400 to-pink-600",
-      className: "invert-0 dark:invert",
-      default: false,
-    },
-    {
-      id: "none",
-      name: "No Native Frontend",
-      description: "No native mobile frontend",
-      icon: "",
-      color: "from-gray-400 to-gray-600",
-      default: false,
-    },
-  ],
   runtime: [
     {
       id: "bun",
@@ -472,14 +435,6 @@ export const TECH_OPTIONS: TechOptions = {
       default: false,
     },
     {
-      id: "wxt",
-      name: "WXT",
-      description: "Build browser extensions",
-      icon: "",
-      color: "from-emerald-500 to-emerald-700",
-      default: false,
-    },
-    {
       id: "skills",
       name: "Skills",
       description: "Install AI agent skills for coding assistants",
@@ -584,26 +539,25 @@ export const PRESET_TEMPLATES: {
   stack: StackState;
 }[] = [
   {
-    id: "uniwind",
-    name: "Uniwind Native",
-    description: "Expo + Uniwind native app with no backend services",
+    id: "tanstack-start",
+    name: "TanStack Start Fullstack",
+    description: "TanStack Start with server routes, SQLite, Drizzle, and Better Auth",
     stack: {
       projectName: "my-better-t-app",
-      webFrontend: ["none"],
-      nativeFrontend: ["native-uniwind"],
+      webFrontend: ["tanstack-start"],
       runtime: "none",
-      backend: "none",
-      database: "none",
-      orm: "none",
+      backend: "self-tanstack-start",
+      database: "sqlite",
+      orm: "drizzle",
       dbSetup: "none",
-      auth: "none",
+      auth: "better-auth",
       payments: "none",
       packageManager: "bun",
-      addons: ["none"],
+      addons: ["turborepo"],
       examples: ["none"],
       git: "true",
       install: "true",
-      api: "none",
+      api: "trpc",
       webDeploy: "none",
       serverDeploy: "none",
       yolo: "false",
@@ -614,7 +568,6 @@ export const PRESET_TEMPLATES: {
 export const DEFAULT_STACK: StackState = {
   projectName: "my-better-t-app",
   webFrontend: ["tanstack-router"],
-  nativeFrontend: ["none"],
   runtime: "bun",
   backend: "hono",
   database: "sqlite",
@@ -639,7 +592,7 @@ export const isStackDefault = <K extends keyof StackState>(
 ): boolean => {
   const defaultValue = DEFAULT_STACK[key];
 
-  if (key === "webFrontend" || key === "nativeFrontend" || key === "addons" || key === "examples") {
+  if (key === "webFrontend" || key === "addons" || key === "examples") {
     if (Array.isArray(defaultValue) && Array.isArray(value)) {
       const sortedDefault = [...defaultValue].sort();
       const sortedValue = [...value].sort();

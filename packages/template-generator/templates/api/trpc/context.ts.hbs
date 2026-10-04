@@ -28,48 +28,7 @@ async function authenticateClerkRequest(request: Request): Promise<ClerkContextA
 }
 {{/if}}
 
-{{#if (and (eq backend 'self') (includes frontend "next"))}}
-import type { NextRequest } from "next/server";
-{{#if (eq auth "better-auth")}}
-{{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}
-import { createAuth } from "@{{projectName}}/auth";
-{{else}}
-import { auth } from "@{{projectName}}/auth";
-{{/if}}
-{{/if}}
-
-export async function createContext({{#if (eq auth "none")}}_req{{else}}req{{/if}}: NextRequest): Promise<ApiContext> {
-{{#if (and (ne database "none") (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare"))))}}
-  const db = await getDb({{#if (usesRequestScopedCloudflareEnv backend webDeploy frontend)}}env{{/if}});
-{{/if}}
-{{#if (eq auth "better-auth")}}
-	const session = await {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}(await createAuth({{#if (ne database "none")}}db{{/if}})){{else}}auth{{/if}}.api.getSession({
-		headers: req.headers,
-	});
-	return {
-{{#if (ne database "none")}}
-    db,
-{{/if}}
-		session,
-	};
-{{else if (eq auth "clerk")}}
-	const clerkAuth = await authenticateClerkRequest(req);
-	return {
-{{#if (ne database "none")}}
-    db,
-{{/if}}
-		auth: clerkAuth,
-	};
-{{else}}
-	return {
-{{#if (ne database "none")}}
-    db,
-{{/if}}
-	};
-{{/if}}
-}
-
-{{else if (and (eq backend 'self') (includes frontend "tanstack-start"))}}
+{{#if (and (eq backend 'self') (includes frontend "tanstack-start"))}}
 {{#if (eq auth "better-auth")}}
 {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}
 import { createAuth } from "@{{projectName}}/auth";

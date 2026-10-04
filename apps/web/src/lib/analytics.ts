@@ -219,7 +219,7 @@ export function stackSnapshot(stack: StackState): StackSnapshot {
   );
 
   return {
-    frontend: joinList([...stack.webFrontend, ...stack.nativeFrontend]),
+    frontend: joinList(stack.webFrontend),
     backend: stack.backend,
     runtime: stack.runtime,
     api: stack.api,

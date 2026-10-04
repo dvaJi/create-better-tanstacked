@@ -111,7 +111,6 @@ const stackCategoryLabels = {
   examples: "Example",
   git: "Git",
   install: "Dependency installation",
-  nativeFrontend: "Native frontend",
   orm: "ORM",
   packageManager: "Package manager",
   payments: "Payments",

@@ -9,7 +9,7 @@ import type { VirtualFileSystem } from "../core/virtual-fs";
 import { getStackGeneratedIgnorePatterns } from "../utils/generated-ignore-patterns";
 
 const BASE_IGNORE_PATTERNS = ["node_modules/**", "**/node_modules/**"] as const;
-const STAGED_PATTERN = "*.{js,ts,jsx,tsx,vue,svelte,json,jsonc,css,md}";
+const STAGED_PATTERN = "*.{js,ts,jsx,tsx,json,jsonc,css,md}";
 
 export function processVitePlusConfig(vfs: VirtualFileSystem, config: ProjectConfig): void {
   if (!config.addons.includes("vite-plus")) return;
