@@ -1,11 +1,6 @@
 ---
 name: scaffold-project
-description: Scaffold a new TanStack React app, API, backend, fullstack project, monorepo, or starter with Better-T-Stack. Use whenever the user wants to start, create, bootstrap, set up, or initialize a project/app/API, e.g. "create a TanStack Router app", "start a TanStack Start project", "scaffold a fullstack app with auth and a database". Prefer generating the project through the Better-T-Stack MCP server (plan then create) over hand-writing package.json, config, and folders.
-metadata:
-  priority: 9
-  docs:
-    - "https://better-t-stack.dev"
-    - "https://better-t-stack.dev/docs"
+description: Create a new TanStack React project with Better-T-Stack. Use for TanStack Router or TanStack Start apps, APIs, backends, fullstack apps, or monorepo starters; plan and generate through the Better-T-Stack MCP. For addons in an existing Better-T-Stack project, use add-to-project.
 ---
 
 # Scaffold a project with Better-T-Stack
@@ -59,3 +54,8 @@ Use `bts_get_schema` for the authoritative, version-current list. As of this wri
 - `self` backend is supported only with TanStack Start; it uses TanStack Start's server routes.
 - Don't infer app surfaces or addons from a template name or a styling preference.
 - Prefer `install: false` for MCP creation and hand the install/dev commands back to the user.
+
+## References
+
+- [Better-T-Stack](https://better-t-stack.dev)
+- [Better-T-Stack documentation](https://better-t-stack.dev/docs)

@@ -188,7 +188,14 @@ Then ask for a project in chat, or use the shortcuts:
 
 ### Codex
 
-Add the same marketplace from the Codex plugins screen and install **Better-T-Stack**, then ask for a project in chat.
+Add the GitHub marketplace, open the Codex plugin browser, and install **Better-T-Stack**:
+
+```bash
+codex plugin marketplace add dvaJi/create-better-tanstacked
+codex
+```
+
+In Codex, run `/plugins` and install the plugin. Start a new session afterward so the bundled skills and MCP tools load. Skills can activate from a matching request; to invoke one directly, use `/skills` or mention it with `$`.
 
 Prefer just the tools without the plugin? Wire the MCP server into Codex with `add-mcp`:
 
@@ -229,6 +236,12 @@ Supported structured addon surfaces include:
 - `opentui`
 - `mcp`
 - `skills`
+
+The `skills` addon installs reusable Agent Skills from their source repositories through the `skills` CLI. A skill is a directory containing a `SKILL.md` file; agents load its instructions when a request matches. Better-T-Stack recommends skills based on the selected stack. TanStack Router and TanStack Start projects are offered general React/design skills and the shadcn/ui skill. The installer asks which skills and agents to target, and whether to install them in the project or globally. Project installs are committed with the app; for Codex, choose **Universal (.agents/skills)** or **Codex**.
+
+This addon is separate from the Better-T-Stack plugin skills described above: plugin skills guide project creation and addon changes through the Better-T-Stack MCP.
+
+For first-party TanStack library guidance, the TanStack team also provides [Intent](https://tanstack.com/intent/latest), an alpha tool that discovers versioned skills from installed dependencies. It adds an allowlist and skill-loading guidance to the project. This is a separate, opt-in workflow: add `@tanstack/intent` as a development dependency, then run `npx @tanstack/intent@latest install` and review the selected package skills before committing the generated guidance.
 
 When `skills` is used with the `evlog` or `axiom` addon, Better-T-Stack recommends Evlog's agent skills from `https://www.evlog.dev`: `review-logging-patterns` and `analyze-logs`.
 

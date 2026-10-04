@@ -1,12 +1,6 @@
 ---
 name: add-to-project
-description: Add addons or features (PWA, Tauri, Fumadocs docs, Oxlint, Lefthook, Turborepo/Vite+, the MCP addon, etc.) to an existing Better-T-Stack project. Use when the user wants to extend, enhance, or add tooling to a project that was created with Better-T-Stack.
-metadata:
-  priority: 7
-  docs:
-    - "https://better-t-stack.dev/docs"
-  pathPatterns:
-    - "bts.jsonc"
+description: Add Better-T-Stack addons to an existing project, especially one with a bts.jsonc file. Use for requests to add PWA, docs, linting, task runners, desktop, MCP, or observability tooling; plan through MCP before applying. Use scaffold-project for a new project.
 ---
 
 # Add addons to an existing Better-T-Stack project
@@ -37,3 +31,7 @@ Note: `turborepo` and `vite-plus` are mutually exclusive task runners. Use `bts_
 - Always `bts_plan_addons` before `bts_add_addons`.
 - Don't add addons the user didn't ask for.
 - Surface any conflicts (e.g. two task runners) from the plan before applying.
+
+## Reference
+
+- [Better-T-Stack documentation](https://better-t-stack.dev/docs)

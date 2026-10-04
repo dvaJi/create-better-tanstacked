@@ -5,9 +5,9 @@ Make your AI assistant scaffold and extend projects with [Better-T-Stack](https:
 The plugin bundles:
 
 - **MCP server** — the official `create-better-tanstacked mcp` server (stdio, no auth/key). Exposes `bts_get_stack_guidance`, `bts_get_schema`, `bts_plan_project`, `bts_create_project`, `bts_plan_addons`, `bts_add_addons`.
-- **Skills** — `scaffold-project` (start a new project) and `add-to-project` (add addons). These steer the assistant to plan a valid stack and generate it through the MCP rather than writing config by hand.
-- **Commands** — `/better-t-stack:new` and `/better-t-stack:add`.
-- **Agent** — `stack-architect`, which designs a coherent stack from a product description and generates it.
+- **Skills** — `scaffold-project` (start a new project) and `add-to-project` (add addons to an existing project). Each is a reusable `SKILL.md` workflow: the assistant loads it when the request matches its description, or when you invoke it directly. The workflow calls the MCP to plan and generate changes.
+- **Claude Code commands** — `/better-t-stack:new` and `/better-t-stack:add`.
+- **Claude Code agent** — `stack-architect`, which designs a coherent stack from a product description and generates it.
 
 ## Requirements
 
@@ -27,11 +27,14 @@ Then just ask: _"create a fullstack app with TanStack Start, Postgres and Better
 
 ## Install in Codex
 
-This plugin is dual-target: the same `skills/` and `.mcp.json` are reused by a Codex manifest (`.codex-plugin/plugin.json`), and the repo also exposes a Codex marketplace catalog (`.agents/plugins/marketplace.json`). So Codex gets both the `scaffold-project` / `add-to-project` skills **and** the MCP server — Codex skills use the same `SKILL.md` frontmatter and implicit-invocation model as Claude Code.
+The same `SKILL.md` workflows and MCP server are bundled for Codex. Add the GitHub marketplace, open Codex, then install Better-T-Stack from the plugin browser:
 
-Add the marketplace and install via Codex's plugins screen, or point Codex at the local source. Codex discovers marketplaces from `$REPO_ROOT/.agents/plugins/marketplace.json` or `~/.agents/plugins/marketplace.json`.
+```bash
+codex plugin marketplace add dvaJi/create-better-tanstacked
+codex
+```
 
-> Note: Codex has no slash-command concept, so `/better-t-stack:new` and `/better-t-stack:add` (and the `stack-architect` subagent) are Claude Code only. The skills cover the same workflows in Codex.
+In Codex, run `/plugins` and install **Better-T-Stack**, then start a new session. Skills can activate automatically from the request, be selected with `/skills`, or be mentioned with `$`. The `/better-t-stack:new` and `/better-t-stack:add` custom commands and `stack-architect` agent are Claude Code features; in Codex, use the two skills.
 
 ### Just the MCP server (any MCP client)
 

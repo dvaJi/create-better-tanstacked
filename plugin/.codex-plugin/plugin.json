@@ -19,8 +19,6 @@
     "fullstack",
     "monorepo",
     "turborepo",
-    "nx",
-    "nextjs",
     "react",
     "hono",
     "trpc",
@@ -35,7 +33,7 @@
   "interface": {
     "displayName": "Better-T-Stack",
     "shortDescription": "Scaffold end-to-end type-safe TypeScript projects",
-    "longDescription": "Bring Better-T-Stack into Codex with skills that plan a valid stack and generate it through the official create-better-tanstacked MCP server, plus an add-addons workflow for existing projects. Covers frontends (Next, TanStack, Nuxt, Svelte, Solid, Astro, React Native), backends (Hono, Express, Fastify, Elysia, Convex), databases and ORMs, auth, payments, deployment, and DB provisioning (Neon, Prisma Postgres, Supabase, Turso, PlanetScale, MongoDB Atlas, Cloudflare D1, Docker).",
+    "longDescription": "Build TanStack React apps with Better-T-Stack. Skills plan and generate TanStack Router or TanStack Start projects, or add tooling to an existing Better-T-Stack project through the official MCP server. Supports Hono, Elysia, TanStack Start server routes, databases, auth, APIs, and deployment options.",
     "developerName": "Aman Varshney",
     "category": "Coding",
     "capabilities": ["Interactive", "Write", "MCP"],
@@ -44,9 +42,9 @@
     "composerIcon": "./assets/icon.svg",
     "logo": "./assets/icon.svg",
     "defaultPrompt": [
-      "Create a fullstack app with Next, Hono, Postgres + Drizzle, and Better Auth",
+      "Create a fullstack TanStack Start app with Hono, Postgres + Drizzle, and Better Auth",
       "Scaffold a TanStack Start project with a Neon database",
-      "Add PWA, Biome, and Turborepo to my Better-T-Stack project"
+      "Add PWA, Oxlint, and Turborepo to my Better-T-Stack project"
     ]
   }
 }
