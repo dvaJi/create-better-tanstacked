@@ -24,6 +24,7 @@ export function getTemplatesRoot(): string {
 
 export function getBinaryTemplatesRoot(): string {
   const possiblePaths = [
+    join(__dirname, "templates-binary"),
     join(__dirname, "../templates-binary"),
     join(__dirname, "../../templates-binary"),
     join(__dirname, "../../../templates-binary"),

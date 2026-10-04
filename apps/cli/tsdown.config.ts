@@ -1,10 +1,16 @@
 import { defineConfig } from "tsdown";
 
+const workspacePackages = [/^@better-t-stack\/(?:template-generator|types)(?:\/.*)?$/];
+
 export default defineConfig({
   entry: ["src/index.ts", "src/cli.ts", "src/virtual.ts"],
   format: ["esm"],
   clean: true,
   shims: true,
+  deps: {
+    alwaysBundle: workspacePackages,
+    dts: { alwaysBundle: workspacePackages },
+  },
   outDir: "dist",
   dts: true,
   outputOptions: {

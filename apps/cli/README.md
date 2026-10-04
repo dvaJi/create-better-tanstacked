@@ -1,4 +1,4 @@
-# Create Better-T-Stack CLI
+# create-better-tanstacked CLI
 
 A modern CLI tool for scaffolding end-to-end type-safe TypeScript projects with best practices and customizable configurations
 

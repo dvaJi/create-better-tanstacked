@@ -21,13 +21,11 @@
     },
     "apps/cli": {
       "name": "create-better-tanstacked",
-      "version": "3.44.2",
+      "version": "3.44.3",
       "bin": {
         "create-better-tanstacked": "dist/cli.mjs",
       },
       "dependencies": {
-        "@better-t-stack/template-generator": "workspace:*",
-        "@better-t-stack/types": "workspace:*",
         "@clack/core": "^1.5.0",
         "@clack/prompts": "^1.8.0",
         "@modelcontextprotocol/server": "2.0.0",
@@ -40,7 +38,9 @@
         "gradient-string": "^3.0.0",
         "handlebars": "^4.7.9",
         "jsonc-parser": "^3.3.1",
+        "memfs": "^4.71.0",
         "oxfmt": "^0.67.0",
+        "pathe": "^2.0.3",
         "picocolors": "^1.1.1",
         "semver": "^7.8.5",
         "tinyglobby": "^0.2.17",
@@ -50,6 +50,8 @@
         "zod": "^4.5.4",
       },
       "devDependencies": {
+        "@better-t-stack/template-generator": "workspace:*",
+        "@better-t-stack/types": "workspace:*",
         "@modelcontextprotocol/client": "2.0.0",
         "@types/bun": "^1.4.2",
         "@types/fs-extra": "^11.0.4",
