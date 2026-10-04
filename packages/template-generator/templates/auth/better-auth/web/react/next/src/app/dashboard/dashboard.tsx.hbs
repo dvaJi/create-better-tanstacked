@@ -1,12 +1,11 @@
 "use client";
 {{#if (eq payments "polar")}}
-import type { CustomerState } from "@polar-sh/sdk/models/components/customerstate";
-{{/if}}
-
-{{#if (eq payments "polar")}}
 import { Button } from "@{{projectName}}/ui/components/button";
 {{/if}}
 import { authClient } from "@/lib/auth-client";
+{{#if (eq payments "polar")}}
+type CustomerState = NonNullable<Awaited<ReturnType<typeof authClient.customer.state>>["data"]>;
+{{/if}}
 {{#if (eq api "orpc")}}
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/utils/orpc";
@@ -35,7 +34,7 @@ export default function Dashboard({
 	{{/if}}
 
 	{{#if (eq payments "polar")}}
-	const hasProSubscription = (customerState?.activeSubscriptions?.length ?? 0) > 0;
+	const hasProSubscription = (customerState?.active_subscriptions?.length ?? 0) > 0;
 	{{/if}}
 
 	return (

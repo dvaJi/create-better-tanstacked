@@ -783,12 +783,17 @@ describe("Deployment Configurations", () => {
       }
 
       const files = collectFiles(result.value.root, result.value.root.path);
-      const svelteConfig = files.get("apps/web/svelte.config.js");
+      const viteConfig = files.get("apps/web/vite.config.ts") ?? "";
       const webPkg = JSON.parse(files.get("apps/web/package.json") ?? "{}");
 
       // Vercel docs recommend the explicit adapter over adapter-auto
-      expect(svelteConfig).toContain("@sveltejs/adapter-vercel");
-      expect(svelteConfig).not.toContain("@sveltejs/adapter-auto");
+      expect(viteConfig).toContain("@sveltejs/adapter-vercel");
+      expect(viteConfig).not.toContain("@sveltejs/adapter-auto");
+      expect(viteConfig).toContain("sveltekit({");
+      expect(viteConfig).toContain("preprocess: vitePreprocess()");
+      expect(viteConfig).toContain('adapter: adapter({ runtime: "nodejs24.x" })');
+      expect(files.has("apps/web/svelte.config.js")).toBe(false);
+      expect(webPkg.imports["#lib/*"]).toBe("./src/lib/*");
       expect(webPkg.devDependencies["@sveltejs/adapter-vercel"]).toBeDefined();
     });
 
@@ -1628,12 +1633,13 @@ describe("Deployment Configurations", () => {
       }
 
       const files = collectFiles(result.value.root, result.value.root.path);
-      const svelteConfig = files.get("apps/web/svelte.config.js");
+      const viteConfig = files.get("apps/web/vite.config.ts") ?? "";
       const webPkg = JSON.parse(files.get("apps/web/package.json") ?? "{}");
       const webDockerfile = files.get("apps/web/Dockerfile");
 
-      expect(svelteConfig).toContain("@sveltejs/adapter-node");
-      expect(svelteConfig).not.toContain("@sveltejs/adapter-auto");
+      expect(viteConfig).toContain("@sveltejs/adapter-node");
+      expect(viteConfig).not.toContain("@sveltejs/adapter-auto");
+      expect(viteConfig).toContain("adapter: adapter(),");
       expect(webPkg.devDependencies["@sveltejs/adapter-node"]).toBeDefined();
       expect(webDockerfile).toContain('CMD ["node", "build/index.js"]');
     });

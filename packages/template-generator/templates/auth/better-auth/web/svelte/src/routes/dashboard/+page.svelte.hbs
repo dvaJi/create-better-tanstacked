@@ -1,15 +1,12 @@
 <script lang="ts">
-{{#if (eq payments "polar")}}
-import type { CustomerState } from "@polar-sh/sdk/models/components/customerstate";
-{{/if}}
-
 	import { goto } from '$app/navigation';
-	import { authClient } from '$lib/auth-client';
+	import { authClient } from '#lib/auth-client.js';
 	{{#if (eq api "orpc")}}
-	import { orpc } from '$lib/orpc';
+	import { orpc } from '#lib/orpc.js';
 	import { createQuery } from '@tanstack/svelte-query';
 	{{/if}}
 	{{#if (eq payments "polar")}}
+	type CustomerState = NonNullable<Awaited<ReturnType<typeof authClient.customer.state>>["data"]>;
 	let customerState = $state<CustomerState | null>(null);
 	{{/if}}
 
@@ -48,8 +45,8 @@ import type { CustomerState } from "@polar-sh/sdk/models/components/customerstat
 		<p>API: {privateDataQuery.data?.message}</p>
 		{{/if}}
 		{{#if (eq payments "polar")}}
-		<p>Plan: {(customerState?.activeSubscriptions?.length ?? 0) > 0 ? "Pro" : "Free"}</p>
-		{#if (customerState?.activeSubscriptions?.length ?? 0) > 0}
+		<p>Plan: {(customerState?.active_subscriptions?.length ?? 0) > 0 ? "Pro" : "Free"}</p>
+		{#if (customerState?.active_subscriptions?.length ?? 0) > 0}
 			<button onclick={async () => await authClient.customer.portal()}>
 				Manage Subscription
 			</button>

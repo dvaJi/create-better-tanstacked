@@ -10,17 +10,17 @@
     "catalog": {
       "@erquhart/convex-oss-stats": "^0.8.2",
       "@types/fs-extra": "^11.0.4",
-      "@types/node": "^26.5.0",
+      "@types/node": "^26.6.4",
       "better-result": "^3.0.1",
-      "convex": "^1.45.0",
-      "convex-helpers": "^0.1.124",
+      "convex": "^1.46.0",
+      "convex-helpers": "^0.1.126",
       "handlebars": "^4.7.9",
-      "oxfmt": "^0.67.0",
+      "oxfmt": "^0.71.0",
       "ts-morph": "^28.0.0",
       "tsdown": "^0.23.0",
       "typescript": "^6.0.3",
-      "yaml": "^2.9.0",
-      "zod": "^4.5.4"
+      "yaml": "^2.9.1",
+      "zod": "^4.6.5"
     }
   },
   "scripts": {
@@ -48,17 +48,17 @@
     "smoke:vercel": "bash scripts/vercel-smoke.sh"
   },
   "dependencies": {
-    "@clack/prompts": "^1.8.0"
+    "@clack/prompts": "^1.8.1"
   },
   "devDependencies": {
-    "@oxlint/plugins": "1.81.0",
+    "@oxlint/plugins": "1.86.0",
     "@types/bun": "^1.4.2",
     "changelogithub": "^15.0.5",
-    "lefthook": "^2.1.12",
-    "lint-staged": "^17.5.0",
+    "lefthook": "^2.1.16",
+    "lint-staged": "^17.6.0",
     "oxfmt": "catalog:",
-    "oxlint": "1.81.0",
-    "turbo": "^2.10.12",
+    "oxlint": "1.86.0",
+    "turbo": "^2.11.7",
     "typescript": "catalog:"
   },
   "lint-staged": {

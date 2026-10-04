@@ -52,7 +52,7 @@ export default {
   "devDependencies": {
     "@types/bun": "^1.4.2",
     "concurrently": "^10.0.5",
-    "electrobun": "^2.0.1",
+    "electrobun": "^2.0.2",
     "typescript": "^6.0.3"
   }
 }
@@ -1114,7 +1114,7 @@ const serverClient: AppRouterClient = createRouterClient(appRouter, {
 	},
 });
 
-// oRPC's SvelteKit SSR setup loads this from hooks.server.ts so $lib/orpc can
+// oRPC's SvelteKit SSR setup loads this from hooks.server.ts so #lib/orpc.js can
 // reuse the in-process server client during SSR and fall back to HTTP in the browser.
 globalThis.$client = serverClient;
 `],
@@ -5974,7 +5974,7 @@ export const POST = handle;
   ["auth/better-auth/fullstack/svelte/src/hooks.server.ts.hbs", `{{#if (eq api "orpc")}}
 import "./lib/orpc.server";
 {{/if}}
-import { building } from "$app/environment";
+import { building } from "$app/env";
 {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}
 import { createAuth } from "@{{projectName}}/auth";
 {{#if (and (eq backend "self") (eq webDeploy "cloudflare"))}}
@@ -5984,7 +5984,7 @@ import { ENV } from "./env.server";
 import { auth } from "@{{projectName}}/auth";
 {{/if}}
 import { svelteKitHandler } from "better-auth/svelte-kit";
-import type { Handle } from "@sveltejs/kit";
+import type { Handle } from "@sveltejs/kit/hooks";
 
 export const handle: Handle = async ({ event, resolve }) => {
 {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}
@@ -9262,7 +9262,7 @@ import Layout from "../layouts/Layout.astro";
       try {
         const { data: customerState } = await authClient.customer.state();
         const subscriptionInfo = document.getElementById("subscription-info")!;
-        if ((customerState?.activeSubscriptions?.length ?? 0) > 0) {
+        if ((customerState?.active_subscriptions?.length ?? 0) > 0) {
           subscriptionInfo.innerHTML = \`
             <p class="text-white">Plan: <span class="text-green-400">Pro</span></p>
             <button
@@ -9562,15 +9562,14 @@ const handleSignOut = async () => {
 });
 `],
   ["auth/better-auth/web/nuxt/app/pages/dashboard.vue.hbs", `<script setup lang="ts">
-{{#if (eq payments "polar")}}
-import type { CustomerState } from "@polar-sh/sdk/models/components/customerstate";
-{{/if}}
-
 {{#if (eq api "orpc")}}
 import { useQuery } from '@tanstack/vue-query'
 {{/if}}
 
 const { $authClient, $orpc } = useNuxtApp()
+{{#if (eq payments "polar")}}
+type CustomerState = NonNullable<Awaited<ReturnType<typeof $authClient.customer.state>>["data"]>;
+{{/if}}
 
 definePageMeta({
   middleware: ['auth']
@@ -9598,7 +9597,7 @@ onMounted(async () => {
 })
 
 const hasProSubscription = computed(() => 
-  (customerState.value?.activeSubscriptions?.length ?? 0) > 0
+  (customerState.value?.active_subscriptions?.length ?? 0) > 0
 )
 {{/if}}
 </script>
@@ -9752,13 +9751,12 @@ export const authClient = createAuthClient({
 `],
   ["auth/better-auth/web/react/next/src/app/dashboard/dashboard.tsx.hbs", `"use client";
 {{#if (eq payments "polar")}}
-import type { CustomerState } from "@polar-sh/sdk/models/components/customerstate";
-{{/if}}
-
-{{#if (eq payments "polar")}}
 import { Button } from "@{{projectName}}/ui/components/button";
 {{/if}}
 import { authClient } from "@/lib/auth-client";
+{{#if (eq payments "polar")}}
+type CustomerState = NonNullable<Awaited<ReturnType<typeof authClient.customer.state>>["data"]>;
+{{/if}}
 {{#if (eq api "orpc")}}
 import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/utils/orpc";
@@ -9787,7 +9785,7 @@ export default function Dashboard({
 	{{/if}}
 
 	{{#if (eq payments "polar")}}
-	const hasProSubscription = (customerState?.activeSubscriptions?.length ?? 0) > 0;
+	const hasProSubscription = (customerState?.active_subscriptions?.length ?? 0) > 0;
 	{{/if}}
 
 	return (
@@ -10643,12 +10641,12 @@ export default function UserMenu() {
 }
 `],
   ["auth/better-auth/web/react/react-router/src/routes/dashboard.tsx.hbs", `{{#if (eq payments "polar")}}
-import type { CustomerState } from "@polar-sh/sdk/models/components/customerstate";
-{{/if}}
-{{#if (eq payments "polar")}}
 import { Button } from "@{{projectName}}/ui/components/button";
 {{/if}}
 import { authClient } from "@/lib/auth-client";
+{{#if (eq payments "polar")}}
+type CustomerState = NonNullable<Awaited<ReturnType<typeof authClient.customer.state>>["data"]>;
+{{/if}}
 {{#if (eq api "orpc")}}
 import { orpc } from "@/utils/orpc";
 {{/if}}
@@ -10699,7 +10697,7 @@ export default function Dashboard() {
   }
 
   {{#if (eq payments "polar")}}
-  const hasProSubscription = (customerState?.activeSubscriptions?.length ?? 0) > 0;
+  const hasProSubscription = (customerState?.active_subscriptions?.length ?? 0) > 0;
   {{/if}}
 
   return (
@@ -11130,7 +11128,7 @@ function RouteComponent() {
 	{{/if}}
 
 	{{#if (eq payments "polar")}}
-	const hasProSubscription = (customerState?.activeSubscriptions?.length ?? 0) > 0;
+	const hasProSubscription = (customerState?.active_subscriptions?.length ?? 0) > 0;
 	{{/if}}
 
 	return (
@@ -11633,7 +11631,7 @@ function RouteComponent() {
   {{/if}}
 
   {{#if (eq payments "polar") }}
-  const hasProSubscription = (customerState?.activeSubscriptions?.length ?? 0) > 0;
+  const hasProSubscription = (customerState?.active_subscriptions?.length ?? 0) > 0;
   {{/if}}
 
   return (
@@ -12030,7 +12028,7 @@ export default function Dashboard() {
 
 	{{#if (eq payments "polar")}}
 	const hasProSubscription = () =>
-		(customerState()?.activeSubscriptions?.length ?? 0) > 0;
+		(customerState()?.active_subscriptions?.length ?? 0) > 0;
 	{{/if}}
 
 	return (
@@ -12089,7 +12087,7 @@ export default function Login() {
   ["auth/better-auth/web/svelte/src/components/SignInForm.svelte.hbs", `<script lang="ts">
 	import { createForm } from '@tanstack/svelte-form';
 	import { z } from 'zod';
-	import { authClient } from '$lib/auth-client';
+	import { authClient } from '#lib/auth-client.js';
 	import { goto } from '$app/navigation';
 
 	let { switchToSignUp } = $props<{ switchToSignUp: () => void }>();
@@ -12201,7 +12199,7 @@ export default function Login() {
   ["auth/better-auth/web/svelte/src/components/SignUpForm.svelte.hbs", `<script lang="ts">
 	import { createForm } from '@tanstack/svelte-form';
 	import { z } from 'zod';
-	import { authClient } from '$lib/auth-client';
+	import { authClient } from '#lib/auth-client.js';
 	import { goto } from '$app/navigation';
 
 	let { switchToSignIn } = $props<{ switchToSignIn: () => void }>();
@@ -12344,7 +12342,7 @@ export default function Login() {
 </div>
 `],
   ["auth/better-auth/web/svelte/src/components/UserMenu.svelte.hbs", `<script lang="ts">
-	import { authClient } from '$lib/auth-client';
+	import { authClient } from '#lib/auth-client.js';
 	import { goto } from '$app/navigation';
 
 	const sessionQuery = authClient.useSession();
@@ -12422,17 +12420,14 @@ export const authClient = createAuthClient({
 });
 `],
   ["auth/better-auth/web/svelte/src/routes/dashboard/+page.svelte.hbs", `<script lang="ts">
-{{#if (eq payments "polar")}}
-import type { CustomerState } from "@polar-sh/sdk/models/components/customerstate";
-{{/if}}
-
 	import { goto } from '$app/navigation';
-	import { authClient } from '$lib/auth-client';
+	import { authClient } from '#lib/auth-client.js';
 	{{#if (eq api "orpc")}}
-	import { orpc } from '$lib/orpc';
+	import { orpc } from '#lib/orpc.js';
 	import { createQuery } from '@tanstack/svelte-query';
 	{{/if}}
 	{{#if (eq payments "polar")}}
+	type CustomerState = NonNullable<Awaited<ReturnType<typeof authClient.customer.state>>["data"]>;
 	let customerState = $state<CustomerState | null>(null);
 	{{/if}}
 
@@ -12471,8 +12466,8 @@ import type { CustomerState } from "@polar-sh/sdk/models/components/customerstat
 		<p>API: {privateDataQuery.data?.message}</p>
 		{{/if}}
 		{{#if (eq payments "polar")}}
-		<p>Plan: {(customerState?.activeSubscriptions?.length ?? 0) > 0 ? "Pro" : "Free"}</p>
-		{#if (customerState?.activeSubscriptions?.length ?? 0) > 0}
+		<p>Plan: {(customerState?.active_subscriptions?.length ?? 0) > 0 ? "Pro" : "Free"}</p>
+		{#if (customerState?.active_subscriptions?.length ?? 0) > 0}
 			<button onclick={async () => await authClient.customer.portal()}>
 				Manage Subscription
 			</button>
@@ -14294,7 +14289,7 @@ export default defineSchema({
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/node": "^26.4.1"
+    "@types/node": "^26.6.4"
   },
   "dependencies": {}
 }
@@ -15248,10 +15243,15 @@ temp
   ],
 {{#if (and (includes frontend "solid") (ne packageManager "pnpm"))}}
   "overrides": {
-    "@solidjs/signals": "2.0.0-rc.7",
-    "@solidjs/compiler": "2.0.0-rc.7",
-    "@solidjs/babel-plugin": "2.0.0-rc.7"
+    "@solidjs/signals": "2.0.0-rc.13",
+    "@solidjs/compiler": "2.0.0-rc.13",
+    "@solidjs/babel-plugin": "2.0.0-rc.13"
   },
+{{/if}}
+{{#if (includes addons "vite-plus")}}
+  "engines": { "node": "^22.18.0 || ^24.11.0 || >=26.0.0" },
+{{else if (includes frontend "svelte")}}
+  "engines": { "node": ">=22.17.0" },
 {{/if}}
   "scripts": {}
 }
@@ -25644,7 +25644,7 @@ export default function Todos() {
 {{else}}
 <script lang="ts">
 	{{#if (eq api "orpc")}}
-	import { orpc } from '$lib/orpc';
+	import { orpc } from '#lib/orpc.js';
 	{{/if}}
 	import { createQuery, createMutation } from '@tanstack/svelte-query';
 
@@ -25858,7 +25858,8 @@ import { defineConfig } from "astro/config";
 {{#if (or (includes addons "electrobun") (includes addons "tauri"))}}
 {{else if (eq webDeploy "vercel")}}
 import vercel from "@astrojs/vercel";
-{{else if (or (eq webDeploy "cloudflare") (and (eq webDeploy "prisma") (eq backend "none")))}}
+{{else if (eq webDeploy "cloudflare")}}
+import cloudflare from "@astrojs/cloudflare";
 {{else}}
 import node from "@astrojs/node";
 {{/if}}
@@ -25873,8 +25874,9 @@ export default defineConfig({
 {{else if (eq webDeploy "vercel")}}
   output: "server",
   adapter: vercel(),
-{{else if (or (eq webDeploy "cloudflare") (and (eq webDeploy "prisma") (eq backend "none")))}}
+{{else if (eq webDeploy "cloudflare")}}
   output: "server",
+  adapter: cloudflare(),
 {{else}}
   output: "server",
   adapter: node({ mode: "standalone" }),
@@ -25902,10 +25904,20 @@ export default defineConfig({
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.1"
+    "astro": "^7.3.5"
   },
   "devDependencies": {
 		"@astrojs/check": "^0.9.10",
+{{#unless (or (includes addons "electrobun") (includes addons "tauri"))}}
+{{#if (eq webDeploy "vercel")}}
+    "@astrojs/vercel": "^11.0.11",
+{{else if (eq webDeploy "cloudflare")}}
+    "@astrojs/cloudflare": "^14.3.3",
+    "wrangler": "^4.147.0",
+{{else}}
+    "@astrojs/node": "^11.1.6",
+{{/if}}
+{{/unless}}
     "@tailwindcss/vite": "^4.3.3",
     "tailwindcss": "^4.3.3"
   }
@@ -27292,34 +27304,34 @@ module.exports = withVarlockMetroConfig(config);
     "check-types": "{{#if (and (eq api "orpc") (ne backend "convex") (ne backend "none"))}}tsc -b ../../packages/api && {{/if}}tsc --noEmit"
   },
   "dependencies": {
-    "@expo/ui": "~57.0.16",
-    "@expo/vector-icons": "^15.0.2",
-    "@tanstack/react-query": "^5.102.8",
+    "@expo/ui": "~57.0.21",
+    "@expo/vector-icons": "^15.1.1",
+    "@tanstack/react-query": "^5.104.1",
     {{#if (includes examples "ai")}}
     "@stardazed/streams-text-encoding": "^1.0.2",
     "@ungap/structured-clone": "^1.4.0",
     {{/if}}
-    "expo": "~57.0.20",
-    "expo-constants": "~57.0.17",
-    "expo-crypto": "~57.0.2",
-    "expo-font": "~57.0.3",
-    "expo-linking": "~57.0.9",
-    "expo-network": "~57.0.1",
-    "expo-router": "~57.0.19",
-    "expo-secure-store": "~57.0.3",
-    "expo-splash-screen": "~57.0.8",
+    "expo": "~57.0.26",
+    "expo-constants": "~57.0.20",
+    "expo-crypto": "~57.0.3",
+    "expo-font": "~57.0.4",
+    "expo-linking": "~57.0.11",
+    "expo-network": "~57.0.2",
+    "expo-router": "~57.0.24",
+    "expo-secure-store": "~57.0.4",
+    "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",
-    "expo-system-ui": "~57.0.3",
-    "expo-web-browser": "~57.0.2",
+    "expo-system-ui": "~57.0.4",
+    "expo-web-browser": "~57.0.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
     "react-native-gesture-handler": "~2.32.0",
-    "react-native-reanimated": "4.5.1",
+    "react-native-reanimated": "4.5.5",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.10.1"
+    "react-native-worklets": "0.10.4"
   },
   "devDependencies": {
     "@types/react": "~19.2.18",
@@ -28641,36 +28653,36 @@ module.exports = withVarlockMetroConfig(config);
     "check-types": "{{#if (and (eq api "orpc") (ne backend "convex") (ne backend "none"))}}tsc -b ../../packages/api && {{/if}}tsc --noEmit"
   },
   "dependencies": {
-    "@expo/vector-icons": "^15.0.2",
+    "@expo/vector-icons": "^15.1.1",
     {{#if (includes examples "ai")}}
     "@stardazed/streams-text-encoding": "^1.0.2",
     "@ungap/structured-clone": "^1.4.0",
     {{/if}}
-    "babel-preset-expo": "~57.0.10",
-    "expo": "~57.0.20",
-    "expo-constants": "~57.0.17",
-    "expo-crypto": "~57.0.2",
-    "expo-dev-client": "~57.0.18",
-    "expo-font": "~57.0.3",
-    "expo-linking": "~57.0.9",
-    "expo-network": "~57.0.1",
-    "expo-router": "~57.0.19",
-    "expo-secure-store": "~57.0.3",
-    "expo-splash-screen": "~57.0.8",
+    "babel-preset-expo": "~57.0.13",
+    "expo": "~57.0.26",
+    "expo-constants": "~57.0.20",
+    "expo-crypto": "~57.0.3",
+    "expo-dev-client": "~57.0.19",
+    "expo-font": "~57.0.4",
+    "expo-linking": "~57.0.11",
+    "expo-network": "~57.0.2",
+    "expo-router": "~57.0.24",
+    "expo-secure-store": "~57.0.4",
+    "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",
-    "expo-system-ui": "~57.0.3",
-    "expo-web-browser": "~57.0.2",
+    "expo-system-ui": "~57.0.4",
+    "expo-web-browser": "~57.0.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-nitro-modules": "0.37.1",
-    "react-native-reanimated": "4.5.1",
+    "react-native-reanimated": "4.5.5",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
-    "react-native-unistyles": "^3.3.0",
+    "react-native-unistyles": "^3.4.0",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.10.1"
+    "react-native-worklets": "0.10.4"
   },
   "devDependencies": {
     "ajv": "^8.20.0",
@@ -29835,44 +29847,44 @@ module.exports = withVarlockMetroConfig(uniwindConfig);
     "check-types": "{{#if (and (eq api "orpc") (ne backend "convex") (ne backend "none"))}}tsc -b ../../packages/api && {{/if}}tsc --noEmit"
   },
   "dependencies": {
-    "@expo/metro-runtime": "~57.0.15",
-    "@expo/vector-icons": "^15.0.2",
+    "@expo/metro-runtime": "~57.0.16",
+    "@expo/vector-icons": "^15.1.1",
     "@gorhom/bottom-sheet": "^5.2.14",
     {{#if (includes examples "ai")}}
     "@stardazed/streams-text-encoding": "^1.0.2",
     "@ungap/structured-clone": "^1.4.0",
     {{/if}}
-    "expo": "~57.0.20",
-    "expo-constants": "~57.0.17",
-    "expo-font": "~57.0.3",
-    "expo-haptics": "~57.0.2",
-    "expo-linking": "~57.0.9",
-    "expo-network": "~57.0.1",
-    "expo-router": "~57.0.19",
-    "expo-secure-store": "~57.0.3",
-    "expo-splash-screen": "~57.0.8",
+    "expo": "~57.0.26",
+    "expo-constants": "~57.0.20",
+    "expo-font": "~57.0.4",
+    "expo-haptics": "~57.0.3",
+    "expo-linking": "~57.0.11",
+    "expo-network": "~57.0.2",
+    "expo-router": "~57.0.24",
+    "expo-secure-store": "~57.0.4",
+    "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",
-    "expo-system-ui": "~57.0.3",
-    "expo-web-browser": "~57.0.2",
-    "heroui-native": "^1.0.9",
+    "expo-system-ui": "~57.0.4",
+    "expo-web-browser": "~57.0.3",
+    "heroui-native": "^1.0.10",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
     "react-native-gesture-handler": "~2.32.0",
-    "react-native-keyboard-controller": "1.21.9",
-    "react-native-reanimated": "4.5.1",
+    "react-native-keyboard-controller": "1.22.6",
+    "react-native-reanimated": "4.5.5",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
-    "react-native-svg": "15.15.4",
+    "react-native-svg": "15.15.5",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.10.1",
-    "tailwind-merge": "^3.6.0",
+    "react-native-worklets": "0.10.4",
+    "tailwind-merge": "^3.7.0",
     "tailwind-variants": "^3.3.1",
     "tailwindcss": "^4.3.3",
     "uniwind": "^1.12.0"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.6.4",
     "@types/react": "~19.2.18",
     "typescript": "~6.0.3"
   }
@@ -30225,15 +30237,15 @@ export default defineNuxtConfig({
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/ui": "^4.11.0",
+    "@nuxt/ui": "^4.11.3",
     "nuxt": "^4.5.2",
-    "vue": "^3.5.42",
+    "vue": "^3.5.43",
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
     "tailwindcss": "^4.3.3",
-    "@iconify-json/lucide": "^1.2.129",
-    "vue-tsc": "^3.3.11"
+    "@iconify-json/lucide": "^1.2.139",
+    "vue-tsc": "^3.3.12"
   }
 }
 `],
@@ -30325,19 +30337,19 @@ initOpenNextCloudflareForDev();
   "dependencies": {
     "@{{projectName}}/ui": "{{#if (eq packageManager "npm")}}*{{else}}workspace:*{{/if}}",
     "@swc/helpers": "^0.5.23",
-    "lucide-react": "^1.41.0",
-    "next": "^16.3.4",
+    "lucide-react": "^1.51.0",
+    "next": "^16.3.8",
     "next-themes": "^0.4.6",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "sonner": "^2.0.8",
     "babel-plugin-react-compiler": "^1.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^26.4.1",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3"
   }
 }
@@ -30730,25 +30742,25 @@ export function ThemeProvider({
   },
   "dependencies": {
     "@{{projectName}}/ui": "{{#if (eq packageManager "npm")}}*{{else}}workspace:*{{/if}}",
-    "@react-router/fs-routes": "^8.3.1",
-    "@react-router/node": "^8.3.1",
-    "@react-router/serve": "^8.3.1",
+    "@react-router/fs-routes": "^8.4.0",
+    "@react-router/node": "^8.4.0",
+    "@react-router/serve": "^8.4.0",
     "isbot": "^5.2.2",
-    "lucide-react": "^1.41.0",
+    "lucide-react": "^1.51.0",
     "next-themes": "^0.4.6",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router": "^8.3.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router": "^8.4.0",
     "sonner": "^2.0.8"
   },
   "devDependencies": {
-    "@react-router/dev": "^8.3.1",
+    "@react-router/dev": "^8.4.0",
     "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^26.4.1",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.2.2"
+    "vite": "^8.3.2"
   }
 }
 `],
@@ -31313,23 +31325,23 @@ export default defineConfig({{#if (and (or (eq webDeploy "vercel") (eq webDeploy
 	"dependencies": {
         "@{{projectName}}/ui": "{{#if (eq packageManager "npm")}}*{{else}}workspace:*{{/if}}",
 		"@tailwindcss/vite": "^4.3.3",
-		"@tanstack/react-router": "^1.170.32",
-		"lucide-react": "^1.41.0",
+		"@tanstack/react-router": "^1.170.41",
+		"lucide-react": "^1.51.0",
         "next-themes": "^0.4.6",
-		"react": "^19.2.8",
-		"react-dom": "^19.2.8",
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0",
         "sonner": "^2.0.8"
 	},
 	"devDependencies": {
-		"@tanstack/react-router-devtools": "^1.167.1",
-		"@tanstack/router-plugin": "^1.168.35",
-		"@types/node": "^26.4.1",
-		"@types/react": "^19.2.18",
-		"@types/react-dom": "^19.2.7",
+		"@tanstack/react-router-devtools": "^1.167.2",
+		"@tanstack/router-plugin": "^1.168.42",
+		"@types/node": "^26.6.4",
+		"@types/react": "^19.3.0",
+		"@types/react-dom": "^19.3.0",
 		"@vitejs/plugin-react": "^6.1.1",
 		"postcss": "^8.5.28",
 		"tailwindcss": "^4.3.3",
-		"vite": "^8.2.2"
+		"vite": "^8.3.2"
 	}
 }
 `],
@@ -31766,26 +31778,26 @@ export default defineConfig({
   "dependencies": {
     "@{{projectName}}/ui": "{{#if (eq packageManager "npm")}}*{{else}}workspace:*{{/if}}",
     "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/react-query": "^5.102.8",
-    "@tanstack/react-router": "^1.170.32",
-    "@tanstack/react-start": "^1.168.49",
-    "lucide-react": "^1.41.0",
+    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-router": "^1.170.41",
+    "@tanstack/react-start": "^1.168.60",
+    "lucide-react": "^1.51.0",
     "next-themes": "^0.4.6",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "sonner": "^2.0.8",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@tanstack/react-router-devtools": "^1.167.1",
-    "@testing-library/dom": "^10.4.1",
+    "@tanstack/react-router-devtools": "^1.167.2",
+    "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
-    "jsdom": "^30.0.1",
-    "vite": "^8.2.2",
-    "web-vitals": "^6.2.1"
+    "jsdom": "^30.1.1",
+    "vite": "^8.3.2",
+    "web-vitals": "^6.2.2"
   }
 }
 `],
@@ -32609,16 +32621,16 @@ dist
   },
   "dependencies": {
     "@solidjs/meta": "1.0.0-next.2",
-    "@solidjs/router": "2.0.0-next.23",
-    "@solidjs/web": "2.0.0-rc.7",
-    "solid-js": "2.0.0-rc.7"
+    "@solidjs/router": "2.0.0-next.35",
+    "@solidjs/web": "2.0.0-rc.13",
+    "solid-js": "2.0.0-rc.13"
   },
   "devDependencies": {
-    "@solidjs/vite-plugin": "3.0.0-next.39",
+    "@solidjs/vite-plugin": "3.0.0-next.47",
     "@tailwindcss/vite": "^4.3.3",
-    "filesystem-routing": "0.3.0",
+    "filesystem-routing": "0.4.0",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.2.2"{{#unless (eq webDeploy "cloudflare")}},
+    "vite": "^8.3.2"{{#unless (eq webDeploy "cloudflare")}},
     "nitro": "3.0.260903-beta"{{/unless}}
   },
   "engines": {
@@ -32965,6 +32977,10 @@ vite.config.ts.timestamp-*
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "{{#if (and (eq api "orpc") (ne backend "convex") (ne backend "none"))}}tsc -b ../../packages/api && {{/if}}vite build",
@@ -32976,19 +32992,24 @@ vite.config.ts.timestamp-*
 	},
 	"devDependencies": {
 		{{#if (or (includes addons "electrobun") (includes addons "tauri"))}}
-		"@sveltejs/adapter-static": "^3.0.10",
-		{{else if (eq webDeploy "prisma")}}
-		"@sveltejs/adapter-node": "^5.5.7",
+		"@sveltejs/adapter-static": "^4.0.0",
+		{{else if (eq webDeploy "cloudflare")}}
+		"@sveltejs/adapter-cloudflare": "^8.0.0",
+		"wrangler": "^4.147.0",
+		{{else if (eq webDeploy "vercel")}}
+		"@sveltejs/adapter-vercel": "^7.0.0",
+		{{else if (or (eq webDeploy "docker") (eq webDeploy "prisma"))}}
+		"@sveltejs/adapter-node": "^6.0.0",
 		{{else}}
-		"@sveltejs/adapter-auto": "^7.0.1",
+		"@sveltejs/adapter-auto": "^8.0.0",
 		{{/if}}
-		"@sveltejs/kit": "^2.70.3",
-		"@sveltejs/vite-plugin-svelte": "^7.3.0",
+		"@sveltejs/kit": "^3.0.0",
+		"@sveltejs/vite-plugin-svelte": "^7.3.1",
 		"@tailwindcss/vite": "^4.3.3",
-		"svelte": "^5.57.0",
+		"svelte": "^5.57.1",
 		"svelte-check": "^4.7.6",
 		"tailwindcss": "^4.3.3",
-		"vite": "^8.2.2"
+		"vite": "^8.3.2"
 	},
 	"dependencies": {}
 }
@@ -33077,7 +33098,7 @@ export {};
 	<hr class="border-neutral-800" />
 </div>
 `],
-  ["frontend/svelte/src/lib/index.ts", `// place files you want to import through the \`$lib\` alias in this folder.
+  ["frontend/svelte/src/lib/index.ts", `// Place files you want to import through the \`#lib\` alias in this folder.
 export {};
 `],
   ["frontend/svelte/src/routes/+layout.svelte.hbs", `{{#if (eq backend "convex")}}
@@ -33103,7 +33124,7 @@ export {};
     import { QueryClientProvider } from '@tanstack/svelte-query';
     import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools'
 	import '../app.css';
-    import { queryClient } from '$lib/orpc';
+    import { queryClient } from '#lib/orpc.js';
     import Header from '../components/Header.svelte';
 
 	const { children } = $props();
@@ -33182,7 +33203,7 @@ const TITLE_TEXT = \`
 {{else}}
 <script lang="ts">
 {{#if (eq api "orpc")}}
-import { orpc } from "$lib/orpc";
+import { orpc } from "#lib/orpc.js";
 import { createQuery } from "@tanstack/svelte-query";
 const healthCheck = createQuery(() => orpc.healthCheck.queryOptions());
 {{/if}}
@@ -33229,56 +33250,13 @@ const TITLE_TEXT = \`
 {{/if}}
 `],
   ["frontend/svelte/static/favicon.png", `[Binary file]`],
-  ["frontend/svelte/svelte.config.js.hbs", `{{#if (or (includes addons "electrobun") (includes addons "tauri"))}}
-import adapter from '@sveltejs/adapter-static';
-{{else if (eq webDeploy "cloudflare")}}
-import adapter from '@sveltejs/adapter-cloudflare';
-{{else if (or (eq webDeploy "docker") (eq webDeploy "prisma"))}}
-import adapter from '@sveltejs/adapter-node';
-{{else if (eq webDeploy "vercel")}}
-import adapter from '@sveltejs/adapter-vercel';
-{{else}}
-import adapter from '@sveltejs/adapter-auto';
-{{/if}}
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-	// Consult https://svelte.dev/docs/kit/integrations
-	// for more information about preprocessors
-	preprocess: vitePreprocess(),
-
-	kit: {
-{{#if (or (includes addons "electrobun") (includes addons "tauri"))}}
-		// adapter-static emits files Electrobun and Tauri can bundle directly.
-		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
-			fallback: 'index.html'
-		})
-{{else if (eq webDeploy "cloudflare")}}
-		adapter: adapter()
-{{else if (or (eq webDeploy "docker") (eq webDeploy "prisma"))}}
-		// adapter-node builds a standalone Node server (run with \`node build/index.js\`).
-		adapter: adapter()
-{{else if (eq webDeploy "vercel")}}
-		adapter: adapter({ runtime: 'nodejs24.x' })
-{{else}}
-		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-		adapter: adapter()
-{{/if}}
-	}
-};
-
-export default config;
-`],
   ["frontend/svelte/tsconfig.json.hbs", `{
   {{#if (and (eq api "orpc") (ne backend "convex") (ne backend "none"))}}
   "references": [{ "path": "../../packages/api" }],
   {{/if}}
-	"extends": "./.svelte-kit/tsconfig.json",
+	"extends": "$app/tsconfig",
+	"include": ["src", "*"],
+	"exclude": ["src/service-worker"],
 	"compilerOptions": {
     {{#if (and (eq api "orpc") (ne backend "convex") (ne backend "none"))}}
     "disableSourceOfProjectReferenceRedirect": true,
@@ -33294,11 +33272,7 @@ export default config;
 		"moduleResolution": "bundler"{{#if (eq webDeploy "cloudflare")}},
 			"types": ["@cloudflare/workers-types"]{{/if}}
 	}
-	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
-	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
-	//
-	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
-	// from the referenced tsconfig.json - TypeScript does not merge them in
+	// SvelteKit uses #lib imports as declared in this package's imports map.
 }
 `],
   ["frontend/svelte/vite.config.ts.hbs", `{{#unless (eq webDeploy "cloudflare")}}
@@ -33306,7 +33280,19 @@ import { varlockVitePlugin } from "@varlock/vite-integration";
 {{/unless}}
 import tailwindcss from "@tailwindcss/vite";
 import { sveltekit } from "@sveltejs/kit/vite";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "{{#if (includes addons "vite-plus")}}vite-plus{{else}}vite{{/if}}";
+{{#if (or (includes addons "electrobun") (includes addons "tauri"))}}
+import adapter from "@sveltejs/adapter-static";
+{{else if (eq webDeploy "cloudflare")}}
+import adapter from "@sveltejs/adapter-cloudflare";
+{{else if (or (eq webDeploy "docker") (eq webDeploy "prisma"))}}
+import adapter from "@sveltejs/adapter-node";
+{{else if (eq webDeploy "vercel")}}
+import adapter from "@sveltejs/adapter-vercel";
+{{else}}
+import adapter from "@sveltejs/adapter-auto";
+{{/if}}
 {{#if (and (eq webDeploy "cloudflare") (eq backend "self") (eq orm "prisma"))}}
 import { unwasm } from "unwasm/plugin";
 {{/if}}
@@ -33320,7 +33306,27 @@ export default defineConfig({
     unwasm({ esmImport: true }),
 {{/if}}
     tailwindcss(),
-    sveltekit(),
+    sveltekit({
+      preprocess: vitePreprocess(),
+{{#if (or (includes addons "electrobun") (includes addons "tauri"))}}
+      // adapter-static emits files Electrobun and Tauri can bundle directly.
+      adapter: adapter({
+        pages: "build",
+        assets: "build",
+        fallback: "index.html",
+      }),
+{{else if (eq webDeploy "cloudflare")}}
+      adapter: adapter(),
+{{else if (or (eq webDeploy "docker") (eq webDeploy "prisma"))}}
+      // adapter-node builds a standalone Node server (run with \`node build/index.js\`).
+      adapter: adapter(),
+{{else if (eq webDeploy "vercel")}}
+      adapter: adapter({ runtime: "nodejs24.x" }),
+{{else}}
+      // adapter-auto supports a limited set of environments; see the SvelteKit adapter docs.
+      adapter: adapter(),
+{{/if}}
+    }),
   ],
 {{#if (and (eq webDeploy "prisma") (ne backend "none"))}}
   // Prisma Compute uploads only the build artifact, so keep the official
@@ -33427,20 +33433,20 @@ export default defineConfig({
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@shadcn/react": "^0.3.1",
-    "shadcn": "^4.21.0",
+    "shadcn": "^4.21.1",
     "class-variance-authority": "^0.7.1",
-    "cn": "^0.2.5",
-    "lucide-react": "^1.41.0",
+    "cn": "^0.4.0",
+    "lucide-react": "^1.51.0",
     "next-themes": "^0.4.6",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "sonner": "^2.0.8",
     "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "tailwindcss": "^4.3.3"
   },
   "scripts": {
@@ -35230,10 +35236,10 @@ export const syncProducts = action({
   },
 });
 `],
-  ["payments/polar/server/base/src/lib/payments.ts.hbs", `import { Polar } from "@polar-sh/sdk";
+  ["payments/polar/server/base/src/lib/payments.ts.hbs", `import { createPolarCore } from "@polar-sh/sdk/2026-10";
 
 export function createPolarClient(config: { POLAR_ACCESS_TOKEN: string }) {
-  return new Polar({ accessToken: config.POLAR_ACCESS_TOKEN, server: "sandbox" });
+  return createPolarCore({ accessToken: config.POLAR_ACCESS_TOKEN, environment: "sandbox" });
 }
 `],
   ["payments/polar/web/nuxt/app/pages/success.vue.hbs", `<script setup lang="ts">
@@ -35366,4 +35372,4 @@ export default function Success() {
 `]
 ]);
 
-export const TEMPLATE_COUNT = 527;
+export const TEMPLATE_COUNT = 526;

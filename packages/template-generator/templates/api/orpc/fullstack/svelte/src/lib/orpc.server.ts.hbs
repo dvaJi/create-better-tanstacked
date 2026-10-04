@@ -26,6 +26,6 @@ const serverClient: AppRouterClient = createRouterClient(appRouter, {
 	},
 });
 
-// oRPC's SvelteKit SSR setup loads this from hooks.server.ts so $lib/orpc can
+// oRPC's SvelteKit SSR setup loads this from hooks.server.ts so #lib/orpc.js can
 // reuse the in-process server client during SSR and fall back to HTTP in the browser.
 globalThis.$client = serverClient;
