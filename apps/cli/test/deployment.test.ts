@@ -794,6 +794,7 @@ describe("Deployment Configurations", () => {
       expect(viteConfig).toContain('adapter: adapter({ runtime: "nodejs24.x" })');
       expect(files.has("apps/web/svelte.config.js")).toBe(false);
       expect(webPkg.imports["#lib/*"]).toBe("./src/lib/*");
+      expect(webPkg.devDependencies["@sveltejs/kit"]).toBe("^3.0.0");
       expect(webPkg.devDependencies["@sveltejs/adapter-vercel"]).toBeDefined();
     });
 

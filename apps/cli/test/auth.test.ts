@@ -197,7 +197,6 @@ describe("Authentication Configurations", () => {
       const authPackageJson = await fs.readJson(
         path.join(result.projectDir, "packages/auth/package.json"),
       );
-
       expect(authRoute).toContain('import type { APIHandler } from "filesystem-routing/api";');
       expect(authRoute).toContain("auth.handler(request)");
       expect(authClient).toContain('from "../client"');
@@ -238,6 +237,7 @@ describe("Authentication Configurations", () => {
       const authPackageJson = await fs.readJson(
         path.join(result.projectDir, "packages/auth/package.json"),
       );
+      const packageJson = await fs.readJson(path.join(result.projectDir, "package.json"));
 
       expect(authRouteFile).toContain('createFileRoute("/_auth")');
       const guardIndex = authRouteFile.indexOf("if (!session)");
@@ -247,6 +247,7 @@ describe("Authentication Configurations", () => {
       expect(paymentIndex).toBeGreaterThanOrEqual(0);
       expect(guardIndex).toBeLessThan(paymentIndex);
       expect(authPackageJson.dependencies["@polar-sh/sdk"]).toBeDefined();
+      expect(packageJson.engines.node).toBe(">=24.0.0");
     });
 
     it("should work with better-auth + convex backend (tanstack-router)", async () => {
@@ -735,6 +736,19 @@ describe("Authentication Configurations", () => {
           await fs.readFile(path.join(result.projectDir, "package.json"), "utf8"),
         );
         expect(packageJson.workspaces.catalog["better-auth"]).toBeDefined();
+
+        if (frontend === "svelte") {
+          const webPackageJson = await fs.readJson(
+            path.join(result.projectDir, "apps/web/package.json"),
+          );
+          const hooksServer = await fs.readFile(
+            path.join(result.projectDir, "apps/web/src/hooks.server.ts"),
+            "utf8",
+          );
+          expect(webPackageJson.devDependencies["@sveltejs/kit"]).toBe("^2.70.3");
+          expect(hooksServer).toContain('from "$app/environment"');
+          expect(hooksServer).toContain('from "@sveltejs/kit"');
+        }
       });
     }
   });

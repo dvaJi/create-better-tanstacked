@@ -5974,7 +5974,7 @@ export const POST = handle;
   ["auth/better-auth/fullstack/svelte/src/hooks.server.ts.hbs", `{{#if (eq api "orpc")}}
 import "./lib/orpc.server";
 {{/if}}
-import { building } from "$app/env";
+import { building } from "$app/environment";
 {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}
 import { createAuth } from "@{{projectName}}/auth";
 {{#if (and (eq backend "self") (eq webDeploy "cloudflare"))}}
@@ -5984,7 +5984,7 @@ import { ENV } from "./env.server";
 import { auth } from "@{{projectName}}/auth";
 {{/if}}
 import { svelteKitHandler } from "better-auth/svelte-kit";
-import type { Handle } from "@sveltejs/kit/hooks";
+import type { Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
 {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}
@@ -15248,8 +15248,14 @@ temp
     "@solidjs/babel-plugin": "2.0.0-rc.13"
   },
 {{/if}}
-{{#if (includes addons "vite-plus")}}
+{{#if (and (includes addons "vite-plus") (and (eq auth "better-auth") (eq payments "polar")))}}
+  "engines": { "node": "^24.11.0 || >=26.0.0" },
+{{else if (includes addons "vite-plus")}}
   "engines": { "node": "^22.18.0 || ^24.11.0 || >=26.0.0" },
+{{else if (and (eq auth "better-auth") (eq payments "polar"))}}
+  "engines": { "node": ">=24.0.0" },
+{{else if (and (includes frontend "svelte") (eq auth "better-auth"))}}
+  "engines": { "node": "^20.19.0 || ^22.12.0 || >=24.0.0" },
 {{else if (includes frontend "svelte")}}
   "engines": { "node": ">=22.17.0" },
 {{/if}}
@@ -32992,18 +32998,42 @@ vite.config.ts.timestamp-*
 	},
 	"devDependencies": {
 		{{#if (or (includes addons "electrobun") (includes addons "tauri"))}}
+		{{#if (eq auth "better-auth")}}
+		"@sveltejs/adapter-static": "^3.0.10",
+		{{else}}
 		"@sveltejs/adapter-static": "^4.0.0",
+		{{/if}}
 		{{else if (eq webDeploy "cloudflare")}}
+		{{#if (eq auth "better-auth")}}
+		"@sveltejs/adapter-cloudflare": "^7.2.9",
+		{{else}}
 		"@sveltejs/adapter-cloudflare": "^8.0.0",
+		{{/if}}
 		"wrangler": "^4.147.0",
 		{{else if (eq webDeploy "vercel")}}
+		{{#if (eq auth "better-auth")}}
+		"@sveltejs/adapter-vercel": "^6.3.4",
+		{{else}}
 		"@sveltejs/adapter-vercel": "^7.0.0",
+		{{/if}}
 		{{else if (or (eq webDeploy "docker") (eq webDeploy "prisma"))}}
+		{{#if (eq auth "better-auth")}}
+		"@sveltejs/adapter-node": "^5.5.7",
+		{{else}}
 		"@sveltejs/adapter-node": "^6.0.0",
+		{{/if}}
+		{{else}}
+		{{#if (eq auth "better-auth")}}
+		"@sveltejs/adapter-auto": "^7.0.1",
 		{{else}}
 		"@sveltejs/adapter-auto": "^8.0.0",
 		{{/if}}
+		{{/if}}
+		{{#if (eq auth "better-auth")}}
+		"@sveltejs/kit": "^2.70.3",
+		{{else}}
 		"@sveltejs/kit": "^3.0.0",
+		{{/if}}
 		"@sveltejs/vite-plugin-svelte": "^7.3.1",
 		"@tailwindcss/vite": "^4.3.3",
 		"svelte": "^5.57.1",
@@ -33254,9 +33284,13 @@ const TITLE_TEXT = \`
   {{#if (and (eq api "orpc") (ne backend "convex") (ne backend "none"))}}
   "references": [{ "path": "../../packages/api" }],
   {{/if}}
+	{{#if (eq auth "better-auth")}}
+	"extends": "./.svelte-kit/tsconfig.json",
+	{{else}}
 	"extends": "$app/tsconfig",
 	"include": ["src", "*"],
 	"exclude": ["src/service-worker"],
+	{{/if}}
 	"compilerOptions": {
     {{#if (and (eq api "orpc") (ne backend "convex") (ne backend "none"))}}
     "disableSourceOfProjectReferenceRedirect": true,
@@ -33272,7 +33306,7 @@ const TITLE_TEXT = \`
 		"moduleResolution": "bundler"{{#if (eq webDeploy "cloudflare")}},
 			"types": ["@cloudflare/workers-types"]{{/if}}
 	}
-	// SvelteKit uses #lib imports as declared in this package's imports map.
+	// Svelte imports use the package imports map declared in package.json.
 }
 `],
   ["frontend/svelte/vite.config.ts.hbs", `{{#unless (eq webDeploy "cloudflare")}}
