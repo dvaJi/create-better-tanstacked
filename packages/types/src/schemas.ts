@@ -156,9 +156,11 @@ export const InstallScopeSchema = z.enum(["project", "global"]).describe("Instal
 
 export const McpServerSchema = z
   .enum([
-    "better-t-stack",
     "context7",
     "cloudflare-docs",
+    "cloudflare-api",
+    "deepwiki",
+    "coolify",
     "shadcn",
     "planetscale",
     "neon",

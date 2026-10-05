@@ -90,11 +90,10 @@ async function runWithFakeBunx<T>(
 }
 
 describe("Addon setup regressions", () => {
-  it("uses a package execution command for the Better T Stack MCP server target", () => {
+  it("does not recommend the Better T Stack scaffold MCP for generated projects", () => {
     const servers = getRecommendedMcpServers(createProjectConfig(), "project");
-    const betterTStackServer = servers.find((server) => server.key === "better-t-stack");
 
-    expect(betterTStackServer?.target).toBe("bunx create-better-tanstacked@latest mcp");
+    expect(servers.map((server) => server.key)).toEqual(["context7", "shadcn"]);
   });
 
   it("preserves explicit empty MCP selections in silent mode", async () => {

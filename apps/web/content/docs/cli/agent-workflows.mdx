@@ -160,13 +160,13 @@ Important field rules:
 - `install` should usually be `false` for `bts_create_project`, because dependency installation can exceed common MCP client timeouts. Run `npm install`, `pnpm install`, or `bun install` separately after scaffolding.
 - If a request is still ambiguous after reading the guidance, the agent should resolve that ambiguity before calling `bts_plan_project`.
 
-If you scaffold a project with the `mcp` addon, Better-T-Stack itself is now one of the recommended MCP servers. The addon installs it through `add-mcp` with a package runner command so the generated config does not rely on a globally installed CLI:
+The `mcp` addon installs MCP servers for working inside the generated app: Context7 for library documentation, shadcn/ui for registry components, and docs or provider servers for selected infrastructure. Generated TanStack React projects use shadcn/ui's `base-rhea` style in `components.json`; Rhea is the UI style, while shadcn is the registry MCP.
 
-```bash
-npx -y add-mcp@latest "npx -y create-better-tanstacked@latest mcp"
-```
+Cloudflare Workers or Cloudflare deployment selections recommend [Cloudflare Docs](https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/) and its API MCP. The API server uses OAuth and asks the client to authorize the account permissions it needs. [DeepWiki](https://mcp.deepwiki.com/) is available for public GitHub repositories; it is optional because new projects may not be published or indexed yet. Private repository access uses Devin API authentication.
 
-For Bun projects, the generated config uses the equivalent `bunx create-better-tanstacked@latest mcp` server command inside `add-mcp`. That means MCP-capable agents inside the generated project can talk back to Better-T-Stack without any extra global install, alongside other recommended docs, framework, and database MCP servers.
+[Coolify](https://coolify.io/docs/mcp/setup) is available as an optional server. The addon registers the Coolify Cloud endpoint but does not collect or store a token. Enable MCP for your Coolify instance and team, create a least-privilege API token, then add it to your MCP client's secret configuration. For self-hosted Coolify, replace the endpoint with your instance URL. Never commit the token.
+
+Better-T-Stack's own MCP is a separate tool for scaffolding or modifying Better-T-Stack projects. Install it through the Better-T-Stack plugin or run `npx create-better-tanstacked@latest mcp` directly; it is not included in generated app configurations.
 
 ## Use it inside your AI agent
 

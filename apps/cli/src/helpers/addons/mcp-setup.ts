@@ -8,7 +8,7 @@ import type { AddonOptions, ProjectConfig } from "../../types";
 import { isSilent } from "../../utils/context";
 import { AddonSetupError, UserCancelledError } from "../../utils/errors";
 import { shouldSkipExternalCommands } from "../../utils/external-commands";
-import { getPackageExecutionCommand, getPackageRunnerPrefix } from "../../utils/package-runner";
+import { getPackageRunnerPrefix } from "../../utils/package-runner";
 import { cliLog, createSpinner } from "../../utils/terminal-output";
 
 type McpTransport = "http" | "sse";
@@ -69,17 +69,8 @@ function hasReactBasedFrontend(frontend: ProjectConfig["frontend"]): boolean {
   return frontend.includes("tanstack-router") || frontend.includes("tanstack-start");
 }
 
-function getAllMcpServers(config: ProjectConfig): McpServerDef[] {
+function getAllMcpServers(): McpServerDef[] {
   return [
-    {
-      key: "better-t-stack",
-      label: "Better T Stack",
-      name: "better-t-stack",
-      target: getPackageExecutionCommand(
-        config.packageManager,
-        "create-better-tanstacked@latest mcp",
-      ),
-    },
     {
       key: "context7",
       label: "Context7",
@@ -91,6 +82,24 @@ function getAllMcpServers(config: ProjectConfig): McpServerDef[] {
       label: "Cloudflare Docs",
       name: "cloudflare-docs",
       target: "https://docs.mcp.cloudflare.com/mcp",
+    },
+    {
+      key: "cloudflare-api",
+      label: "Cloudflare API",
+      name: "cloudflare-api",
+      target: "https://mcp.cloudflare.com/mcp",
+    },
+    {
+      key: "deepwiki",
+      label: "DeepWiki (public repositories)",
+      name: "deepwiki",
+      target: "https://mcp.deepwiki.com/mcp",
+    },
+    {
+      key: "coolify",
+      label: "Coolify (manual API token setup)",
+      name: "coolify",
+      target: "https://app.coolify.io/mcp",
     },
     {
       key: "shadcn",
@@ -141,15 +150,15 @@ export function getRecommendedMcpServers(
   config: ProjectConfig,
   _scope: InstallScope,
 ): McpServerDef[] {
-  const serversByKey = new Map(getAllMcpServers(config).map((server) => [server.key, server]));
-  const recommendedServerKeys: McpServerKey[] = ["better-t-stack", "context7"];
+  const serversByKey = new Map(getAllMcpServers().map((server) => [server.key, server]));
+  const recommendedServerKeys: McpServerKey[] = ["context7"];
 
   if (
     config.runtime === "workers" ||
     config.webDeploy === "cloudflare" ||
     config.serverDeploy === "cloudflare"
   ) {
-    recommendedServerKeys.push("cloudflare-docs");
+    recommendedServerKeys.push("cloudflare-docs", "cloudflare-api");
   }
 
   if (hasReactBasedFrontend(config.frontend)) {
@@ -204,7 +213,7 @@ export async function setupMcp(
   const configuredServerKeys = config.addonOptions?.mcp?.servers;
   const configuredAgents = config.addonOptions?.mcp?.agents;
 
-  const allServersByKey = new Map(getAllMcpServers(config).map((server) => [server.key, server]));
+  const allServersByKey = new Map(getAllMcpServers().map((server) => [server.key, server]));
   const availableServerKeys = new Set(allServersByKey.keys());
 
   let scope: InstallScope;
@@ -255,19 +264,20 @@ export async function setupMcp(
         const currentScope = (r.scope ?? configuredScope ?? DEFAULT_SCOPE) as InstallScope;
         const recommended = getRecommendedMcpServers(config, currentScope);
         if (recommended.length === 0) return [];
-        const options = recommended.map((s) => ({
+        const recommendedKeys = new Set(recommended.map((server) => server.key));
+        const options = [...allServersByKey.values()].map((s) => ({
           value: s.key,
-          label: s.label,
+          label: recommendedKeys.has(s.key) ? `${s.label} (recommended)` : s.label,
           hint: s.target,
         }));
         if (configuredServerKeys !== undefined) {
           return configuredServerKeys.filter((k) => availableServerKeys.has(k));
         }
         return navigableMultiselect<McpServerKey>({
-          message: "Select MCP servers to install",
+          message: "Select MCP servers to install (recommended servers are preselected)",
           options,
           required: false,
-          initialValues: options.map((o) => o.value),
+          initialValues: recommended.map((server) => server.key),
         });
       },
       agents: async ({ results: r }) => {

@@ -80,7 +80,7 @@ function getAddonDisplay(addon: Addons): AddonDisplay {
       break;
     case "mcp":
       label = "MCP";
-      hint = "Install MCP servers, including Better T Stack, via add-mcp";
+      hint = "Install docs, UI registry, and provider MCP servers via add-mcp";
       break;
     case "evlog":
       label = "evlog";
