@@ -1,4 +1,8 @@
+{{#if (or (eq orm "drizzle") (eq orm "prisma") (eq orm "mongoose"))}}
+import { betterAuth } from "better-auth/minimal";
+{{else}}
 import { betterAuth } from "better-auth";
+{{/if}}
 {{#if (eq orm "prisma")}}
 import { prismaAdapter } from "better-auth/adapters/prisma";
 {{else if (eq orm "drizzle")}}
@@ -46,6 +50,14 @@ export function createAuth(env: AuthConfig{{#if (ne database "none")}}, database
       ...desktopOrigins{{/if}},
     ],
     emailAndPassword: { enabled: true },
+{{#if (ne database "none")}}
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // Revoked sessions may remain active until this cache expires.
+      },
+    },
+{{/if}}
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
 {{#if (ne backend "self")}}

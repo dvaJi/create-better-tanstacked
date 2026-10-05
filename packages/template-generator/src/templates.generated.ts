@@ -1366,6 +1366,12 @@ function createAuth(ctx: GenericCtx<DataModel>) {
       enabled: true,
       requireEmailVerification: false,
     },
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // Revoked sessions may remain active until this cache expires.
+      },
+    },
     plugins: [
       {{#if (or (includes frontend "tanstack-router") (includes frontend "tanstack-start"))}}
       crossDomain({ siteUrl }),
@@ -2414,7 +2420,11 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
   },
   "devDependencies": {}
 }`],
-  ["auth/better-auth/server/base/src/index.ts.hbs", `import { betterAuth } from "better-auth";
+  ["auth/better-auth/server/base/src/index.ts.hbs", `{{#if (or (eq orm "drizzle") (eq orm "prisma") (eq orm "mongoose"))}}
+import { betterAuth } from "better-auth/minimal";
+{{else}}
+import { betterAuth } from "better-auth";
+{{/if}}
 {{#if (eq orm "prisma")}}
 import { prismaAdapter } from "better-auth/adapters/prisma";
 {{else if (eq orm "drizzle")}}
@@ -2462,6 +2472,14 @@ export function createAuth(env: AuthConfig{{#if (ne database "none")}}, database
       ...desktopOrigins{{/if}},
     ],
     emailAndPassword: { enabled: true },
+{{#if (ne database "none")}}
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // Revoked sessions may remain active until this cache expires.
+      },
+    },
+{{/if}}
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
 {{#if (ne backend "self")}}
@@ -9344,7 +9362,8 @@ declare module "cloudflare:workers" {
 		"@types/node": "^26.6.4",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
-		"@vitejs/plugin-react": "^6.1.1",
+		"@vitejs/plugin-react": "^6.1.2",
+		"oxc-transform-react": "^0.152.0",
 		"postcss": "^8.5.28",
 		"tailwindcss": "^4.3.3",
 		"vite": "^8.3.2"
@@ -9767,7 +9786,7 @@ export default defineConfig({
       target: "react",
       autoCodeSplitting: true,
     }),
-    react(),
+    react({ compiler: true }),
   ],
 });
 `],
@@ -9800,7 +9819,8 @@ export default defineConfig({
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.1",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxc-transform-react": "^0.152.0",
     "jsdom": "^30.1.1",
     "vite": "^8.3.2",
     "web-vitals": "^6.2.2"
@@ -10406,7 +10426,7 @@ export default defineConfig({
 {{#if (or (eq webDeploy "docker") (eq webDeploy "vercel") (and (eq webDeploy "prisma") (ne backend "none")) (and (ne webDeploy "cloudflare") (not (and (eq webDeploy "prisma") (eq backend "none"))) (includes addons "axiom")))}}
     nitro({{#if (eq webDeploy "docker")}}{ preset: "{{#if (eq runtime "bun")}}bun{{else}}node-server{{/if}}" }{{/if}}),
 {{/if}}
-    viteReact(),
+    viteReact({ compiler: true }),
   ],
 {{#if (eq webDeploy "vercel")}}
   // Bundle all SSR deps: Vercel functions have no node_modules at runtime

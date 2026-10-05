@@ -50,7 +50,7 @@ export default defineConfig({
 {{#if (or (eq webDeploy "docker") (eq webDeploy "vercel") (and (eq webDeploy "prisma") (ne backend "none")) (and (ne webDeploy "cloudflare") (not (and (eq webDeploy "prisma") (eq backend "none"))) (includes addons "axiom")))}}
     nitro({{#if (eq webDeploy "docker")}}{ preset: "{{#if (eq runtime "bun")}}bun{{else}}node-server{{/if}}" }{{/if}}),
 {{/if}}
-    viteReact(),
+    viteReact({ compiler: true }),
   ],
 {{#if (eq webDeploy "vercel")}}
   // Bundle all SSR deps: Vercel functions have no node_modules at runtime

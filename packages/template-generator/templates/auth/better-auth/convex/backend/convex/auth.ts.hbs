@@ -32,6 +32,12 @@ function createAuth(ctx: GenericCtx<DataModel>) {
       enabled: true,
       requireEmailVerification: false,
     },
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // Revoked sessions may remain active until this cache expires.
+      },
+    },
     plugins: [
       {{#if (or (includes frontend "tanstack-router") (includes frontend "tanstack-start"))}}
       crossDomain({ siteUrl }),
