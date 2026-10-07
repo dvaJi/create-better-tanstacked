@@ -1,3 +1,4 @@
+import { DEFAULT_CONFIG } from "../constants";
 import type { API, Backend, Frontend } from "../types";
 import {
   allowedApisForFrontends,
@@ -46,7 +47,7 @@ export async function getApiChoice(
   const apiType = await navigableSelect<API>({
     message: "Choose an API layer",
     options: apiOptions,
-    initialValue: preferValidInitial(apiOptions, previousValue, apiOptions[0].value),
+    initialValue: preferValidInitial(apiOptions, previousValue, DEFAULT_CONFIG.api),
   });
 
   if (isCancel(apiType)) throw new UserCancelledError({ message: "Operation cancelled" });

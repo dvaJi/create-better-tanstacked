@@ -23,6 +23,7 @@ export type McpServerDef = {
   label: string;
   name: string;
   target: string;
+  hint?: string;
   transport?: McpTransport;
   headers?: string[];
 };
@@ -59,7 +60,7 @@ const MCP_AGENTS: AgentOption[] = [
 ];
 
 const DEFAULT_SCOPE: InstallScope = "project";
-const DEFAULT_AGENTS: McpAgent[] = ["cursor", "claude-code", "vscode"];
+const DEFAULT_AGENTS: McpAgent[] = ["codex", "claude-code", "opencode"];
 
 function uniqueValues<T>(values: T[]): T[] {
   return Array.from(new Set(values));
@@ -97,9 +98,10 @@ function getAllMcpServers(): McpServerDef[] {
     },
     {
       key: "coolify",
-      label: "Coolify (manual API token setup)",
+      label: "Coolify (user API token required)",
       name: "coolify",
       target: "https://app.coolify.io/mcp",
+      hint: "Requires a team-scoped Coolify API token; use your own instance URL when self-hosted",
     },
     {
       key: "shadcn",
@@ -151,7 +153,7 @@ export function getRecommendedMcpServers(
   _scope: InstallScope,
 ): McpServerDef[] {
   const serversByKey = new Map(getAllMcpServers().map((server) => [server.key, server]));
-  const recommendedServerKeys: McpServerKey[] = ["context7"];
+  const recommendedServerKeys: McpServerKey[] = ["context7", "deepwiki"];
 
   if (
     config.runtime === "workers" ||
@@ -159,6 +161,10 @@ export function getRecommendedMcpServers(
     config.serverDeploy === "cloudflare"
   ) {
     recommendedServerKeys.push("cloudflare-docs", "cloudflare-api");
+  }
+
+  if (config.serverDeploy === "docker") {
+    recommendedServerKeys.push("coolify");
   }
 
   if (hasReactBasedFrontend(config.frontend)) {
@@ -268,7 +274,7 @@ export async function setupMcp(
         const options = [...allServersByKey.values()].map((s) => ({
           value: s.key,
           label: recommendedKeys.has(s.key) ? `${s.label} (recommended)` : s.label,
-          hint: s.target,
+          hint: s.hint ?? s.target,
         }));
         if (configuredServerKeys !== undefined) {
           return configuredServerKeys.filter((k) => availableServerKeys.has(k));
@@ -388,5 +394,14 @@ export async function setupMcp(
       ? "MCP servers installed"
       : "MCP servers installed with warnings",
   );
+
+  if (selectedServers.some((server) => server.key === "coolify")) {
+    cliLog.info(
+      pc.cyan(
+        "Finish Coolify MCP authentication in your private agent settings with a team-scoped API token: https://coolify.io/docs/mcp/setup",
+      ),
+    );
+  }
+
   return Result.ok(undefined);
 }

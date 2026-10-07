@@ -1,5 +1,6 @@
 import { supportsDatabaseSetup, supportsDatabaseSetupRuntime } from "@better-t-stack/types";
 
+import { DEFAULT_CONFIG } from "../constants";
 import {
   supportsAlchemyManagedDatabase,
   type Backend,
@@ -66,7 +67,7 @@ export async function getDBSetupChoice(
   const response = await navigableSelect<DatabaseSetup>({
     message: `Choose a ${databaseType} setup`,
     options,
-    initialValue: preferValidInitial(options, previousValue, "none"),
+    initialValue: preferValidInitial(options, previousValue, DEFAULT_CONFIG.dbSetup),
   });
 
   if (isCancel(response)) throw new UserCancelledError({ message: "Operation cancelled" });

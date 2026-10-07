@@ -11,7 +11,6 @@ export const TECH_OPTIONS: TechOptions = {
       description: "End-to-end typesafe APIs",
       icon: `${ICON_BASE_URL}/trpc.svg`,
       color: "from-blue-500 to-blue-700",
-      default: true,
     },
     {
       id: "orpc",
@@ -19,6 +18,7 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Typesafe APIs Made Simple",
       icon: `${ICON_BASE_URL}/orpc.svg`,
       color: "from-indigo-400 to-indigo-600",
+      default: true,
     },
     {
       id: "none",
@@ -35,7 +35,6 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Modern type-safe router for React",
       icon: `${ICON_BASE_URL}/tanstack.svg`,
       color: "from-blue-400 to-blue-600",
-      default: true,
     },
     {
       id: "tanstack-start",
@@ -43,7 +42,7 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Full-stack React framework powered by TanStack Router",
       icon: `${ICON_BASE_URL}/tanstack.svg`,
       color: "from-purple-400 to-purple-600",
-      default: false,
+      default: true,
     },
     {
       id: "none",
@@ -92,7 +91,6 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Ultrafast web framework",
       icon: `${ICON_BASE_URL}/hono.svg`,
       color: "from-blue-500 to-blue-700",
-      default: true,
     },
     {
       id: "elysia",
@@ -100,6 +98,7 @@ export const TECH_OPTIONS: TechOptions = {
       description: "TypeScript web framework",
       icon: `${ICON_BASE_URL}/elysia.svg`,
       color: "from-purple-500 to-purple-700",
+      default: true,
     },
     {
       id: "self-tanstack-start",
@@ -123,7 +122,6 @@ export const TECH_OPTIONS: TechOptions = {
       description: "File-based SQL database",
       icon: `${ICON_BASE_URL}/sqlite.svg`,
       color: "from-blue-400 to-cyan-500",
-      default: true,
     },
     {
       id: "postgres",
@@ -131,6 +129,7 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Advanced SQL database",
       icon: `${ICON_BASE_URL}/postgres.svg`,
       color: "from-indigo-400 to-indigo-600",
+      default: true,
     },
     {
       id: "none",
@@ -203,9 +202,10 @@ export const TECH_OPTIONS: TechOptions = {
     {
       id: "docker",
       name: "Docker",
-      description: "Run PostgreSQL locally via Docker Compose",
+      description: "Run PostgreSQL in Docker Compose for local development or self-hosting",
       icon: `${ICON_BASE_URL}/docker.svg`,
       color: "from-blue-500 to-blue-700",
+      default: true,
     },
     {
       id: "none",
@@ -213,7 +213,6 @@ export const TECH_OPTIONS: TechOptions = {
       description: "No cloud DB integration",
       icon: "",
       color: "from-gray-400 to-gray-600",
-      default: true,
     },
   ],
   webDeploy: [
@@ -223,6 +222,7 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Deploy to Cloudflare Workers using Alchemy",
       icon: `${ICON_BASE_URL}/workers.svg`,
       color: "from-orange-400 to-orange-600",
+      default: true,
     },
     {
       id: "prisma",
@@ -234,7 +234,7 @@ export const TECH_OPTIONS: TechOptions = {
     {
       id: "docker",
       name: "Docker",
-      description: "Self-host with a Dockerfile and docker-compose.yml",
+      description: "Self-host with Docker Compose or deploy as a Coolify Compose resource",
       icon: `${ICON_BASE_URL}/docker.svg`,
       color: "from-blue-400 to-blue-600",
     },
@@ -252,7 +252,6 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Skip deployment setup",
       icon: "",
       color: "from-gray-400 to-gray-600",
-      default: true,
     },
   ],
   serverDeploy: [
@@ -273,9 +272,10 @@ export const TECH_OPTIONS: TechOptions = {
     {
       id: "docker",
       name: "Docker",
-      description: "Self-host with a Dockerfile and docker-compose.yml",
+      description: "Self-host with Docker Compose or deploy as a Coolify Compose resource",
       icon: `${ICON_BASE_URL}/docker.svg`,
       color: "from-blue-400 to-blue-600",
+      default: true,
     },
     {
       id: "vercel",
@@ -291,7 +291,6 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Skip deployment setup",
       icon: "",
       color: "from-gray-400 to-gray-600",
-      default: true,
     },
   ],
   auth: [
@@ -408,7 +407,7 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Oxlint + Oxfmt (linting & formatting)",
       icon: `${ICON_BASE_URL}/oxc.svg`,
       color: "from-orange-500 to-orange-700",
-      default: false,
+      default: true,
     },
     {
       id: "turborepo",
@@ -440,7 +439,7 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Install AI agent skills for coding assistants",
       icon: "",
       color: "from-pink-500 to-pink-700",
-      default: false,
+      default: true,
     },
     {
       id: "mcp",
@@ -448,7 +447,7 @@ export const TECH_OPTIONS: TechOptions = {
       description: "Install MCP servers for your agents/editors",
       icon: "",
       color: "from-emerald-500 to-emerald-700",
-      default: false,
+      default: true,
     },
     {
       id: "evlog",
@@ -567,22 +566,22 @@ export const PRESET_TEMPLATES: {
 
 export const DEFAULT_STACK: StackState = {
   projectName: "my-better-t-app",
-  webFrontend: ["tanstack-router"],
+  webFrontend: ["tanstack-start"],
   runtime: "bun",
-  backend: "hono",
-  database: "sqlite",
+  backend: "elysia",
+  database: "postgres",
   orm: "drizzle",
-  dbSetup: "none",
+  dbSetup: "docker",
   auth: "better-auth",
   payments: "none",
   packageManager: "bun",
-  addons: ["turborepo"],
+  addons: ["turborepo", "oxlint", "skills", "mcp"],
   examples: ["none"],
   git: "true",
   install: "true",
-  api: "trpc",
-  webDeploy: "none",
-  serverDeploy: "none",
+  api: "orpc",
+  webDeploy: "cloudflare",
+  serverDeploy: "docker",
   yolo: "false",
 };
 

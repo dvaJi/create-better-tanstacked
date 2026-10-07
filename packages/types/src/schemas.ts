@@ -201,6 +201,8 @@ export const SkillsSourceSchema = z
     "vercel-labs/agent-skills",
     "vercel/ai",
     "vercel/turborepo",
+    "tanstack-skills/tanstack-skills",
+    "cloudflare/skills",
     "honojs/skills",
     "shadcn/ui",
     "better-auth/skills",

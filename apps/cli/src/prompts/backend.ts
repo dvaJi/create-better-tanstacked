@@ -51,11 +51,7 @@ export async function getBackendFrameworkChoice(
   const response = await navigableSelect<Backend>({
     message: "Choose a backend",
     options: backendOptions,
-    initialValue: preferValidInitial(
-      backendOptions,
-      previousValue,
-      hasFullstackFrontend ? "self" : DEFAULT_CONFIG.backend,
-    ),
+    initialValue: preferValidInitial(backendOptions, previousValue, DEFAULT_CONFIG.backend),
   });
 
   if (isCancel(response)) throw new UserCancelledError({ message: "Operation cancelled" });

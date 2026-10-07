@@ -563,6 +563,13 @@ function generateDeploymentCommands(
       "Environment variables are read from each app's `.env` file (baked into web builds for public variables) and overridden in `docker-compose.yml` for container networking.",
     );
 
+    if (serverDeploy === "docker") {
+      lines.push(
+        "",
+        "- Coolify: create a Docker Compose resource from this repository and use the root `docker-compose.yml`. Review its `env_file` and `secrets` paths, and provide the required values through your Coolify environment setup.",
+      );
+    }
+
     if (
       database === "sqlite" &&
       dbSetup === "none" &&

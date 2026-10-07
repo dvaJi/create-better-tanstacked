@@ -5622,6 +5622,66 @@ coverage
 tmp
 temp
 `],
+  ["base/AGENTS.md.hbs", `# Agent Instructions
+
+Follow the generated stack and the patterns already used in this repository.
+
+{{#if (includes frontend "tanstack-start")}}
+This project uses React with TanStack Start. Keep frontend changes within that stack.
+
+## TanStack Start
+
+- Routes live in \`apps/web/src/routes\`; do not edit the generated route tree by hand.
+- Start route loaders can run on both the server and browser. Put database access, secrets, and other server-only work behind \`createServerFn\` or the existing API package.
+- Use TanStack Start APIs and the installed TanStack skills for routing, server functions, middleware, and server routes.
+{{else if (includes frontend "tanstack-router")}}
+This project uses React with TanStack Router. Keep frontend changes within that stack.
+
+## TanStack Router
+
+- Routes live in \`apps/web/src/routes\`; do not edit the generated route tree by hand.
+- Follow the existing router and data-loading patterns in \`apps/web\` and use the installed TanStack skills when available.
+{{/if}}
+
+## Workspace conventions
+
+- Keep shared React UI in \`packages/ui\` and reuse the existing shadcn/ui Base UI (\`base-rhea\`) components and styles.
+- Keep API, database, and authentication logic in their existing workspace packages. Do not access private data from browser code.
+- Read the root \`README.md\` and \`package.json\` before choosing commands. Use the package manager declared by the workspace and existing scripts.
+- When \`skills-lock.json\` is present, read only the relevant installed \`SKILL.md\` files before framework-specific work.
+- Check existing environment schemas and examples before adding variables. Keep credentials in ignored local files or the relevant platform's secret store; never commit tokens.
+
+## Stack
+
+- Frontend: {{frontend}}
+- Backend: {{backend}}
+- API: {{api}}
+- Database: {{database}} with {{orm}}
+- Authentication: {{auth}}
+- Web deployment: {{webDeploy}}
+- Server deployment: {{serverDeploy}}
+
+{{#if (eq webDeploy "cloudflare")}}
+## Cloudflare
+
+- The web app deploys to Cloudflare through the generated Alchemy infrastructure in \`packages/infra\`. Follow its scripts and the root README for deploy and environment setup.
+- Use the Cloudflare documentation and skills for current platform guidance when those agent tools are connected.
+{{/if}}
+
+{{#if (eq serverDeploy "docker")}}
+## Coolify and Docker Compose
+
+- The server deployment uses the root \`docker-compose.yml\` and generated app Dockerfiles. Coolify can use that Compose file as the resource definition.
+- Inspect Compose \`env_file\` and \`secrets\` paths and provide the required values through the deployment environment. Do not commit production secrets.
+- Coolify MCP requires a user-created, team-scoped API token. Each user must configure the token and, for self-hosted Coolify, the instance URL in their private agent settings. Never put the token in this repository.
+- Setup guide: [Coolify MCP setup](https://coolify.io/docs/mcp/setup).
+{{/if}}
+
+## Agent tools
+
+- Use the configured documentation MCPs for current library and platform details. Use DeepWiki to understand public repositories when their architecture matters.
+- MCP access to Cloudflare or Coolify can reach live resources. Only change or deploy live resources when the user explicitly asks for that action.
+`],
   ["base/package.json.hbs", `{
   "name": "better-t-stack",
   "private": true,
@@ -12551,4 +12611,4 @@ function SuccessPage() {
 `]
 ]);
 
-export const TEMPLATE_COUNT = 233;
+export const TEMPLATE_COUNT = 234;
