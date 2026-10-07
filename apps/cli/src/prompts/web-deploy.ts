@@ -39,7 +39,7 @@ function getDeploymentDisplay(deployment: WebDeploy): DeploymentDisplay {
   if (deployment === "docker") {
     return {
       label: "Docker",
-      hint: "Self-host with a Dockerfile and docker-compose.yml",
+      hint: "Self-host with Docker Compose; deployable as a Coolify Compose resource",
     };
   }
   if (deployment === "prisma") {

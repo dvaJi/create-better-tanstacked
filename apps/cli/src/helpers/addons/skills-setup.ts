@@ -32,6 +32,12 @@ const SKILL_SOURCES = {
   "vercel-labs/agent-skills": {
     label: "Vercel Agent Skills",
   },
+  "tanstack-skills/tanstack-skills": {
+    label: "TanStack",
+  },
+  "cloudflare/skills": {
+    label: "Cloudflare",
+  },
   "vercel/ai": {
     label: "Vercel AI SDK",
   },
@@ -209,11 +215,17 @@ function hasReactBasedFrontend(frontend: ProjectConfig["frontend"]): boolean {
 
 function getRecommendedSourceKeys(config: ProjectConfig): SourceKey[] {
   const sources: SourceKey[] = [];
-  const { frontend, backend, dbSetup, auth, examples, addons, webDeploy, serverDeploy } = config;
+  const { frontend, backend, dbSetup, auth, examples, addons, runtime, webDeploy, serverDeploy } =
+    config;
 
   if (hasReactBasedFrontend(frontend)) {
     sources.push("vercel-labs/agent-skills");
     sources.push("shadcn/ui");
+    sources.push("tanstack-skills/tanstack-skills");
+  }
+
+  if (webDeploy === "cloudflare" || serverDeploy === "cloudflare" || runtime === "workers") {
+    sources.push("cloudflare/skills");
   }
 
   if (
@@ -285,6 +297,22 @@ const CURATED_SKILLS_BY_SOURCE = {
     }
     return skills;
   },
+  "tanstack-skills/tanstack-skills": (config) => {
+    const skills: string[] = [];
+    if (config.frontend.includes("tanstack-start")) {
+      skills.push("tanstack-start", "tanstack-router");
+    } else if (config.frontend.includes("tanstack-router")) {
+      skills.push("tanstack-router");
+    }
+    if (config.api !== "none" && hasReactBasedFrontend(config.frontend)) {
+      skills.push("tanstack-query");
+    }
+    if (config.auth === "better-auth" && hasReactBasedFrontend(config.frontend)) {
+      skills.push("tanstack-form");
+    }
+    return skills;
+  },
+  "cloudflare/skills": () => ["cloudflare", "workers-best-practices"],
   "vercel/ai": () => ["ai-sdk"],
   "vercel/turborepo": () => ["turborepo"],
   "honojs/skills": () => ["hono"],
