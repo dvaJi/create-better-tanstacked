@@ -21,7 +21,7 @@
     },
     "apps/cli": {
       "name": "create-better-tanstacked",
-      "version": "3.44.3",
+      "version": "3.44.4",
       "bin": {
         "create-better-tanstacked": "dist/cli.mjs",
       },
