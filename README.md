@@ -1,109 +1,64 @@
-# Better-T-Stack
+# Create Better Tanstacked
 
-A modern CLI tool for scaffolding end-to-end type-safe TypeScript projects with best practices and customizable configurations
+An opinionated, TanStack React-focused fork of [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack). It keeps the useful backend, database, API, and auth choices while limiting web frontends to TanStack Router and TanStack Start.
 
-<br />
+## How it differs from Better-T-Stack
 
-<a href="https://vercel.com/oss">
-  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge.svg" />
-</a>
+|                | Create Better Tanstacked                                                                   | Better-T-Stack                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Web frontends  | TanStack Router or TanStack Start                                                          | A wider selection, including Next.js, Nuxt, Svelte, Solid, Astro, and React Native |
+| Starting point | Opinionated defaults for a TanStack React app                                              | A general-purpose stack builder with a broader set of choices                      |
+| Agent setup    | Skills and MCP recommendations tailored to TanStack React and Cloudflare/Coolify workflows | Agent workflows support its broader framework and stack choices                    |
 
-## Sponsors
+Use this repo when you want a TanStack React project ready for your preferred tools. Use [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack) when you want its wider framework selection.
 
-<p align="center">
-<img src="https://sponsors.better-t-stack.dev/sponsors.png" alt="Sponsors">
-</p>
+## Default stack
 
-https://github.com/user-attachments/assets/87b541ea-9d4d-4734-b383-00784b0b43ff
+Accepting the CLI defaults creates a TanStack Start app with:
 
-## Philosophy
+- Bun, Elysia, and oRPC
+- PostgreSQL, Drizzle, and Better Auth
+- Tailwind CSS and shadcn/ui
+- Turborepo, Oxlint, agent Skills, and MCP configuration
+- Docker for the database and server deployment; Cloudflare for web deployment
 
-- Roll your own stack: you pick only the parts you need, nothing extra.
-- Minimal templates: bare-bones scaffolds with zero bloat.
-- Latest dependencies: always use current, stable versions by default.
-- Free and open source: forever.
+The CLI still lets you change the backend, database, authentication, API, and deployment choices.
 
-## Quick Start
+## Quick start
+
+Run the interactive setup:
 
 ```bash
-# Using bun (recommended)
+# Bun
 bun create better-tanstacked@latest
 
-# Using pnpm
+# pnpm
 pnpm create better-tanstacked@latest
 
-# Using npm
+# npm
 npx create-better-tanstacked@latest
 ```
 
-## Claude Code plugin
-
-Want your AI assistant to scaffold and extend projects with Better-T-Stack? Install the plugin and it will plan a valid stack and generate it through the bundled MCP server instead of hand-rolling boilerplate.
+Use `--yes` to accept the defaults:
 
 ```bash
-/plugin marketplace add dvaJi/create-better-tanstacked
-/plugin install better-t-stack@better-t-stack
+npx create-better-tanstacked@latest my-app --yes
 ```
 
-Then ask: _"create a fullstack app with TanStack Start, Postgres and Better Auth"_, or run `/better-t-stack:new <description>`. See [`plugin/`](plugin) and the [Agent Workflows docs](https://better-t-stack.dev/docs/cli/agent-workflows#claude-code-plugin).
+## Agent tools
 
-## Features
+The `skills` and `mcp` addons give coding agents project guidance and stack-aware setup tools. MCP recommendations can include Context7, DeepWiki, Cloudflare, Coolify, shadcn/ui, and services selected for your stack. Services that need credentials, such as Coolify, must be configured in your own agent settings.
 
-- Frontend: TanStack Router, TanStack Start, or none
-- Backend: Hono, Elysia, TanStack Start fullstack, or none
-- API: tRPC or oRPC (or none)
-- Runtime: Bun, Node.js, or Cloudflare Workers
-- Databases: SQLite, PostgreSQL (or none)
-- ORM: Drizzle (or none)
-- Auth: Better Auth or Clerk (optional)
-- Addons: Turborepo, Vite+, PWA, Tauri, Electrobun, Lefthook, Fumadocs, Oxlint, MCP, OpenTUI, Skills
-- Examples: Todo, AI
-- DB Setup: Turso, Neon, Supabase, Prisma PostgreSQL, PlanetScale, Cloudflare D1, Docker
-- Web Deploy: Cloudflare Workers
+This repository also includes Claude Code and Codex plugin instructions in [`plugin/README.md`](plugin/README.md).
 
-Type safety end-to-end, clean monorepo layout, and zero lock-in: you choose only what you need.
+## Documentation and development
 
-## Repository Structure
-
-This repository is organized as a monorepo containing:
-
-- **CLI**: [`apps/cli`](apps/cli) - The scaffolding CLI tool
-- **Documentation**: [`apps/web`](apps/web) - Official website and documentation
-- **Plugin**: [`plugin`](plugin) - Claude Code plugin (MCP server + skills + commands + agent)
-
-## Documentation
-
-Visit [better-t-stack.dev](https://better-t-stack.dev) for full documentation, guides, and examples. You can also use the visual Stack Builder at `https://better-t-stack.dev/new` to generate a command for your stack.
-
-## Development
+- Documentation: [better-t-stack.dev](https://better-t-stack.dev)
+- CLI options: [`apps/cli/README.md`](apps/cli/README.md)
+- Contributing: [guide](.github/CONTRIBUTING.md)
 
 ```bash
-# Clone the repository
-git clone https://github.com/dvaJi/create-better-tanstacked.git
-
-# Install dependencies
 bun install
-
-# Start CLI development
 bun dev:cli
-
-# Start website development
 bun dev:web
 ```
-
-## Want to contribute?
-
-Please read the Contribution Guide first and open an issue before starting new features to ensure alignment with project goals.
-
-- Docs: [`./apps/web/content/docs/contributing.mdx`](./apps/web/content/docs/contributing.mdx)
-- Repo guide: [`./.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md)
-
-## Star History
-
-<a href="https://www.star-history.com/#dvaJi/create-better-tanstacked&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dvaJi/create-better-tanstacked&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dvaJi/create-better-tanstacked&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dvaJi/create-better-tanstacked&type=Date" />
- </picture>
-</a>
