@@ -102,7 +102,7 @@ jobs:
 
       - name: Build CLI
         if: steps.published.outputs.needs_publish == 'true'
-        run: cd apps/cli && bun run build
+        run: bun run build:cli
         env:
           BTS_TELEMETRY: 1
           CONVEX_INGEST_URL: ${{ secrets.CONVEX_INGEST_URL }}
