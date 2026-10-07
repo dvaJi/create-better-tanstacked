@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release (must match the CLI package version)
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -11,7 +17,7 @@ permissions:
 jobs:
   release:
     name: Release CLI
-    if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore(release):')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore(release):'))
     permissions:
       contents: write
       pull-requests: write
@@ -37,8 +43,14 @@ jobs:
 
       - name: Extract version from commit message
         id: version
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
         run: |
-          VERSION=$(git log -1 --pretty=%s | sed -nE 's/^chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')
+          if [[ -n "$REQUESTED_VERSION" ]]; then
+            VERSION="$REQUESTED_VERSION"
+          else
+            VERSION=$(git log -1 --pretty=%s | sed -nE 's/^chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+).*/\1/p')
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Releasing version: $VERSION"
 
@@ -47,6 +59,11 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Error: Invalid version format '$VERSION'. Expected semver (x.y.z)"
+            exit 1
+          fi
+          PACKAGE_VERSION=$(jq -r '.version' apps/cli/package.json)
+          if [[ "$PACKAGE_VERSION" != "$VERSION" ]]; then
+            echo "Error: CLI package version '$PACKAGE_VERSION' does not match requested release '$VERSION'."
             exit 1
           fi
 
