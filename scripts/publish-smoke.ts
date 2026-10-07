@@ -63,11 +63,6 @@ async function pack(pkg: Publishable, outDir: string): Promise<string> {
       | Record<string, { filename: string; files: Array<{ path: string }> }>;
     const entry = Array.isArray(packed) ? packed[0] : Object.values(packed)[0];
 
-    const requiredAsset = "dist/templates-binary/frontend/native/base/assets/images/icon.png";
-    if (!entry.files.some(({ path }) => path === requiredAsset)) {
-      throw new Error(`Packed CLI is missing required template asset: ${requiredAsset}`);
-    }
-
     return join(outDir, entry.filename);
   } finally {
     writeFileSync(packageJsonPath, originalPackageJson);
@@ -139,10 +134,10 @@ async function installAndRun(
     process.exit(1);
   }
 
-  const nativeProjectInput = {
-    projectName: "smoke-native",
+  const tanstackStartProjectInput = {
+    projectName: "smoke-tanstack",
     api: "orpc",
-    frontend: ["native-bare"],
+    frontend: ["tanstack-start"],
     backend: "hono",
     runtime: "bun",
     database: "none",
@@ -160,26 +155,28 @@ async function installAndRun(
     disableAnalytics: true,
   };
   const generate =
-    await $`node ${cliEntrypoint} create-json --json ${JSON.stringify(nativeProjectInput)}`
+    await $`node ${cliEntrypoint} create-json --json ${JSON.stringify(tanstackStartProjectInput)}`
       .cwd(dir)
       .quiet()
       .nothrow();
   const generatedProjectPath = join(
     dir,
-    "smoke-native",
+    "smoke-tanstack",
     "apps",
-    "native",
-    "assets",
-    "images",
-    "icon.png",
+    "web",
+    "src",
+    "routes",
+    "index.tsx",
   );
   if (generate.exitCode !== 0 || !existsSync(generatedProjectPath)) {
-    console.error(red(`✗ ${pm}: native project generation failed or omitted bundled icon.png`));
+    console.error(
+      red(`✗ ${pm}: TanStack Start project generation failed or omitted src/routes/index.tsx`),
+    );
     console.error(dim(generate.stderr.toString() + generate.stdout.toString()));
     process.exit(1);
   }
 
-  console.log(green(`✓ ${pm}`) + dim(`  v${run.stdout.toString().trim()} + native assets`));
+  console.log(green(`✓ ${pm}`) + dim(`  v${run.stdout.toString().trim()} + TanStack Start`));
 }
 
 async function hasPackageManager(pm: string): Promise<boolean> {
