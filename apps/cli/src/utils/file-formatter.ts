@@ -2,16 +2,10 @@ import path from "node:path";
 
 import { Result } from "better-result";
 import fs from "fs-extra";
-import { format, type FormatOptions } from "oxfmt";
+import { format } from "oxfmt";
 
 import { ProjectCreationError } from "./errors";
-
-const formatOptions: FormatOptions = {
-  experimentalSortPackageJson: true,
-  experimentalSortImports: {
-    order: "asc",
-  },
-};
+import { OXFMT_FORMAT_OPTIONS } from "./ox-config-defaults";
 
 // A merge can target an installed or previously built project. Never rewrite
 // dependencies (which may be hard-linked to a package-manager cache) or output.
@@ -31,7 +25,7 @@ const ignoredDirectories = new Set([
 export async function formatCode(filePath: string, content: string): Promise<string | null> {
   const result = await Result.tryPromise({
     try: async () => {
-      const formatResult = await format(path.basename(filePath), content, formatOptions);
+      const formatResult = await format(path.basename(filePath), content, OXFMT_FORMAT_OPTIONS);
 
       if (formatResult.errors && formatResult.errors.length > 0) {
         return null;

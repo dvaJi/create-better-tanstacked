@@ -1,20 +1,22 @@
 import path from "node:path";
 
 import { Result } from "better-result";
-import { $ } from "execa";
 import fs from "fs-extra";
 
-import type { PackageManager } from "../../types";
 import { addPackageDependency } from "../../utils/add-package-deps";
 import { AddonSetupError } from "../../utils/errors";
-import { shouldSkipExternalCommands } from "../../utils/external-commands";
-import { getPackageExecutionArgs } from "../../utils/package-runner";
+import { OXFMT_CONFIG, OXLINT_CONFIG } from "../../utils/ox-config-defaults";
 import { createSpinner } from "../../utils/terminal-output";
 
-export async function setupOxlint(
-  projectDir: string,
-  packageManager: PackageManager,
-): Promise<Result<void, AddonSetupError>> {
+async function writeConfigIfMissing(
+  filePath: string,
+  config: typeof OXLINT_CONFIG | typeof OXFMT_CONFIG,
+): Promise<void> {
+  if (await fs.pathExists(filePath)) return;
+  await fs.writeFile(filePath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
+}
+
+export async function setupOxlint(projectDir: string): Promise<Result<void, AddonSetupError>> {
   return Result.tryPromise({
     try: async () => {
       await addPackageDependency({
@@ -34,24 +36,17 @@ export async function setupOxlint(
         await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
       }
 
-      if (shouldSkipExternalCommands()) {
-        return;
-      }
-
       const s = createSpinner();
 
       try {
-        s.start("Initializing oxlint and oxfmt...");
+        s.start("Writing oxlint and oxfmt defaults...");
 
-        const oxlintArgs = getPackageExecutionArgs(packageManager, "oxlint@latest --init");
-        await $({ cwd: projectDir, env: { CI: "true" } })`${oxlintArgs}`;
+        await writeConfigIfMissing(path.join(projectDir, ".oxlintrc.json"), OXLINT_CONFIG);
+        await writeConfigIfMissing(path.join(projectDir, ".oxfmtrc.json"), OXFMT_CONFIG);
 
-        const oxfmtArgs = getPackageExecutionArgs(packageManager, "oxfmt@latest --init");
-        await $({ cwd: projectDir, env: { CI: "true" } })`${oxfmtArgs}`;
-
-        s.stop("oxlint and oxfmt initialized successfully!");
+        s.stop("oxlint and oxfmt configured");
       } catch (error) {
-        s.stop("Failed to initialize oxlint and oxfmt");
+        s.stop("Failed to write oxlint and oxfmt defaults");
         throw error;
       }
     },

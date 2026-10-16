@@ -7,6 +7,7 @@ import { setupOxlint } from "../src/helpers/addons/oxlint-setup";
 import { installDependencies } from "../src/helpers/core/install-dependencies";
 import { getNeonProjectCreateArgs } from "../src/helpers/database-providers/neon-setup";
 import { getPackageExecutionArgs } from "../src/utils/package-runner";
+
 import { SMOKE_DIR } from "./setup";
 
 describe("External Command Guards", () => {
@@ -67,7 +68,7 @@ describe("External Command Guards", () => {
     expect(getFumadocsLinter(getFumadocsAddonContext(["fumadocs"], ["biome"]))).toBe("biome");
   });
 
-  it("should update package.json without running oxlint init in test mode", async () => {
+  it("should write default oxlint/oxfmt configs and update package.json without external commands", async () => {
     const projectDir = join(SMOKE_DIR, "oxlint-skip");
     await mkdir(projectDir, { recursive: true });
 
@@ -86,7 +87,7 @@ describe("External Command Guards", () => {
       ),
     );
 
-    const result = await setupOxlint(projectDir, "bun");
+    const result = await setupOxlint(projectDir);
     expect(result.isOk()).toBe(true);
 
     const updated = await Bun.file(pkgJsonPath).json();
@@ -94,5 +95,16 @@ describe("External Command Guards", () => {
     expect(updated.scripts?.check).toBe("oxlint && oxfmt --write");
     expect(updated.devDependencies?.oxlint).toBeDefined();
     expect(updated.devDependencies?.oxfmt).toBeDefined();
+
+    const oxlintrc = await Bun.file(join(projectDir, ".oxlintrc.json")).json();
+    expect(oxlintrc.$schema).toBe("./node_modules/oxlint/configuration_schema.json");
+    expect(oxlintrc.ignorePatterns).toEqual([".agents/*", "routeTree.gen.ts"]);
+
+    const oxfmtrc = await Bun.file(join(projectDir, ".oxfmtrc.json")).json();
+    expect(oxfmtrc.$schema).toBe("./node_modules/oxfmt/configuration_schema.json");
+    expect(oxfmtrc.printWidth).toBe(100);
+    expect(oxfmtrc.ignorePatterns).toEqual([".agents/*", "routeTree.gen.ts"]);
+    expect(oxfmtrc.sortImports?.order).toBe("asc");
+    expect(oxfmtrc.sortImports?.groups[2]).toEqual(["external", "type-external"]);
   });
 });

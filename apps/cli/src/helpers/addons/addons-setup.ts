@@ -4,6 +4,7 @@ import { desktopWebFrontends, type ProjectConfig } from "../../types";
 import { addPackageDependency } from "../../utils/add-package-deps";
 import { AddonSetupError, UserCancelledError } from "../../utils/errors";
 import { runOptionalStep } from "../../utils/optional-step";
+
 import { setupEvlog } from "./evlog-setup";
 import { setupFumadocs } from "./fumadocs-setup";
 import { setupMcp } from "./mcp-setup";
@@ -26,7 +27,7 @@ export async function setupAddons(config: ProjectConfig): Promise<void> {
   }
 
   if (addons.includes("oxlint")) {
-    await runSetup(() => setupOxlint(projectDir, config.packageManager));
+    await runSetup(() => setupOxlint(projectDir));
   }
 
   if (addons.includes("lefthook")) {
