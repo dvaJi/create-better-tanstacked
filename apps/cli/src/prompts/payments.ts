@@ -1,6 +1,7 @@
 import { DEFAULT_CONFIG } from "../constants";
 import type { Auth, Backend, Frontend, Payments } from "../types";
 import { UserCancelledError } from "../utils/errors";
+
 import { isCancel, navigableSelect, preferValidInitial } from "./navigable";
 
 export async function getPaymentsChoice(

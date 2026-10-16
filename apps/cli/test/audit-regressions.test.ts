@@ -7,6 +7,7 @@ import type { ProjectConfig } from "@better-t-stack/types";
 import { Node, Project, SyntaxKind } from "ts-morph";
 
 import { add, create } from "../src";
+
 import { SMOKE_DIR } from "./setup";
 
 const config: ProjectConfig = {

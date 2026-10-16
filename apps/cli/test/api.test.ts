@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import { createVirtual } from "../src/index";
 import type { API, Backend, Database, Examples, Frontend, ORM, Runtime } from "../src/types";
+
 import { collectFiles } from "./setup";
 import { expectError, expectSuccess, runCreateTest, type TestConfig } from "./test-utils";
 

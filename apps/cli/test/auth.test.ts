@@ -4,6 +4,7 @@ import path from "node:path";
 import fs from "fs-extra";
 
 import type { Backend, Database, Frontend, ORM } from "../src/types";
+
 import { expectError, expectSuccess, runCreateTest, type TestConfig } from "./test-utils";
 
 describe("Authentication Configurations", () => {

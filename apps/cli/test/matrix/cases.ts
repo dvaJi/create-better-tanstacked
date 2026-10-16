@@ -1,4 +1,5 @@
 import type { DatabaseSetup, Examples, Frontend, ProjectConfig } from "../../src/types";
+
 import { evaluateMatrixConfig, type MatrixOracleResult } from "./oracle";
 
 export const MATRIX_DATABASES = ["none", "sqlite", "postgres", "mysql", "mongodb"] as const;

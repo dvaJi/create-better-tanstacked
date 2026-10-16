@@ -3,6 +3,7 @@ import { link, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { formatProject } from "../src/utils/file-formatter";
+
 import { SMOKE_DIR } from "./setup";
 
 it("formats source without touching installed dependencies, linked caches, or build output", async () => {

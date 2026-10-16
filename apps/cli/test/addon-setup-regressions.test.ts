@@ -7,6 +7,7 @@ import { setupMcp, getRecommendedMcpServers } from "../src/helpers/addons/mcp-se
 import { setupSkills, UNIVERSAL_SKILLS_AGENTS } from "../src/helpers/addons/skills-setup";
 import type { ProjectConfig } from "../src/types";
 import { runWithContextAsync } from "../src/utils/context";
+
 import { SMOKE_DIR } from "./setup";
 
 function createProjectConfig(overrides: Partial<ProjectConfig> = {}): ProjectConfig {

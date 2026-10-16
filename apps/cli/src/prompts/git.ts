@@ -1,5 +1,6 @@
 import { DEFAULT_CONFIG } from "../constants";
 import { UserCancelledError } from "../utils/errors";
+
 import { isCancel, navigableConfirm } from "./navigable";
 
 export async function getGitChoice(git?: boolean, previousValue?: boolean) {

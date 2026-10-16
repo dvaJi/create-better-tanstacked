@@ -1,3 +1,5 @@
+import "./global.css";
+
 import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -12,8 +14,6 @@ import {
   SITE_URL,
   SUPPORT_EMAIL,
 } from "@/lib/site";
-
-import "./global.css";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({

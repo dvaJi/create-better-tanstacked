@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 import { add, type Addons, type Backend, type Frontend } from "../src";
 import { getCompatibleAddons } from "../src/utils/compatibility-rules";
+
 import { expectError, expectSuccess, runCreateTest, type TestConfig } from "./test-utils";
 
 async function readSourceFiles(dir: string): Promise<{ path: string; content: string }[]> {

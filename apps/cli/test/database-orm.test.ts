@@ -1,6 +1,7 @@
 import { describe, it } from "bun:test";
 
 import type { Database, ORM } from "../src/types";
+
 import { expectError, expectSuccess, runCreateTest } from "./test-utils";
 
 describe("Database and ORM Combinations", () => {

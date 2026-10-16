@@ -3,6 +3,7 @@ import { parse, stringify } from "yaml";
 
 import type { VirtualFileSystem } from "../core/virtual-fs";
 import { getAllowedDependencyScripts } from "../utils/dependency-scripts";
+
 import { type TemplateData, processSingleTemplate } from "./utils";
 
 export async function processExtrasTemplates(

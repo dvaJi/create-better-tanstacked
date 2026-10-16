@@ -24,6 +24,7 @@ import { runOptionalStep } from "../../utils/optional-step";
 import { cliLog } from "../../utils/terminal-output";
 import { setupAddons } from "../addons/addons-setup";
 import { setupDatabase } from "../core/db-setup";
+
 import { initializeGit } from "./git";
 import { installDependencies } from "./install-dependencies";
 import { displayPostInstallInstructions } from "./post-installation";

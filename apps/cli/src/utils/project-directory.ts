@@ -6,6 +6,7 @@ import fs from "fs-extra";
 import pc from "picocolors";
 
 import { getProjectName } from "../prompts/project-name";
+
 import { isSilent } from "./context";
 import { CLIError, UserCancelledError } from "./errors";
 import { isMissingPathError } from "./fs-error";

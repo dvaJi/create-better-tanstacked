@@ -1,7 +1,8 @@
 import { lineByLineConsoleLogger } from "trpc-cli";
 
-import { createBtsCli } from "./index";
 import { startBtsMcpServer } from "./mcp";
+
+import { createBtsCli } from "./index";
 
 const [, , command, ...args] = process.argv;
 

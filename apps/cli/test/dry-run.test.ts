@@ -4,6 +4,7 @@ import path from "node:path";
 import fs from "fs-extra";
 
 import { create } from "../src/index";
+
 import { SMOKE_DIR } from "./setup";
 
 describe("Dry run", () => {

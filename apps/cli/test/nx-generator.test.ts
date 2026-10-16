@@ -5,6 +5,7 @@ import type { ProjectConfig } from "@better-t-stack/types";
 import { generateNxConfig } from "../../../packages/template-generator/src/processors/nx-generator";
 import { generateTurboConfig } from "../../../packages/template-generator/src/processors/turbo-generator";
 import { createVirtual } from "../src/index";
+
 import { collectFiles } from "./setup";
 
 const baseConfig: ProjectConfig = {

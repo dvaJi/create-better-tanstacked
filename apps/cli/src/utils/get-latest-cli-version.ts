@@ -4,6 +4,7 @@ import { Result } from "better-result";
 import fs from "fs-extra";
 
 import { PKG_ROOT } from "../constants";
+
 import { CLIError } from "./errors";
 
 export function getLatestCLIVersionResult(): Result<string, CLIError> {

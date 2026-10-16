@@ -16,6 +16,7 @@ import {
   type DatabaseSetup,
   type ProjectConfig,
 } from "../types";
+
 import {
   ensureSingleFrontend,
   isWebFrontend,

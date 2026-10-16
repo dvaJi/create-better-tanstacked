@@ -4,6 +4,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { add } from "../src/index";
+
 import { SMOKE_DIR } from "./setup";
 import { expectSuccess, runCreateTest } from "./test-utils";
 

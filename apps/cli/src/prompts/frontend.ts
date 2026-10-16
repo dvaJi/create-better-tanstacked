@@ -2,6 +2,7 @@ import { DEFAULT_CONFIG } from "../constants";
 import type { Backend, Frontend, Auth } from "../types";
 import { isFirstPrompt } from "../utils/context";
 import { UserCancelledError } from "../utils/errors";
+
 import {
   GO_BACK_SYMBOL,
   isCancel,

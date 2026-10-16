@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { ActionButtons } from "../action-buttons";
 import { PreviewPanel, useStackPreview } from "../preview-panel";
 import { SpecialSponsorsPanel } from "../special-sponsors-panel";
+
 import { CategoryNav, scrollToCategorySection } from "./category-nav";
 import { SelectedStackBadges } from "./selected-stack-badges";
 import { TechCategories } from "./tech-categories";

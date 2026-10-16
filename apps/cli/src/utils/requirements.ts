@@ -5,6 +5,7 @@ import { execa } from "execa";
 import { clean, coerce, satisfies } from "semver";
 
 import type { PackageManager, ProjectConfig } from "../types";
+
 import { CLIError } from "./errors";
 import { shouldSkipExternalCommands } from "./external-commands";
 

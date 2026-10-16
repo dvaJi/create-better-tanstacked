@@ -5,6 +5,7 @@ import envPaths from "env-paths";
 import fs from "fs-extra";
 
 import type { ProjectConfig } from "../types";
+
 import { getLatestCLIVersion } from "./get-latest-cli-version";
 
 const paths = envPaths("better-t-stack", { suffix: "" });

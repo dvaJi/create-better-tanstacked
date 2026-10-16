@@ -5,6 +5,7 @@ import { $ } from "execa";
 import pc from "picocolors";
 
 import type { Database } from "../types";
+
 import { commandExists } from "./command-exists";
 
 export async function isDockerInstalled() {

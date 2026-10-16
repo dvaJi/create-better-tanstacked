@@ -6,6 +6,7 @@ import {
   type AnalyticsMode,
   type ProjectConfig,
 } from "../types";
+
 import { getLatestCLIVersion } from "./get-latest-cli-version";
 import { isTelemetryEnabled } from "./telemetry";
 

@@ -15,6 +15,7 @@ import {
   validateAddonCompatibility,
 } from "../utils/compatibility-rules";
 import { UserCancelledError } from "../utils/errors";
+
 import { isCancel, navigableGroupMultiselect } from "./navigable";
 
 type AddonOption = {

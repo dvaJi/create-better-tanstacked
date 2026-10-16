@@ -3,6 +3,7 @@ import { Activity, ArrowUpRight, DatabaseZap, Terminal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { PageHeader } from "../../_components/page-header";
+
 import { formatCompactNumber } from "./analytics-helpers";
 
 // Feb-Nov 2025 PostHog era, estimated from npm downloads (92.8k) times the

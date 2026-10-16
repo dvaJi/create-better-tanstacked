@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
 import { createVirtual } from "../src/index";
+
 import { collectFiles } from "./setup";
 
 async function generateReadme(config: Parameters<typeof createVirtual>[0]): Promise<string> {

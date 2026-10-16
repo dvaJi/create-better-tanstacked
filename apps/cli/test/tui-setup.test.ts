@@ -6,6 +6,7 @@ import fs from "fs-extra";
 import { postProcessTuiWorkspace, resolveTuiTemplate } from "../src/helpers/addons/tui-setup";
 import type { ProjectConfig } from "../src/types";
 import { runWithContextAsync } from "../src/utils/context";
+
 import { SMOKE_DIR } from "./setup";
 
 function createTuiConfig(overrides: Partial<ProjectConfig> = {}): ProjectConfig {

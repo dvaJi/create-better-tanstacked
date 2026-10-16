@@ -19,6 +19,7 @@ import { setupPlanetScale } from "../database-providers/planetscale-setup";
 import { setupPrismaPostgres } from "../database-providers/prisma-postgres-setup";
 import { setupSupabase } from "../database-providers/supabase-setup";
 import { setupTurso } from "../database-providers/turso-setup";
+
 import { type DatabaseSetupCliOptions, mergeResolvedDbSetupOptions } from "./db-setup-options";
 
 export async function setupDatabase(

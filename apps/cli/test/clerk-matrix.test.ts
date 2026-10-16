@@ -3,6 +3,7 @@ import { describe, expect, it } from "bun:test";
 import { createVirtual } from "../src/index";
 import type { CLIInput, Frontend } from "../src/types";
 import { validateConfigCompatibility } from "../src/validation";
+
 import { collectFiles } from "./setup";
 
 const standardBackends = [

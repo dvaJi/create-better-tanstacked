@@ -11,6 +11,7 @@ import { AddonSetupError, UserCancelledError } from "../../utils/errors";
 import { shouldSkipExternalCommands } from "../../utils/external-commands";
 import { getPackageRunnerPrefix } from "../../utils/package-runner";
 import { cliLog, createSpinner } from "../../utils/terminal-output";
+
 import { supportsEvlogLocalLogs } from "./evlog-setup";
 
 type SkillSource = {

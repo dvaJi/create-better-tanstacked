@@ -6,6 +6,7 @@ import fs from "fs-extra";
 import { add, create } from "../src/index";
 import type { AddonOptions } from "../src/types";
 import { readBtsConfig } from "../src/utils/bts-config";
+
 import { SMOKE_DIR } from "./setup";
 
 describe("Addon options", () => {

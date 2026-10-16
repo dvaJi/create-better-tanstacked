@@ -2,7 +2,6 @@ import { McpServer } from "@modelcontextprotocol/server";
 import { serveStdio } from "@modelcontextprotocol/server/stdio";
 import z from "zod";
 
-import { add, create, type SchemaName, SchemaNameSchema, getSchemaResult } from "./index";
 import {
   AddInputSchema,
   AddonOptionsSchema,
@@ -26,6 +25,8 @@ import {
 } from "./types";
 import { setProcessMode } from "./utils/context";
 import { getLatestCLIVersion } from "./utils/get-latest-cli-version";
+
+import { add, create, type SchemaName, SchemaNameSchema, getSchemaResult } from "./index";
 
 const ToolResponseSchema = z.object({
   ok: z.boolean(),

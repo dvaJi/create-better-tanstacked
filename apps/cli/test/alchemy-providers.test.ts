@@ -3,6 +3,7 @@ import { describe, expect, it } from "bun:test";
 import { usesAlchemyManagedDatabase } from "@better-t-stack/types";
 
 import { createVirtual } from "../src/index";
+
 import { collectFiles } from "./setup";
 
 type CreateOptions = Parameters<typeof createVirtual>[0];

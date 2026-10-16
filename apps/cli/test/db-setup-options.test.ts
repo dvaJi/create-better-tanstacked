@@ -6,6 +6,7 @@ import fs from "fs-extra";
 import { setupNeonPostgres } from "../src/helpers/database-providers/neon-setup";
 import { create } from "../src/index";
 import { readBtsConfig } from "../src/utils/bts-config";
+
 import { SMOKE_DIR } from "./setup";
 
 describe("Database setup options", () => {

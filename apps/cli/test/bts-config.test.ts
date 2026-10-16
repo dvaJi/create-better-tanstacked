@@ -6,6 +6,7 @@ import fs from "fs-extra";
 
 import { add } from "../src/index";
 import { readBtsConfig, updateBtsConfig } from "../src/utils/bts-config";
+
 import { expectSuccess, runCreateTest } from "./test-utils";
 
 describe("persisted project configuration", () => {

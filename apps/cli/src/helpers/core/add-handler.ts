@@ -33,6 +33,7 @@ import { beginInterruptibleScope, endInterruptibleScope } from "../../utils/inte
 import { renderTitle } from "../../utils/render-title";
 import { checkLocalRequirements } from "../../utils/requirements";
 import { setupAddons } from "../addons/addons-setup";
+
 import { detectProjectConfig } from "./detect-project-config";
 import { installDependencies } from "./install-dependencies";
 

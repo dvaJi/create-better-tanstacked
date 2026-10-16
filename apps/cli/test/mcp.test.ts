@@ -8,6 +8,7 @@ import fs from "fs-extra";
 import { create } from "../src/index";
 import { createBtsMcpServer } from "../src/mcp";
 import { readBtsConfig } from "../src/utils/bts-config";
+
 import { SMOKE_DIR } from "./setup";
 
 interface JsonSchemaView {

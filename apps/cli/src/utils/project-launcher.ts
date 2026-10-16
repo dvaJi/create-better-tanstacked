@@ -3,6 +3,7 @@ import { execa } from "execa";
 import z from "zod";
 
 import { isCancel, navigableSelect, setIsFirstPrompt } from "../prompts/navigable";
+
 import { commandExists } from "./command-exists";
 import { CLIError } from "./errors";
 import { shouldSkipExternalCommands } from "./external-commands";

@@ -13,6 +13,7 @@ import { chartCssVars, type LineConfig, useChart, useChartStable } from "../char
 import { parseChartNumber, type ChartDatum } from "../chart-data";
 import { weekdayDateFmt } from "../chart-formatters";
 import type { IndicatorFadeEdges } from "../indicator-fade";
+
 import { DateTicker } from "./date-ticker";
 import { TooltipBox } from "./tooltip-box";
 import { TooltipContent, type TooltipRow } from "./tooltip-content";

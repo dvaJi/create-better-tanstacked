@@ -4,6 +4,7 @@ import { memfs } from "memfs";
 import { dirname, extname, normalize, join } from "pathe";
 
 import type { VirtualDirectory, VirtualFile } from "../types";
+
 import type { JsonValue } from "./json-types";
 
 export class VirtualFileSystem {

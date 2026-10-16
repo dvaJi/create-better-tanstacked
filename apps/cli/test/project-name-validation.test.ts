@@ -8,6 +8,7 @@ import {
   extractAndValidateProjectName,
   validateProjectName,
 } from "../src/utils/project-name-validation";
+
 import { SMOKE_DIR } from "./setup";
 
 describe("Project name validation hardening", () => {

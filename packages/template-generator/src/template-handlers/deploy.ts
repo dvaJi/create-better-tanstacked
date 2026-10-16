@@ -3,6 +3,7 @@ import type { ProjectConfig } from "@better-t-stack/types";
 import type { VirtualFileSystem } from "../core/virtual-fs";
 import { processAlchemyRun } from "../generators/alchemy/render";
 import { isDatabaseConsumedByDocker } from "../utils/docker-database";
+
 import { type TemplateData, processTemplatesFromPrefix } from "./utils";
 
 function hasOwnKey<T extends object>(object: T, key: PropertyKey): key is keyof T {

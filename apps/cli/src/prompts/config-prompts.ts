@@ -20,6 +20,7 @@ import type {
 } from "../types";
 import { isSilent } from "../utils/context";
 import { UserCancelledError } from "../utils/errors";
+
 import { getAddonsChoice } from "./addons";
 import { getApiChoice } from "./api";
 import { getAuthChoice } from "./auth";

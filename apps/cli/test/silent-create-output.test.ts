@@ -5,6 +5,7 @@ import { execa } from "execa";
 import fs from "fs-extra";
 
 import type { CreateInput } from "../src/types";
+
 import { SMOKE_DIR } from "./setup";
 
 const CLI_INDEX_PATH = path.join(import.meta.dir, "..", "src", "index.ts");
