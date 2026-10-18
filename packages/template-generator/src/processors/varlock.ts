@@ -37,6 +37,13 @@ function schemaKeys(vfs: VirtualFileSystem, app: string, config: ProjectConfig):
       if (config.dbSetup === "turso") keys.add("DATABASE_AUTH_TOKEN");
     }
   }
+  if (
+    app === "apps/web" &&
+    config.frontend.includes("tanstack-start") &&
+    config.addons.includes("tanstack-ai")
+  ) {
+    keys.add("OPENAI_API_KEY");
+  }
   return keys;
 }
 
@@ -75,6 +82,10 @@ function schema(keys: Set<string>, config: ProjectConfig, envFile: string, app: 
         `${key}=`,
         "",
       );
+      continue;
+    }
+    if (key === "OPENAI_API_KEY") {
+      lines.push("# @required=false @type=string(minLength=1)", `${key}=`, "");
       continue;
     }
     const isPublic = key.startsWith("VITE_");

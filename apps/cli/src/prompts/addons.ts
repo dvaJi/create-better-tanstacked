@@ -91,6 +91,22 @@ function getAddonDisplay(addon: Addons): AddonDisplay {
       label = "Axiom";
       hint = "Managed production observability through evlog and Alchemy";
       break;
+    case "tanstack-table":
+      label = "TanStack Table";
+      hint = "Headless tables and data grids with virtualization";
+      break;
+    case "tanstack-charts":
+      label = "TanStack Charts";
+      hint = "Responsive, accessible, SSR-friendly charts";
+      break;
+    case "tanstack-db":
+      label = "TanStack DB";
+      hint = "Reactive client store with live queries (beta)";
+      break;
+    case "tanstack-ai":
+      label = "TanStack AI";
+      hint = "Streaming chat with provider adapters (alpha)";
+      break;
     default:
       label = addon;
       hint = `Add ${addon}`;
@@ -103,6 +119,7 @@ const ADDON_GROUPS = {
   "Monorepo & Tasks": ["turborepo", "vite-plus"],
   "Code Quality": ["oxlint", "lefthook"],
   Documentation: ["fumadocs"],
+  TanStack: ["tanstack-table", "tanstack-charts", "tanstack-db", "tanstack-ai"],
   "Platform Extensions": ["pwa", "tauri", "electrobun", "opentui"],
   Observability: ["evlog", "axiom"],
   "AI & Agent Tools": ["skills", "mcp"],

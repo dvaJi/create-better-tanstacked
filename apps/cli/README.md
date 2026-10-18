@@ -71,7 +71,7 @@ Options:
   --auth <provider>               Authentication (better-auth, clerk, none)
   --payments <provider>           Payments provider (polar, none)
   --frontend <type>               Frontend (tanstack-router, tanstack-start, none)
-  --addons <types...>             Additional addons (pwa, tauri, electrobun, lefthook, mcp, turborepo, vite-plus, fumadocs, oxlint, opentui, skills, evlog, none)
+  --addons <types...>             Additional addons (pwa, tauri, electrobun, lefthook, mcp, turborepo, vite-plus, fumadocs, oxlint, opentui, skills, evlog, tanstack-table, tanstack-charts, tanstack-db, tanstack-ai, none)
   --examples <types...>           Examples to include (todo, ai, none)
   --git                           Initialize git repository
   --no-git                        Skip git initialization

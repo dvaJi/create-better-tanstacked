@@ -1,0 +1,46 @@
+import { DbProvider, useDbClient, useLiveQuery } from "@tanstack/react-db";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+
+import { createDbClient, projectCollection } from "@/lib/project-collection";
+
+export const Route = createFileRoute("/db")({
+  component: DbRoute,
+});
+
+function DbRoute() {
+  const [client] = useState(createDbClient);
+
+  return (
+    <DbProvider client={client}>
+      <ProjectList />
+    </DbProvider>
+  );
+}
+
+function ProjectList() {
+  const collection = useDbClient().collection(projectCollection);
+  const { data: projects } = useLiveQuery({
+    query: (q) => q.from({ project: collection }),
+  });
+
+  return (
+    <div className="container mx-auto max-w-3xl px-4 py-6">
+      <h1 className="mb-1 text-2xl font-semibold">TanStack DB</h1>
+      <p className="text-muted-foreground mb-6 text-sm">
+        A live query over a TanStack Query-backed collection.
+      </p>
+      <ul className="divide-y rounded-lg border">
+        {(projects ?? []).map((project) => (
+          <li key={project.id} className="flex items-center justify-between px-4 py-3">
+            <div>
+              <p className="font-medium">{project.name}</p>
+              <p className="text-muted-foreground text-sm capitalize">{project.status}</p>
+            </div>
+            <span className="text-sm tabular-nums">{project.score}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

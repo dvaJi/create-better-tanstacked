@@ -52,6 +52,10 @@ const LegacyAddonsSchema = z.enum([
   "skills",
   "evlog",
   "axiom",
+  "tanstack-table",
+  "tanstack-charts",
+  "tanstack-db",
+  "tanstack-ai",
   "none",
 ]);
 export const AddonsSchema = z
@@ -69,6 +73,10 @@ export const AddonsSchema = z
     "skills",
     "evlog",
     "axiom",
+    "tanstack-table",
+    "tanstack-charts",
+    "tanstack-db",
+    "tanstack-ai",
     "none",
   ])
   .pipe(LegacyAddonsSchema)
@@ -561,6 +569,10 @@ export const ADDONS_VALUES = [
   "skills",
   "evlog",
   "axiom",
+  "tanstack-table",
+  "tanstack-charts",
+  "tanstack-db",
+  "tanstack-ai",
   "none",
 ] as const;
 export const EXAMPLES_VALUES = ExamplesSchema.options;

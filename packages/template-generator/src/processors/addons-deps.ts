@@ -79,4 +79,47 @@ export function processAddonsDeps(vfs: VirtualFileSystem, config: ProjectConfig)
       }
     }
   }
+
+  processTanStackAddonDeps(vfs, config);
+}
+
+function processTanStackAddonDeps(vfs: VirtualFileSystem, config: ProjectConfig): void {
+  const webPkgPath = "apps/web/package.json";
+  if (!vfs.exists(webPkgPath)) return;
+
+  if (config.addons.includes("tanstack-table")) {
+    addPackageDependency({
+      vfs,
+      packagePath: webPkgPath,
+      dependencies: ["@tanstack/react-table", "@tanstack/react-virtual"],
+    });
+  }
+
+  if (config.addons.includes("tanstack-charts")) {
+    addPackageDependency({
+      vfs,
+      packagePath: webPkgPath,
+      dependencies: ["@tanstack/charts"],
+    });
+  }
+
+  if (config.addons.includes("tanstack-db")) {
+    addPackageDependency({
+      vfs,
+      packagePath: webPkgPath,
+      dependencies: [
+        "@tanstack/react-query",
+        "@tanstack/react-db",
+        "@tanstack/query-db-collection",
+      ],
+    });
+  }
+
+  if (config.addons.includes("tanstack-ai")) {
+    addPackageDependency({
+      vfs,
+      packagePath: webPkgPath,
+      dependencies: ["@tanstack/ai", "@tanstack/ai-react", "@tanstack/ai-openai"],
+    });
+  }
 }

@@ -465,6 +465,38 @@ export const TECH_OPTIONS: TechOptions = {
       color: "from-violet-500 to-indigo-700",
       default: false,
     },
+    {
+      id: "tanstack-table",
+      name: "TanStack Table",
+      description: "Headless tables and data grids with virtualization",
+      icon: "",
+      color: "from-emerald-500 to-teal-700",
+      default: false,
+    },
+    {
+      id: "tanstack-charts",
+      name: "TanStack Charts",
+      description: "Responsive, accessible, SSR-friendly charts",
+      icon: "",
+      color: "from-sky-500 to-blue-700",
+      default: false,
+    },
+    {
+      id: "tanstack-db",
+      name: "TanStack DB",
+      description: "Reactive client store with live queries (beta)",
+      icon: "",
+      color: "from-amber-500 to-orange-700",
+      default: false,
+    },
+    {
+      id: "tanstack-ai",
+      name: "TanStack AI",
+      description: "Streaming chat with provider adapters (alpha)",
+      icon: "",
+      color: "from-fuchsia-500 to-purple-700",
+      default: false,
+    },
   ],
   examples: [
     {

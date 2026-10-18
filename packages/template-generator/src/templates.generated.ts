@@ -178,6 +178,289 @@ export default defineConfig({
   images: ["public/logo.png"],
 });
 `],
+  ["addons/tanstack-ai/apps/web/src/routes/api/chat.ts.hbs", `import { chat, chatParamsFromRequest, toServerSentEventsResponse } from "@tanstack/ai";
+import { openaiText } from "@tanstack/ai-openai";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/api/chat")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        const { messages, threadId, runId } = await chatParamsFromRequest(request);
+
+        const stream = chat({
+          adapter: openaiText("gpt-5.6"),
+          messages,
+          threadId,
+          runId,
+        });
+
+        return toServerSentEventsResponse(stream);
+      },
+    },
+  },
+});
+`],
+  ["addons/tanstack-ai/apps/web/src/routes/chat.tsx.hbs", `import { fetchServerSentEvents, useChat } from "@tanstack/ai-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+
+import { Button } from "@{{projectName}}/ui/components/button";
+import { Input } from "@{{projectName}}/ui/components/input";
+
+export const Route = createFileRoute("/chat")({
+  component: ChatRoute,
+});
+
+function ChatRoute() {
+  const [input, setInput] = useState("");
+  const { messages, sendMessage, isLoading, stop } = useChat({
+    connection: fetchServerSentEvents("/api/chat"),
+  });
+
+  return (
+    <div className="container mx-auto max-w-3xl px-4 py-6">
+      <h1 className="mb-1 text-2xl font-semibold">TanStack AI</h1>
+      <p className="text-muted-foreground mb-6 text-sm">
+        Streaming chat powered by TanStack AI.
+      </p>
+      <div className="mb-6 space-y-3">
+        {messages.map((message) => (
+          <div key={message.id} className="rounded-lg border p-4">
+            <p className="mb-1 text-xs font-medium uppercase">{message.role}</p>
+            <div className="space-y-1 text-sm">
+              {message.parts.map((part, index) =>
+                part.type === "text" ? <p key={index}>{part.content}</p> : null,
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      <form
+        className="flex gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (input.trim() === "") return;
+          sendMessage(input);
+          setInput("");
+        }}
+      >
+        <Input
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          placeholder="Send a message..."
+        />
+        {isLoading ? (
+          <Button type="button" onClick={stop}>
+            Stop
+          </Button>
+        ) : (
+          <Button type="submit">Send</Button>
+        )}
+      </form>
+    </div>
+  );
+}
+`],
+  ["addons/tanstack-charts/apps/web/src/routes/charts.tsx.hbs", `import { barY, defineChart } from "@tanstack/charts";
+import { Chart } from "@tanstack/charts/react";
+import { scaleBand } from "@tanstack/charts/scales/band";
+import { scaleLinear } from "@tanstack/charts/scales/linear";
+import { createFileRoute } from "@tanstack/react-router";
+
+const revenue = [
+  { month: "Jan", value: 42 },
+  { month: "Feb", value: 58 },
+  { month: "Mar", value: 51 },
+  { month: "Apr", value: 74 },
+  { month: "May", value: 89 },
+  { month: "Jun", value: 96 },
+];
+
+const revenueChart = defineChart({
+  marks: [barY(revenue, { x: "month", y: "value" })],
+  scales: {
+    x: {
+      scale: () => scaleBand().padding(0.18),
+    },
+    y: {
+      scale: scaleLinear,
+      nice: true,
+      grid: true,
+      axis: { label: "Revenue" },
+    },
+  },
+});
+
+export const Route = createFileRoute("/charts")({
+  component: ChartsRoute,
+});
+
+function ChartsRoute() {
+  return (
+    <div className="container mx-auto max-w-4xl px-4 py-6">
+      <h1 className="mb-1 text-2xl font-semibold">TanStack Charts</h1>
+      <p className="text-muted-foreground mb-6 text-sm">
+        A responsive chart defined in TypeScript and rendered with React.
+      </p>
+      <div className="rounded-lg border p-4">
+        <Chart definition={revenueChart} height={320} ariaLabel="Monthly revenue" />
+      </div>
+    </div>
+  );
+}
+`],
+  ["addons/tanstack-db/apps/web/src/lib/project-collection.ts.hbs", `import { QueryClient } from "@tanstack/react-query";
+import { collectionOptions, DbClient } from "@tanstack/react-db";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
+
+export type Project = {
+  id: string;
+  name: string;
+  status: "active" | "review" | "shipped";
+  score: number;
+};
+
+const seedProjects: Project[] = [
+  { id: "1", name: "Router docs", status: "active", score: 98 },
+  { id: "2", name: "Query cache", status: "review", score: 94 },
+  { id: "3", name: "Table filters", status: "shipped", score: 91 },
+  { id: "4", name: "Virtual lists", status: "active", score: 88 },
+];
+
+export function createDbClient() {
+  return new DbClient({ queryClient: new QueryClient() });
+}
+
+export const projectCollection = collectionOptions("projects", (client) =>
+  queryCollectionOptions({
+    id: "projects",
+    queryKey: ["projects"],
+    queryClient: client.requireDependency<QueryClient>("queryClient"),
+    queryFn: async () => seedProjects,
+    getKey: (project: Project) => project.id,
+  }),
+);
+`],
+  ["addons/tanstack-db/apps/web/src/routes/db.tsx.hbs", `import { DbProvider, useDbClient, useLiveQuery } from "@tanstack/react-db";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+
+import { createDbClient, projectCollection } from "@/lib/project-collection";
+
+export const Route = createFileRoute("/db")({
+  component: DbRoute,
+});
+
+function DbRoute() {
+  const [client] = useState(createDbClient);
+
+  return (
+    <DbProvider client={client}>
+      <ProjectList />
+    </DbProvider>
+  );
+}
+
+function ProjectList() {
+  const collection = useDbClient().collection(projectCollection);
+  const { data: projects } = useLiveQuery({
+    query: (q) => q.from({ project: collection }),
+  });
+
+  return (
+    <div className="container mx-auto max-w-3xl px-4 py-6">
+      <h1 className="mb-1 text-2xl font-semibold">TanStack DB</h1>
+      <p className="text-muted-foreground mb-6 text-sm">
+        A live query over a TanStack Query-backed collection.
+      </p>
+      <ul className="divide-y rounded-lg border">
+        {(projects ?? []).map((project) => (
+          <li key={project.id} className="flex items-center justify-between px-4 py-3">
+            <div>
+              <p className="font-medium">{project.name}</p>
+              <p className="text-muted-foreground text-sm capitalize">{project.status}</p>
+            </div>
+            <span className="text-sm tabular-nums">{project.score}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+`],
+  ["addons/tanstack-table/apps/web/src/routes/table.tsx.hbs", `import { createFileRoute } from "@tanstack/react-router";
+import { type ColumnDef, tableFeatures, useTable } from "@tanstack/react-table";
+
+type Project = {
+  id: string;
+  name: string;
+  owner: string;
+  status: "Active" | "Review" | "Shipped";
+  score: number;
+};
+
+const features = tableFeatures({});
+
+const columns: ColumnDef<typeof features, Project>[] = [
+  { accessorKey: "name", header: "Project" },
+  { accessorKey: "owner", header: "Owner" },
+  { accessorKey: "status", header: "Status" },
+  { accessorKey: "score", header: "Score" },
+];
+
+const projects: Project[] = [
+  { id: "1", name: "Router docs", owner: "Ava", status: "Active", score: 98 },
+  { id: "2", name: "Query cache", owner: "Noah", status: "Review", score: 94 },
+  { id: "3", name: "Table filters", owner: "Mia", status: "Shipped", score: 91 },
+  { id: "4", name: "Virtual lists", owner: "Liam", status: "Active", score: 88 },
+  { id: "5", name: "Chart scales", owner: "Zoe", status: "Shipped", score: 86 },
+  { id: "6", name: "Form validation", owner: "Ethan", status: "Review", score: 83 },
+];
+
+export const Route = createFileRoute("/table")({
+  component: TableRoute,
+});
+
+function TableRoute() {
+  const table = useTable({ features, columns, data: projects });
+
+  return (
+    <div className="container mx-auto max-w-4xl px-4 py-6">
+      <h1 className="mb-1 text-2xl font-semibold">TanStack Table</h1>
+      <p className="text-muted-foreground mb-6 text-sm">
+        A headless table rendered with your own markup.
+      </p>
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2 text-left font-medium">
+                    {header.isPlaceholder ? null : <table.FlexRender header={header} />}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-t">
+                {row.getAllCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    <table.FlexRender cell={cell} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+`],
   ["api/orpc/context.ts.hbs", `import type { Context as ApiContext } from "@{{projectName}}/api/context";
 {{#if (ne database "none")}}
 import { {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}getDb{{else}}db{{/if}} } from "@{{projectName}}/app-services";
@@ -10600,6 +10883,18 @@ export default function Header() {
     {{#if (includes examples "ai")}}
     { to: "/ai", label: "AI Chat" },
     {{/if}}
+    {{#if (includes addons "tanstack-table")}}
+    { to: "/table", label: "Table" },
+    {{/if}}
+    {{#if (includes addons "tanstack-charts")}}
+    { to: "/charts", label: "Charts" },
+    {{/if}}
+    {{#if (includes addons "tanstack-db")}}
+    { to: "/db", label: "DB" },
+    {{/if}}
+    {{#if (includes addons "tanstack-ai")}}
+    { to: "/chat", label: "Chat" },
+    {{/if}}
   ] as const;
 
   return (
@@ -12611,4 +12906,4 @@ function SuccessPage() {
 `]
 ]);
 
-export const TEMPLATE_COUNT = 234;
+export const TEMPLATE_COUNT = 240;

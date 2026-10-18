@@ -28,6 +28,10 @@ function expectParseableTypeScript(content: string) {
   expect(() => new Bun.Transpiler({ loader: "ts" }).transformSync(content)).not.toThrow();
 }
 
+function expectParseableTsx(content: string) {
+  expect(() => new Bun.Transpiler({ loader: "tsx" }).transformSync(content)).not.toThrow();
+}
+
 function expectDocsWithEvlogAuth(content: string) {
   expect(content).not.toContain("createEvlogAuth");
   expect(content).not.toContain("toHeaders");
@@ -1785,6 +1789,85 @@ describe("Addon Configurations", () => {
         expect(content).toContain("createAxiomDrain()");
       });
     }
+  });
+
+  describe("TanStack Addons", () => {
+    it("should wire TanStack table, charts, DB, and AI addons", async () => {
+      const result = await runCreateTest({
+        projectName: "tanstack-addons",
+        frontend: ["tanstack-start"],
+        backend: "self",
+        runtime: "none",
+        api: "none",
+        addons: ["tanstack-table", "tanstack-charts", "tanstack-db", "tanstack-ai"],
+      });
+
+      expectSuccess(result);
+      const projectDir = result.projectDir;
+
+      const webPackageJson = JSON.parse(
+        await readFile(join(projectDir, "apps/web/package.json"), "utf8"),
+      ) as { dependencies?: Record<string, string> };
+
+      expect(webPackageJson.dependencies?.["@tanstack/react-table"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@tanstack/react-virtual"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@tanstack/charts"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@tanstack/react-query"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@tanstack/react-db"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@tanstack/query-db-collection"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@tanstack/ai"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@tanstack/ai-react"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@tanstack/ai-openai"]).toBeDefined();
+
+      for (const filePath of [
+        "apps/web/src/routes/table.tsx",
+        "apps/web/src/routes/charts.tsx",
+        "apps/web/src/lib/project-collection.ts",
+        "apps/web/src/routes/db.tsx",
+        "apps/web/src/routes/api/chat.ts",
+        "apps/web/src/routes/chat.tsx",
+      ]) {
+        expect(existsSync(join(projectDir, filePath))).toBe(true);
+      }
+
+      const envSchema = await readFile(join(projectDir, "apps/web/.env.schema"), "utf8");
+      expect(envSchema).toContain("OPENAI_API_KEY");
+
+      const header = await readFile(join(projectDir, "apps/web/src/components/header.tsx"), "utf8");
+      expect(header).toContain('to: "/table"');
+      expect(header).toContain('to: "/charts"');
+      expect(header).toContain('to: "/db"');
+      expect(header).toContain('to: "/chat"');
+
+      const tableRoute = await readFile(join(projectDir, "apps/web/src/routes/table.tsx"), "utf8");
+      expect(tableRoute).toContain("useTable(");
+      expectParseableTsx(tableRoute);
+
+      const chartsRoute = await readFile(
+        join(projectDir, "apps/web/src/routes/charts.tsx"),
+        "utf8",
+      );
+      expect(chartsRoute).toContain("defineChart(");
+      expectParseableTsx(chartsRoute);
+
+      const dbRoute = await readFile(join(projectDir, "apps/web/src/routes/db.tsx"), "utf8");
+      expect(dbRoute).toContain("useLiveQuery(");
+      expectParseableTsx(dbRoute);
+
+      const chatRoute = await readFile(join(projectDir, "apps/web/src/routes/chat.tsx"), "utf8");
+      expect(chatRoute).toContain("useChat(");
+      expectParseableTsx(chatRoute);
+    });
+
+    it("should reject TanStack AI without TanStack Start", async () => {
+      const result = await runCreateTest({
+        projectName: "tanstack-ai-router-fail",
+        frontend: ["tanstack-router"],
+        addons: ["tanstack-ai"],
+      });
+
+      expectError(result, "tanstack-ai addon requires one of these frontends: tanstack-start");
+    });
   });
 
   describe("Addons with None Option", () => {

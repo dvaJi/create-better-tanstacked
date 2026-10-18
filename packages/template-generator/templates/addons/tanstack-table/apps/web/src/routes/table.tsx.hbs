@@ -1,0 +1,71 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { type ColumnDef, tableFeatures, useTable } from "@tanstack/react-table";
+
+type Project = {
+  id: string;
+  name: string;
+  owner: string;
+  status: "Active" | "Review" | "Shipped";
+  score: number;
+};
+
+const features = tableFeatures({});
+
+const columns: ColumnDef<typeof features, Project>[] = [
+  { accessorKey: "name", header: "Project" },
+  { accessorKey: "owner", header: "Owner" },
+  { accessorKey: "status", header: "Status" },
+  { accessorKey: "score", header: "Score" },
+];
+
+const projects: Project[] = [
+  { id: "1", name: "Router docs", owner: "Ava", status: "Active", score: 98 },
+  { id: "2", name: "Query cache", owner: "Noah", status: "Review", score: 94 },
+  { id: "3", name: "Table filters", owner: "Mia", status: "Shipped", score: 91 },
+  { id: "4", name: "Virtual lists", owner: "Liam", status: "Active", score: 88 },
+  { id: "5", name: "Chart scales", owner: "Zoe", status: "Shipped", score: 86 },
+  { id: "6", name: "Form validation", owner: "Ethan", status: "Review", score: 83 },
+];
+
+export const Route = createFileRoute("/table")({
+  component: TableRoute,
+});
+
+function TableRoute() {
+  const table = useTable({ features, columns, data: projects });
+
+  return (
+    <div className="container mx-auto max-w-4xl px-4 py-6">
+      <h1 className="mb-1 text-2xl font-semibold">TanStack Table</h1>
+      <p className="text-muted-foreground mb-6 text-sm">
+        A headless table rendered with your own markup.
+      </p>
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2 text-left font-medium">
+                    {header.isPlaceholder ? null : <table.FlexRender header={header} />}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-t">
+                {row.getAllCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    <table.FlexRender cell={cell} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

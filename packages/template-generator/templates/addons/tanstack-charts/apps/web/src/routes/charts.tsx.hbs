@@ -1,0 +1,47 @@
+import { barY, defineChart } from "@tanstack/charts";
+import { Chart } from "@tanstack/charts/react";
+import { scaleBand } from "@tanstack/charts/scales/band";
+import { scaleLinear } from "@tanstack/charts/scales/linear";
+import { createFileRoute } from "@tanstack/react-router";
+
+const revenue = [
+  { month: "Jan", value: 42 },
+  { month: "Feb", value: 58 },
+  { month: "Mar", value: 51 },
+  { month: "Apr", value: 74 },
+  { month: "May", value: 89 },
+  { month: "Jun", value: 96 },
+];
+
+const revenueChart = defineChart({
+  marks: [barY(revenue, { x: "month", y: "value" })],
+  scales: {
+    x: {
+      scale: () => scaleBand().padding(0.18),
+    },
+    y: {
+      scale: scaleLinear,
+      nice: true,
+      grid: true,
+      axis: { label: "Revenue" },
+    },
+  },
+});
+
+export const Route = createFileRoute("/charts")({
+  component: ChartsRoute,
+});
+
+function ChartsRoute() {
+  return (
+    <div className="container mx-auto max-w-4xl px-4 py-6">
+      <h1 className="mb-1 text-2xl font-semibold">TanStack Charts</h1>
+      <p className="text-muted-foreground mb-6 text-sm">
+        A responsive chart defined in TypeScript and rendered with React.
+      </p>
+      <div className="rounded-lg border p-4">
+        <Chart definition={revenueChart} height={320} ariaLabel="Monthly revenue" />
+      </div>
+    </div>
+  );
+}

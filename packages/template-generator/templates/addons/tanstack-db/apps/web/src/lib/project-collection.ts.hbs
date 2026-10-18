@@ -1,0 +1,31 @@
+import { QueryClient } from "@tanstack/react-query";
+import { collectionOptions, DbClient } from "@tanstack/react-db";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
+
+export type Project = {
+  id: string;
+  name: string;
+  status: "active" | "review" | "shipped";
+  score: number;
+};
+
+const seedProjects: Project[] = [
+  { id: "1", name: "Router docs", status: "active", score: 98 },
+  { id: "2", name: "Query cache", status: "review", score: 94 },
+  { id: "3", name: "Table filters", status: "shipped", score: 91 },
+  { id: "4", name: "Virtual lists", status: "active", score: 88 },
+];
+
+export function createDbClient() {
+  return new DbClient({ queryClient: new QueryClient() });
+}
+
+export const projectCollection = collectionOptions("projects", (client) =>
+  queryCollectionOptions({
+    id: "projects",
+    queryKey: ["projects"],
+    queryClient: client.requireDependency<QueryClient>("queryClient"),
+    queryFn: async () => seedProjects,
+    getKey: (project: Project) => project.id,
+  }),
+);

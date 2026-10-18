@@ -4,7 +4,11 @@ import path from "node:path";
 import fs from "fs-extra";
 
 import { setupMcp, getRecommendedMcpServers } from "../src/helpers/addons/mcp-setup";
-import { setupSkills, UNIVERSAL_SKILLS_AGENTS } from "../src/helpers/addons/skills-setup";
+import {
+  getCuratedSkillNamesForSourceKey,
+  setupSkills,
+  UNIVERSAL_SKILLS_AGENTS,
+} from "../src/helpers/addons/skills-setup";
 import type { ProjectConfig } from "../src/types";
 import { runWithContextAsync } from "../src/utils/context";
 
@@ -203,6 +207,26 @@ describe("Addon setup regressions", () => {
     expect(commandLog).not.toContain("--agent universal");
     expect(commandLog).toContain(`--agent ${UNIVERSAL_SKILLS_AGENTS.join(" ")}`);
     expect(commandLog).toContain("zed claude-code -y");
+  });
+
+  it("recommends TanStack skills for TanStack addons", () => {
+    const skills = getCuratedSkillNamesForSourceKey(
+      "tanstack-skills/tanstack-skills",
+      createProjectConfig({
+        frontend: ["tanstack-start"],
+        addons: ["skills", "tanstack-table", "tanstack-db", "tanstack-ai"],
+      }),
+    );
+
+    expect(skills).toEqual([
+      "tanstack-start",
+      "tanstack-router",
+      "tanstack-query",
+      "tanstack-table",
+      "tanstack-virtual",
+      "tanstack-db",
+      "tanstack-ai",
+    ]);
   });
 
   it("preserves an explicit empty skills agent list in silent mode", async () => {

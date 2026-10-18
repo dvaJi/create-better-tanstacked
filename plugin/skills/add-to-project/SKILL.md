@@ -22,7 +22,7 @@ For brand-new projects, use the **scaffold-project** skill instead.
 
 ## Available addons
 
-`pwa`, `tauri`, `electrobun`, `lefthook`, `mcp`, `turborepo`, `vite-plus`, `fumadocs`, `oxlint`, `opentui`, `skills`, `evlog`.
+`pwa`, `tauri`, `electrobun`, `lefthook`, `mcp`, `turborepo`, `vite-plus`, `fumadocs`, `oxlint`, `opentui`, `skills`, `evlog`, `tanstack-table`, `tanstack-charts`, `tanstack-db`, `tanstack-ai`.
 
 Note: `turborepo` and `vite-plus` are mutually exclusive task runners. Use `bts_get_schema` for nested addon options (e.g. Fumadocs templates/search/AI chat, OpenTUI templates).
 

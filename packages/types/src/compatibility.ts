@@ -42,6 +42,10 @@ export const ADDON_COMPATIBILITY = {
   skills: [],
   evlog: [],
   axiom: [],
+  "tanstack-table": ["tanstack-router", "tanstack-start"],
+  "tanstack-charts": ["tanstack-router", "tanstack-start"],
+  "tanstack-db": ["tanstack-router", "tanstack-start"],
+  "tanstack-ai": ["tanstack-start"],
   none: [],
 } as const;
 

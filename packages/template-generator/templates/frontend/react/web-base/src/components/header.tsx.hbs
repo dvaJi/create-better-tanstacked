@@ -18,6 +18,18 @@ export default function Header() {
     {{#if (includes examples "ai")}}
     { to: "/ai", label: "AI Chat" },
     {{/if}}
+    {{#if (includes addons "tanstack-table")}}
+    { to: "/table", label: "Table" },
+    {{/if}}
+    {{#if (includes addons "tanstack-charts")}}
+    { to: "/charts", label: "Charts" },
+    {{/if}}
+    {{#if (includes addons "tanstack-db")}}
+    { to: "/db", label: "DB" },
+    {{/if}}
+    {{#if (includes addons "tanstack-ai")}}
+    { to: "/chat", label: "Chat" },
+    {{/if}}
   ] as const;
 
   return (

@@ -299,17 +299,28 @@ const CURATED_SKILLS_BY_SOURCE = {
     return skills;
   },
   "tanstack-skills/tanstack-skills": (config) => {
+    if (!hasReactBasedFrontend(config.frontend)) return [];
+
     const skills: string[] = [];
     if (config.frontend.includes("tanstack-start")) {
       skills.push("tanstack-start", "tanstack-router");
-    } else if (config.frontend.includes("tanstack-router")) {
+    } else {
       skills.push("tanstack-router");
     }
-    if (config.api !== "none" && hasReactBasedFrontend(config.frontend)) {
+    if (config.api !== "none") {
       skills.push("tanstack-query");
     }
-    if (config.auth === "better-auth" && hasReactBasedFrontend(config.frontend)) {
+    if (config.auth === "better-auth") {
       skills.push("tanstack-form");
+    }
+    if (config.addons.includes("tanstack-table")) {
+      skills.push("tanstack-table", "tanstack-virtual");
+    }
+    if (config.addons.includes("tanstack-db")) {
+      skills.push("tanstack-db");
+    }
+    if (config.addons.includes("tanstack-ai")) {
+      skills.push("tanstack-ai");
     }
     return skills;
   },
@@ -359,7 +370,10 @@ const CURATED_SKILLS_BY_SOURCE = {
   ],
 } satisfies Record<SourceKey, (config: ProjectConfig) => string[]>;
 
-function getCuratedSkillNamesForSourceKey(sourceKey: SourceKey, config: ProjectConfig): string[] {
+export function getCuratedSkillNamesForSourceKey(
+  sourceKey: SourceKey,
+  config: ProjectConfig,
+): string[] {
   return CURATED_SKILLS_BY_SOURCE[sourceKey](config);
 }
 
