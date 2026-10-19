@@ -101,6 +101,25 @@ describe("Addon setup regressions", () => {
     expect(servers.map((server) => server.key)).toEqual(["context7", "shadcn"]);
   });
 
+  it("recommends product MCP servers for ErrorDX and Shipboard addons", () => {
+    const servers = getRecommendedMcpServers(
+      createProjectConfig({ addons: ["errordx", "shipboard"] }),
+      "project",
+    );
+    const keys = servers.map((server) => server.key);
+
+    expect(keys).toContain("errordx");
+    expect(keys).toContain("shipboard");
+
+    const errordx = servers.find((server) => server.key === "errordx");
+    expect(errordx?.target).toBe("https://api.errordx.com/mcp");
+    expect(errordx?.headers).toEqual(["Authorization: Bearer ${ERRORDX_API_KEY}"]);
+
+    const shipboard = servers.find((server) => server.key === "shipboard");
+    expect(shipboard?.target).toBe("https://api.tryshipboard.com/mcp");
+    expect(shipboard?.headers).toEqual(["Authorization: Bearer ${SHIPBOARD_API_KEY}"]);
+  });
+
   it("preserves explicit empty MCP selections in silent mode", async () => {
     const projectDir = path.join(SMOKE_DIR, "mcp-explicit-empty");
     await fs.remove(projectDir);

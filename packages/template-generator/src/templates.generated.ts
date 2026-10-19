@@ -109,6 +109,20 @@ console.log("Electrobun desktop shell started.");
   "include": ["src/**/*.ts", "electrobun.config.ts"]
 }
 `],
+  ["addons/errordx/apps/web/src/lib/errordx.ts.hbs", `export function initErrorDx() {
+  if (typeof window === "undefined") return;
+
+  const dsn = import.meta.env.VITE_ERRORDX_DSN;
+  if (!dsn) return;
+
+  void import("@sentry/browser").then((Sentry) => {
+    Sentry.init({
+      dsn,
+      tracesSampleRate: 1.0,
+    });
+  });
+}
+`],
   ["addons/lefthook/lefthook.yml.hbs", `# Lefthook configuration
 # https://github.com/evilmartians/lefthook
 
@@ -177,6 +191,61 @@ export default defineConfig({
   preset,
   images: ["public/logo.png"],
 });
+`],
+  ["addons/shipboard/apps/web/src/components/shipboard-widget.tsx.hbs", `import { useEffect } from "react";
+
+import { mountShipboard } from "@/lib/shipboard";
+
+export function ShipboardWidget() {
+  useEffect(() => mountShipboard(), []);
+
+  return null;
+}
+`],
+  ["addons/shipboard/apps/web/src/lib/shipboard.ts.hbs", `type WidgetOptions = {
+  slug: string;
+  label?: string;
+  position?: "left" | "right";
+  theme?: "light" | "dark" | "auto";
+};
+
+declare global {
+  interface Window {
+    ShipboardWidget?: {
+      init: (options: WidgetOptions) => unknown;
+      destroy: () => void;
+    };
+  }
+}
+
+export function mountShipboard(options: Partial<WidgetOptions> = {}): () => void {
+  const slug = options.slug ?? import.meta.env.VITE_SHIPBOARD_SLUG;
+  if (!slug) return () => {};
+
+  const init = () => {
+    if (!window.ShipboardWidget) return;
+    document.removeEventListener("load", init, true);
+    window.ShipboardWidget.init({ ...options, slug });
+  };
+
+  if (window.ShipboardWidget) {
+    init();
+  } else {
+    document.addEventListener("load", init, true);
+    if (!document.getElementById("shipboard-widget-loader")) {
+      const script = document.createElement("script");
+      script.id = "shipboard-widget-loader";
+      script.src = "https://tryshipboard.com/widget.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }
+
+  return () => {
+    document.removeEventListener("load", init, true);
+    window.ShipboardWidget?.destroy();
+  };
+}
 `],
   ["addons/tanstack-ai/apps/web/src/routes/api/chat.ts.hbs", `import { chat, chatParamsFromRequest, toServerSentEventsResponse } from "@tanstack/ai";
 import { openaiText } from "@tanstack/ai-openai";
@@ -5960,6 +6029,29 @@ This project uses React with TanStack Router. Keep frontend changes within that 
 - Setup guide: [Coolify MCP setup](https://coolify.io/docs/mcp/setup).
 {{/if}}
 
+{{#if (includes addons "errordx")}}
+## ErrorDX
+
+This project sends browser errors to ErrorDX through the Sentry browser SDK.
+
+- Ask the user for permission before creating external resources.
+- If the \`errordx\` MCP server is connected (\`https://api.errordx.com/mcp\` with an \`Authorization: Bearer <agent key>\` header), use it to create or find the project for this app and read its DSN. Put the DSN in \`apps/web/.env\` as \`VITE_ERRORDX_DSN\`.
+- If the MCP server is not available, ask the user to create an organization and project at [app.errordx.com](https://app.errordx.com), then paste the project DSN into \`apps/web/.env\` as \`VITE_ERRORDX_DSN\`.
+- Agent keys are created in ErrorDX under Settings → Members → Agent keys. Use \`read\` and \`write\` scopes; add \`deploy\` only when uploading source maps.
+- The DSN is public and safe to ship in the browser bundle. Keep secrets in the agent environment and never commit \`.env\`.
+{{/if}}
+
+{{#if (includes addons "shipboard")}}
+## Shipboard
+
+This project mounts the Shipboard feedback widget from the shared header.
+
+- Ask the user for permission before creating external resources.
+- If the \`shipboard\` MCP server is connected (\`https://api.tryshipboard.com/mcp\` with an \`Authorization: Bearer <API token>\` header), use it to create or find the workspace for this app and read its slug. Put the slug in \`apps/web/.env\` as \`VITE_SHIPBOARD_SLUG\`.
+- If the MCP server is not available, ask the user to create a workspace at [app.tryshipboard.com](https://app.tryshipboard.com), then paste the workspace slug into \`apps/web/.env\` as \`VITE_SHIPBOARD_SLUG\`.
+- The widget loads \`https://tryshipboard.com/widget.js\` once from \`apps/web/src/components/shipboard-widget.tsx\`. Do not add a second installation.
+{{/if}}
+
 ## Agent tools
 
 - Use the configured documentation MCPs for current library and platform details. Use DeepWiki to understand public repositories when their architecture matters.
@@ -9763,6 +9855,9 @@ import { setClerkAuthTokenGetter } from "@/utils/clerk-auth";
 {{/if}}
 import Loader from "./components/loader";
 import { routeTree } from "./routeTree.gen";
+{{#if (includes addons "errordx")}}
+import { initErrorDx } from "./lib/errordx";
+{{/if}}
 
 {{#if (eq api "orpc")}}
   import { QueryClientProvider } from "@tanstack/react-query";
@@ -9807,6 +9902,10 @@ function ClerkApiAuthBridge() {
 }
 {{/if}}
 
+{{#if (includes addons "errordx")}}
+initErrorDx();
+
+{{/if}}
 const router = createRouter({
   routeTree,
   defaultPreload: "intent",
@@ -10181,11 +10280,17 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import { routeTree } from "./routeTree.gen";
 import Loader from "./components/loader";
+{{#if (includes addons "errordx")}}
+import { initErrorDx } from "./lib/errordx";
+{{/if}}
 import { ENV } from "./env{{#if (eq webDeploy "cloudflare")}}.public{{/if}}";
 {{else}}
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import Loader from "./components/loader";
 import { routeTree } from "./routeTree.gen";
+{{#if (includes addons "errordx")}}
+import { initErrorDx } from "./lib/errordx";
+{{/if}}
 {{#if (eq api "trpc")}}
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
@@ -10206,6 +10311,10 @@ import { createQueryClient, orpc } from "./utils/orpc";
 {{/if}}
 {{/if}}
 
+{{#if (includes addons "errordx")}}
+initErrorDx();
+
+{{/if}}
 {{#if (eq backend "convex")}}
 export function getRouter() {
 	const convexUrl = ENV.VITE_CONVEX_URL;
@@ -10867,6 +10976,9 @@ dev-dist
 {{#unless (includes frontend "tanstack-start")}}
 import { ModeToggle } from "./mode-toggle";
 {{/unless}}
+{{#if (includes addons "shipboard")}}
+import { ShipboardWidget } from "./shipboard-widget";
+{{/if}}
 {{#if (and (eq auth "better-auth") (ne backend "convex"))}}
 import UserMenu from "./user-menu";
 {{/if}}
@@ -10922,6 +11034,9 @@ export default function Header() {
         </div>
       </div>
       <hr />
+      {{#if (includes addons "shipboard")}}
+      <ShipboardWidget />
+      {{/if}}
     </div>
   );
 }
@@ -12906,4 +13021,4 @@ function SuccessPage() {
 `]
 ]);
 
-export const TEMPLATE_COUNT = 240;
+export const TEMPLATE_COUNT = 243;

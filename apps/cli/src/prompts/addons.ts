@@ -107,6 +107,14 @@ function getAddonDisplay(addon: Addons): AddonDisplay {
       label = "TanStack AI";
       hint = "Streaming chat with provider adapters (alpha)";
       break;
+    case "errordx":
+      label = "ErrorDX";
+      hint = "Error monitoring with the Sentry browser SDK and MCP setup";
+      break;
+    case "shipboard":
+      label = "Shipboard";
+      hint = "Embedded feedback, roadmap, and changelog widget with MCP setup";
+      break;
     default:
       label = addon;
       hint = `Add ${addon}`;
@@ -122,6 +130,7 @@ const ADDON_GROUPS = {
   TanStack: ["tanstack-table", "tanstack-charts", "tanstack-db", "tanstack-ai"],
   "Platform Extensions": ["pwa", "tauri", "electrobun", "opentui"],
   Observability: ["evlog", "axiom"],
+  "Product Tools": ["errordx", "shipboard"],
   "AI & Agent Tools": ["skills", "mcp"],
 };
 

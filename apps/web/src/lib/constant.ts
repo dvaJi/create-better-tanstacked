@@ -497,6 +497,22 @@ export const TECH_OPTIONS: TechOptions = {
       color: "from-fuchsia-500 to-purple-700",
       default: false,
     },
+    {
+      id: "errordx",
+      name: "ErrorDX",
+      description: "Error monitoring with Sentry-compatible SDKs",
+      icon: "",
+      color: "from-rose-500 to-red-700",
+      default: false,
+    },
+    {
+      id: "shipboard",
+      name: "Shipboard",
+      description: "Embedded feedback, roadmap, and changelog widget",
+      icon: "",
+      color: "from-cyan-500 to-blue-700",
+      default: false,
+    },
   ],
   examples: [
     {

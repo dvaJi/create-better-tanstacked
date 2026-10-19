@@ -44,6 +44,12 @@ function schemaKeys(vfs: VirtualFileSystem, app: string, config: ProjectConfig):
   ) {
     keys.add("OPENAI_API_KEY");
   }
+  if (app === "apps/web" && config.addons.includes("errordx")) {
+    keys.add("VITE_ERRORDX_DSN");
+  }
+  if (app === "apps/web" && config.addons.includes("shipboard")) {
+    keys.add("VITE_SHIPBOARD_SLUG");
+  }
   return keys;
 }
 
@@ -86,6 +92,10 @@ function schema(keys: Set<string>, config: ProjectConfig, envFile: string, app: 
     }
     if (key === "OPENAI_API_KEY") {
       lines.push("# @required=false @type=string(minLength=1)", `${key}=`, "");
+      continue;
+    }
+    if (key === "VITE_ERRORDX_DSN" || key === "VITE_SHIPBOARD_SLUG") {
+      lines.push("# @public @required=false @type=string(minLength=1)", `${key}=`, "");
       continue;
     }
     const isPublic = key.startsWith("VITE_");

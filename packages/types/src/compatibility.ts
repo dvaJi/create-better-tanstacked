@@ -46,6 +46,8 @@ export const ADDON_COMPATIBILITY = {
   "tanstack-charts": ["tanstack-router", "tanstack-start"],
   "tanstack-db": ["tanstack-router", "tanstack-start"],
   "tanstack-ai": ["tanstack-start"],
+  errordx: ["tanstack-router", "tanstack-start"],
+  shipboard: ["tanstack-router", "tanstack-start"],
   none: [],
 } as const;
 

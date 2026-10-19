@@ -145,6 +145,24 @@ function getAllMcpServers(): McpServerDef[] {
       name: "polar",
       target: "https://mcp.polar.sh/mcp/polar-mcp",
     },
+    {
+      key: "errordx",
+      label: "ErrorDX (agent key required)",
+      name: "errordx",
+      target: "https://api.errordx.com/mcp",
+      transport: "http",
+      headers: ["Authorization: Bearer ${ERRORDX_API_KEY}"],
+      hint: "Create an agent key in ErrorDX under Settings → Members → Agent keys",
+    },
+    {
+      key: "shipboard",
+      label: "Shipboard (API token required)",
+      name: "shipboard",
+      target: "https://api.tryshipboard.com/mcp",
+      transport: "http",
+      headers: ["Authorization: Bearer ${SHIPBOARD_API_KEY}"],
+      hint: "Create a Shipboard API token and expose it as SHIPBOARD_API_KEY",
+    },
   ];
 }
 
@@ -153,7 +171,17 @@ export function getRecommendedMcpServers(
   _scope: InstallScope,
 ): McpServerDef[] {
   const serversByKey = new Map(getAllMcpServers().map((server) => [server.key, server]));
-  const recommendedServerKeys: McpServerKey[] = ["context7", "deepwiki"];
+  const recommendedServerKeys: McpServerKey[] = [];
+
+  if (config.addons.includes("errordx")) {
+    recommendedServerKeys.push("errordx");
+  }
+
+  if (config.addons.includes("shipboard")) {
+    recommendedServerKeys.push("shipboard");
+  }
+
+  recommendedServerKeys.push("context7", "deepwiki");
 
   if (
     config.runtime === "workers" ||

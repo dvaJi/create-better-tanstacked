@@ -122,4 +122,12 @@ function processTanStackAddonDeps(vfs: VirtualFileSystem, config: ProjectConfig)
       dependencies: ["@tanstack/ai", "@tanstack/ai-react", "@tanstack/ai-openai"],
     });
   }
+
+  if (config.addons.includes("errordx")) {
+    addPackageDependency({
+      vfs,
+      packagePath: webPkgPath,
+      dependencies: ["@sentry/browser"],
+    });
+  }
 }

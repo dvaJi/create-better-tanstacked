@@ -4,6 +4,7 @@ import { desktopWebFrontends, type ProjectConfig } from "../../types";
 import { addPackageDependency } from "../../utils/add-package-deps";
 import { AddonSetupError, UserCancelledError } from "../../utils/errors";
 import { runOptionalStep } from "../../utils/optional-step";
+import { cliLog } from "../../utils/terminal-output";
 
 import { setupEvlog } from "./evlog-setup";
 import { setupFumadocs } from "./fumadocs-setup";
@@ -49,12 +50,24 @@ export async function setupAddons(config: ProjectConfig): Promise<void> {
     await runSetup(() => setupSkills(config));
   }
 
-  if (addons.includes("mcp")) {
+  if (addons.includes("mcp") || addons.includes("errordx") || addons.includes("shipboard")) {
     await runSetup(() => setupMcp(config));
   }
 
   if (addons.includes("evlog") || addons.includes("axiom")) {
     await runSetup(() => setupEvlog(config));
+  }
+
+  if (addons.includes("errordx")) {
+    cliLog.info(
+      "ErrorDX: create a project at https://app.errordx.com and set VITE_ERRORDX_DSN in apps/web/.env. If the errordx MCP server is connected, the agent can create the project and fetch the DSN automatically.",
+    );
+  }
+
+  if (addons.includes("shipboard")) {
+    cliLog.info(
+      "Shipboard: create a workspace at https://app.tryshipboard.com and set VITE_SHIPBOARD_SLUG in apps/web/.env. If the shipboard MCP server is connected, the agent can create the workspace and fetch the slug automatically.",
+    );
   }
 }
 

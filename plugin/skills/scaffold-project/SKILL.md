@@ -39,7 +39,7 @@ Use `bts_get_schema` for the authoritative, version-current list. As of this wri
 - **api**: `trpc`, `orpc`, `none`
 - **auth**: `better-auth`, `clerk`, `none`
 - **payments**: `polar`, `none`
-- **addons**: `pwa`, `tauri`, `electrobun`, `lefthook`, `mcp`, `turborepo`, `vite-plus`, `fumadocs`, `oxlint`, `opentui`, `skills`, `evlog`, `tanstack-table`, `tanstack-charts`, `tanstack-db`, `tanstack-ai`, `none` (`turborepo` and `vite-plus` are mutually exclusive)
+- **addons**: `pwa`, `tauri`, `electrobun`, `lefthook`, `mcp`, `turborepo`, `vite-plus`, `fumadocs`, `oxlint`, `opentui`, `skills`, `evlog`, `tanstack-table`, `tanstack-charts`, `tanstack-db`, `tanstack-ai`, `errordx`, `shipboard`, `none` (`turborepo` and `vite-plus` are mutually exclusive)
 - **examples**: `todo`, `ai`, `none`
 - **packageManager**: `npm`, `pnpm`, `bun`
 - **dbSetup**: `turso`, `neon`, `prisma-postgres`, `planetscale`, `supabase`, `d1`, `docker`, `none`

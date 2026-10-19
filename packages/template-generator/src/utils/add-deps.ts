@@ -95,6 +95,7 @@ export const dependencyVersionMap = {
   "@tanstack/ai": "^0.69.0",
   "@tanstack/ai-react": "^0.30.4",
   "@tanstack/ai-openai": "^0.30.0",
+  "@sentry/browser": "^11.8.0",
   "@cloudflare/workers-types": "^5.20261004.1",
   "@alchemy.run/frontend-frameworks": "2.0.0-beta.80",
 

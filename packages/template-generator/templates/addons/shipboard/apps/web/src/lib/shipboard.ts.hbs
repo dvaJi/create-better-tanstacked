@@ -1,0 +1,44 @@
+type WidgetOptions = {
+  slug: string;
+  label?: string;
+  position?: "left" | "right";
+  theme?: "light" | "dark" | "auto";
+};
+
+declare global {
+  interface Window {
+    ShipboardWidget?: {
+      init: (options: WidgetOptions) => unknown;
+      destroy: () => void;
+    };
+  }
+}
+
+export function mountShipboard(options: Partial<WidgetOptions> = {}): () => void {
+  const slug = options.slug ?? import.meta.env.VITE_SHIPBOARD_SLUG;
+  if (!slug) return () => {};
+
+  const init = () => {
+    if (!window.ShipboardWidget) return;
+    document.removeEventListener("load", init, true);
+    window.ShipboardWidget.init({ ...options, slug });
+  };
+
+  if (window.ShipboardWidget) {
+    init();
+  } else {
+    document.addEventListener("load", init, true);
+    if (!document.getElementById("shipboard-widget-loader")) {
+      const script = document.createElement("script");
+      script.id = "shipboard-widget-loader";
+      script.src = "https://tryshipboard.com/widget.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }
+
+  return () => {
+    document.removeEventListener("load", init, true);
+    window.ShipboardWidget?.destroy();
+  };
+}

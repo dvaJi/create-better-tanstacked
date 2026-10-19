@@ -53,6 +53,29 @@ This project uses React with TanStack Router. Keep frontend changes within that 
 - Setup guide: [Coolify MCP setup](https://coolify.io/docs/mcp/setup).
 {{/if}}
 
+{{#if (includes addons "errordx")}}
+## ErrorDX
+
+This project sends browser errors to ErrorDX through the Sentry browser SDK.
+
+- Ask the user for permission before creating external resources.
+- If the `errordx` MCP server is connected (`https://api.errordx.com/mcp` with an `Authorization: Bearer <agent key>` header), use it to create or find the project for this app and read its DSN. Put the DSN in `apps/web/.env` as `VITE_ERRORDX_DSN`.
+- If the MCP server is not available, ask the user to create an organization and project at [app.errordx.com](https://app.errordx.com), then paste the project DSN into `apps/web/.env` as `VITE_ERRORDX_DSN`.
+- Agent keys are created in ErrorDX under Settings → Members → Agent keys. Use `read` and `write` scopes; add `deploy` only when uploading source maps.
+- The DSN is public and safe to ship in the browser bundle. Keep secrets in the agent environment and never commit `.env`.
+{{/if}}
+
+{{#if (includes addons "shipboard")}}
+## Shipboard
+
+This project mounts the Shipboard feedback widget from the shared header.
+
+- Ask the user for permission before creating external resources.
+- If the `shipboard` MCP server is connected (`https://api.tryshipboard.com/mcp` with an `Authorization: Bearer <API token>` header), use it to create or find the workspace for this app and read its slug. Put the slug in `apps/web/.env` as `VITE_SHIPBOARD_SLUG`.
+- If the MCP server is not available, ask the user to create a workspace at [app.tryshipboard.com](https://app.tryshipboard.com), then paste the workspace slug into `apps/web/.env` as `VITE_SHIPBOARD_SLUG`.
+- The widget loads `https://tryshipboard.com/widget.js` once from `apps/web/src/components/shipboard-widget.tsx`. Do not add a second installation.
+{{/if}}
+
 ## Agent tools
 
 - Use the configured documentation MCPs for current library and platform details. Use DeepWiki to understand public repositories when their architecture matters.

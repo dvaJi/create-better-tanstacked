@@ -56,6 +56,8 @@ const LegacyAddonsSchema = z.enum([
   "tanstack-charts",
   "tanstack-db",
   "tanstack-ai",
+  "errordx",
+  "shipboard",
   "none",
 ]);
 export const AddonsSchema = z
@@ -77,6 +79,8 @@ export const AddonsSchema = z
     "tanstack-charts",
     "tanstack-db",
     "tanstack-ai",
+    "errordx",
+    "shipboard",
     "none",
   ])
   .pipe(LegacyAddonsSchema)
@@ -176,6 +180,8 @@ export const McpServerSchema = z
     "better-auth",
     "clerk",
     "polar",
+    "errordx",
+    "shipboard",
   ])
   .describe("MCP server to install");
 
@@ -573,6 +579,8 @@ export const ADDONS_VALUES = [
   "tanstack-charts",
   "tanstack-db",
   "tanstack-ai",
+  "errordx",
+  "shipboard",
   "none",
 ] as const;
 export const EXAMPLES_VALUES = ExamplesSchema.options;

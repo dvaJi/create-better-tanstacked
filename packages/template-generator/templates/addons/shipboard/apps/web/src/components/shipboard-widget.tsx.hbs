@@ -1,0 +1,9 @@
+import { useEffect } from "react";
+
+import { mountShipboard } from "@/lib/shipboard";
+
+export function ShipboardWidget() {
+  useEffect(() => mountShipboard(), []);
+
+  return null;
+}
