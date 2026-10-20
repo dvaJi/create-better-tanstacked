@@ -1,0 +1,7 @@
+import { installWebMCP } from "@mcp-b/webmcp-polyfill";
+
+export function initWebMcp() {
+  if (typeof window === "undefined") return;
+
+  installWebMCP();
+}

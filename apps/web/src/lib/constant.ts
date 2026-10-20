@@ -513,6 +513,14 @@ export const TECH_OPTIONS: TechOptions = {
       color: "from-cyan-500 to-blue-700",
       default: false,
     },
+    {
+      id: "webmcp",
+      name: "WebMCP",
+      description: "Expose typed browser tools to AI agents (experimental)",
+      icon: "",
+      color: "from-lime-500 to-emerald-700",
+      default: false,
+    },
   ],
   examples: [
     {

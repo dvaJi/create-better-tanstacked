@@ -48,6 +48,7 @@ export const ADDON_COMPATIBILITY = {
   "tanstack-ai": ["tanstack-start"],
   errordx: ["tanstack-router", "tanstack-start"],
   shipboard: ["tanstack-router", "tanstack-start"],
+  webmcp: ["tanstack-router", "tanstack-start"],
   none: [],
 } as const;
 

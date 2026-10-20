@@ -530,6 +530,46 @@ function TableRoute() {
   );
 }
 `],
+  ["addons/webmcp/apps/web/src/components/webmcp-tools.tsx.hbs", `import { useWebMCP } from "@mcp-b/react-webmcp";
+import { toast } from "sonner";
+import { z } from "zod";
+
+export function WebMcpTools() {
+  useWebMCP({
+    name: "get_page_context",
+    description: "Get the current page path and title.",
+    inputSchema: z.object({}),
+    annotations: { readOnlyHint: true },
+    execute: () => ({
+      path: window.location.pathname,
+      title: document.title,
+    }),
+  });
+
+  useWebMCP({
+    name: "show_notification",
+    description: "Show a short notification to the user in the app.",
+    inputSchema: z.object({
+      message: z.string().describe("Notification text"),
+    }),
+    annotations: { readOnlyHint: false },
+    execute: ({ message }) => {
+      toast(message);
+      return \`Showed notification: \${message}\`;
+    },
+  });
+
+  return null;
+}
+`],
+  ["addons/webmcp/apps/web/src/lib/webmcp.ts.hbs", `import { installWebMCP } from "@mcp-b/webmcp-polyfill";
+
+export function initWebMcp() {
+  if (typeof window === "undefined") return;
+
+  installWebMCP();
+}
+`],
   ["api/orpc/context.ts.hbs", `import type { Context as ApiContext } from "@{{projectName}}/api/context";
 {{#if (ne database "none")}}
 import { {{#if (or (eq runtime "workers") (eq serverDeploy "cloudflare") (and (eq backend "self") (eq webDeploy "cloudflare")))}}getDb{{else}}db{{/if}} } from "@{{projectName}}/app-services";
@@ -6052,6 +6092,18 @@ This project mounts the Shipboard feedback widget from the shared header.
 - The widget loads \`https://tryshipboard.com/widget.js\` once from \`apps/web/src/components/shipboard-widget.tsx\`. Do not add a second installation.
 {{/if}}
 
+{{#if (includes addons "webmcp")}}
+## WebMCP
+
+This project exposes browser tools to AI agents through WebMCP.
+
+- Tools are registered with \`useWebMCP\` in \`apps/web/src/components/webmcp-tools.tsx\`. Add new tools there and keep their \`inputSchema\` and \`outputSchema\` accurate.
+- Prefer \`document.modelContext\` for direct API calls; \`navigator.modelContext\` is a deprecated alias.
+- Mark read-only tools with \`annotations: { readOnlyHint: true }\` and irreversible or high-impact tools with \`consequentialHint: true\`.
+- Validate tool inputs, never return secrets, and confirm consequential actions with the user.
+- WebMCP is experimental. Test in Chrome 149+ with the origin trial, or enable \`chrome://flags/#enable-webmcp-testing\` locally. Inspect registered tools in DevTools → Application → WebMCP or with the Model Context Tool Inspector extension.
+{{/if}}
+
 ## Agent tools
 
 - Use the configured documentation MCPs for current library and platform details. Use DeepWiki to understand public repositories when their architecture matters.
@@ -9858,6 +9910,9 @@ import { routeTree } from "./routeTree.gen";
 {{#if (includes addons "errordx")}}
 import { initErrorDx } from "./lib/errordx";
 {{/if}}
+{{#if (includes addons "webmcp")}}
+import { initWebMcp } from "./lib/webmcp";
+{{/if}}
 
 {{#if (eq api "orpc")}}
   import { QueryClientProvider } from "@tanstack/react-query";
@@ -9904,8 +9959,11 @@ function ClerkApiAuthBridge() {
 
 {{#if (includes addons "errordx")}}
 initErrorDx();
-
 {{/if}}
+{{#if (includes addons "webmcp")}}
+initWebMcp();
+{{/if}}
+
 const router = createRouter({
   routeTree,
   defaultPreload: "intent",
@@ -10283,6 +10341,9 @@ import Loader from "./components/loader";
 {{#if (includes addons "errordx")}}
 import { initErrorDx } from "./lib/errordx";
 {{/if}}
+{{#if (includes addons "webmcp")}}
+import { initWebMcp } from "./lib/webmcp";
+{{/if}}
 import { ENV } from "./env{{#if (eq webDeploy "cloudflare")}}.public{{/if}}";
 {{else}}
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
@@ -10290,6 +10351,9 @@ import Loader from "./components/loader";
 import { routeTree } from "./routeTree.gen";
 {{#if (includes addons "errordx")}}
 import { initErrorDx } from "./lib/errordx";
+{{/if}}
+{{#if (includes addons "webmcp")}}
+import { initWebMcp } from "./lib/webmcp";
 {{/if}}
 {{#if (eq api "trpc")}}
 import { QueryCache, QueryClient } from "@tanstack/react-query";
@@ -10311,10 +10375,13 @@ import { createQueryClient, orpc } from "./utils/orpc";
 {{/if}}
 {{/if}}
 
+{{#if (includes addons "webmcp")}}
+initWebMcp();
+{{/if}}
 {{#if (includes addons "errordx")}}
 initErrorDx();
-
 {{/if}}
+
 {{#if (eq backend "convex")}}
 export function getRouter() {
 	const convexUrl = ENV.VITE_CONVEX_URL;
@@ -10979,6 +11046,9 @@ import { ModeToggle } from "./mode-toggle";
 {{#if (includes addons "shipboard")}}
 import { ShipboardWidget } from "./shipboard-widget";
 {{/if}}
+{{#if (includes addons "webmcp")}}
+import { WebMcpTools } from "./webmcp-tools";
+{{/if}}
 {{#if (and (eq auth "better-auth") (ne backend "convex"))}}
 import UserMenu from "./user-menu";
 {{/if}}
@@ -11036,6 +11106,9 @@ export default function Header() {
       <hr />
       {{#if (includes addons "shipboard")}}
       <ShipboardWidget />
+      {{/if}}
+      {{#if (includes addons "webmcp")}}
+      <WebMcpTools />
       {{/if}}
     </div>
   );
@@ -13021,4 +13094,4 @@ function SuccessPage() {
 `]
 ]);
 
-export const TEMPLATE_COUNT = 243;
+export const TEMPLATE_COUNT = 245;

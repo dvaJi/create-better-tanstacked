@@ -96,6 +96,8 @@ export const dependencyVersionMap = {
   "@tanstack/ai-react": "^0.30.4",
   "@tanstack/ai-openai": "^0.30.0",
   "@sentry/browser": "^11.8.0",
+  "@mcp-b/webmcp-polyfill": "^6.0.3",
+  "@mcp-b/react-webmcp": "^6.0.3",
   "@cloudflare/workers-types": "^5.20261004.1",
   "@alchemy.run/frontend-frameworks": "2.0.0-beta.80",
 

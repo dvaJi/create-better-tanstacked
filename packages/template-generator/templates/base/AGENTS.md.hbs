@@ -76,6 +76,18 @@ This project mounts the Shipboard feedback widget from the shared header.
 - The widget loads `https://tryshipboard.com/widget.js` once from `apps/web/src/components/shipboard-widget.tsx`. Do not add a second installation.
 {{/if}}
 
+{{#if (includes addons "webmcp")}}
+## WebMCP
+
+This project exposes browser tools to AI agents through WebMCP.
+
+- Tools are registered with `useWebMCP` in `apps/web/src/components/webmcp-tools.tsx`. Add new tools there and keep their `inputSchema` and `outputSchema` accurate.
+- Prefer `document.modelContext` for direct API calls; `navigator.modelContext` is a deprecated alias.
+- Mark read-only tools with `annotations: { readOnlyHint: true }` and irreversible or high-impact tools with `consequentialHint: true`.
+- Validate tool inputs, never return secrets, and confirm consequential actions with the user.
+- WebMCP is experimental. Test in Chrome 149+ with the origin trial, or enable `chrome://flags/#enable-webmcp-testing` locally. Inspect registered tools in DevTools → Application → WebMCP or with the Model Context Tool Inspector extension.
+{{/if}}
+
 ## Agent tools
 
 - Use the configured documentation MCPs for current library and platform details. Use DeepWiki to understand public repositories when their architecture matters.

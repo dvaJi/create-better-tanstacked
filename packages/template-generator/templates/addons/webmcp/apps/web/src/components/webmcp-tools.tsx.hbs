@@ -1,0 +1,31 @@
+import { useWebMCP } from "@mcp-b/react-webmcp";
+import { toast } from "sonner";
+import { z } from "zod";
+
+export function WebMcpTools() {
+  useWebMCP({
+    name: "get_page_context",
+    description: "Get the current page path and title.",
+    inputSchema: z.object({}),
+    annotations: { readOnlyHint: true },
+    execute: () => ({
+      path: window.location.pathname,
+      title: document.title,
+    }),
+  });
+
+  useWebMCP({
+    name: "show_notification",
+    description: "Show a short notification to the user in the app.",
+    inputSchema: z.object({
+      message: z.string().describe("Notification text"),
+    }),
+    annotations: { readOnlyHint: false },
+    execute: ({ message }) => {
+      toast(message);
+      return `Showed notification: ${message}`;
+    },
+  });
+
+  return null;
+}

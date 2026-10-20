@@ -58,6 +58,7 @@ const LegacyAddonsSchema = z.enum([
   "tanstack-ai",
   "errordx",
   "shipboard",
+  "webmcp",
   "none",
 ]);
 export const AddonsSchema = z
@@ -81,6 +82,7 @@ export const AddonsSchema = z
     "tanstack-ai",
     "errordx",
     "shipboard",
+    "webmcp",
     "none",
   ])
   .pipe(LegacyAddonsSchema)
@@ -581,6 +583,7 @@ export const ADDONS_VALUES = [
   "tanstack-ai",
   "errordx",
   "shipboard",
+  "webmcp",
   "none",
 ] as const;
 export const EXAMPLES_VALUES = ExamplesSchema.options;

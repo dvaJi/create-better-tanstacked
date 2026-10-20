@@ -5,6 +5,9 @@ import { ModeToggle } from "./mode-toggle";
 {{#if (includes addons "shipboard")}}
 import { ShipboardWidget } from "./shipboard-widget";
 {{/if}}
+{{#if (includes addons "webmcp")}}
+import { WebMcpTools } from "./webmcp-tools";
+{{/if}}
 {{#if (and (eq auth "better-auth") (ne backend "convex"))}}
 import UserMenu from "./user-menu";
 {{/if}}
@@ -62,6 +65,9 @@ export default function Header() {
       <hr />
       {{#if (includes addons "shipboard")}}
       <ShipboardWidget />
+      {{/if}}
+      {{#if (includes addons "webmcp")}}
+      <WebMcpTools />
       {{/if}}
     </div>
   );

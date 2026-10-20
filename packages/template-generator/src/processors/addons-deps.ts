@@ -130,4 +130,12 @@ function processTanStackAddonDeps(vfs: VirtualFileSystem, config: ProjectConfig)
       dependencies: ["@sentry/browser"],
     });
   }
+
+  if (config.addons.includes("webmcp")) {
+    addPackageDependency({
+      vfs,
+      packagePath: webPkgPath,
+      dependencies: ["@mcp-b/webmcp-polyfill", "@mcp-b/react-webmcp"],
+    });
+  }
 }

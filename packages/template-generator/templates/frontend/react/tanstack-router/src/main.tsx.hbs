@@ -9,6 +9,9 @@ import { routeTree } from "./routeTree.gen";
 {{#if (includes addons "errordx")}}
 import { initErrorDx } from "./lib/errordx";
 {{/if}}
+{{#if (includes addons "webmcp")}}
+import { initWebMcp } from "./lib/webmcp";
+{{/if}}
 
 {{#if (eq api "orpc")}}
   import { QueryClientProvider } from "@tanstack/react-query";
@@ -55,8 +58,11 @@ function ClerkApiAuthBridge() {
 
 {{#if (includes addons "errordx")}}
 initErrorDx();
-
 {{/if}}
+{{#if (includes addons "webmcp")}}
+initWebMcp();
+{{/if}}
+
 const router = createRouter({
   routeTree,
   defaultPreload: "intent",

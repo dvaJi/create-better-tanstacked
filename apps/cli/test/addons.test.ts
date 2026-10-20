@@ -1935,6 +1935,72 @@ describe("Addon Configurations", () => {
     });
   });
 
+  describe("WebMCP Addon", () => {
+    it("should expose WebMCP tools in a TanStack Start app", async () => {
+      const result = await runCreateTest({
+        projectName: "webmcp-start",
+        frontend: ["tanstack-start"],
+        backend: "self",
+        runtime: "none",
+        api: "none",
+        addons: ["webmcp"],
+      });
+
+      expectSuccess(result);
+      const projectDir = result.projectDir;
+
+      const webPackageJson = JSON.parse(
+        await readFile(join(projectDir, "apps/web/package.json"), "utf8"),
+      ) as { dependencies?: Record<string, string> };
+      expect(webPackageJson.dependencies?.["@mcp-b/webmcp-polyfill"]).toBeDefined();
+      expect(webPackageJson.dependencies?.["@mcp-b/react-webmcp"]).toBeDefined();
+
+      for (const filePath of [
+        "apps/web/src/lib/webmcp.ts",
+        "apps/web/src/components/webmcp-tools.tsx",
+      ]) {
+        expect(existsSync(join(projectDir, filePath))).toBe(true);
+      }
+
+      const router = await readFile(join(projectDir, "apps/web/src/router.tsx"), "utf8");
+      expect(router).toContain('import { initWebMcp } from "./lib/webmcp";');
+      expect(router).toContain("initWebMcp();");
+      expectParseableTsx(router);
+
+      const header = await readFile(join(projectDir, "apps/web/src/components/header.tsx"), "utf8");
+      expect(header).toContain('import { WebMcpTools } from "./webmcp-tools";');
+      expect(header).toContain("<WebMcpTools />");
+      expectParseableTsx(header);
+
+      const tools = await readFile(
+        join(projectDir, "apps/web/src/components/webmcp-tools.tsx"),
+        "utf8",
+      );
+      expect(tools).toContain("useWebMCP(");
+      expect(tools).toContain("show_notification");
+      expectParseableTsx(tools);
+
+      const agents = await readFile(join(projectDir, "AGENTS.md"), "utf8");
+      expect(agents).toContain("## WebMCP");
+    });
+
+    it("should initialize WebMCP in a TanStack Router app", async () => {
+      const result = await runCreateTest({
+        projectName: "webmcp-router",
+        frontend: ["tanstack-router"],
+        addons: ["webmcp"],
+      });
+
+      expectSuccess(result);
+      const projectDir = result.projectDir;
+      const main = await readFile(join(projectDir, "apps/web/src/main.tsx"), "utf8");
+
+      expect(main).toContain('import { initWebMcp } from "./lib/webmcp";');
+      expect(main).toContain("initWebMcp();");
+      expectParseableTsx(main);
+    });
+  });
+
   describe("Addons with None Option", () => {
     it("should work with addons none", async () => {
       const result = await runCreateTest({

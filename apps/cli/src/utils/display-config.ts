@@ -57,6 +57,7 @@ const VALUE_LABELS = {
   "tanstack-ai": "TanStack AI",
   errordx: "ErrorDX",
   shipboard: "Shipboard",
+  webmcp: "WebMCP",
   todo: "Todo app",
   ai: "AI chat",
   turso: "Turso",

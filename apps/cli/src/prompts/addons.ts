@@ -115,6 +115,10 @@ function getAddonDisplay(addon: Addons): AddonDisplay {
       label = "Shipboard";
       hint = "Embedded feedback, roadmap, and changelog widget with MCP setup";
       break;
+    case "webmcp":
+      label = "WebMCP";
+      hint = "Expose typed browser tools to AI agents (experimental)";
+      break;
     default:
       label = addon;
       hint = `Add ${addon}`;
@@ -131,7 +135,7 @@ const ADDON_GROUPS = {
   "Platform Extensions": ["pwa", "tauri", "electrobun", "opentui"],
   Observability: ["evlog", "axiom"],
   "Product Tools": ["errordx", "shipboard"],
-  "AI & Agent Tools": ["skills", "mcp"],
+  "AI & Agent Tools": ["skills", "mcp", "webmcp"],
 };
 
 function createGroupedOptions(): Record<string, AddonOption[]> {

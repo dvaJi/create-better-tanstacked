@@ -8,6 +8,9 @@ import Loader from "./components/loader";
 {{#if (includes addons "errordx")}}
 import { initErrorDx } from "./lib/errordx";
 {{/if}}
+{{#if (includes addons "webmcp")}}
+import { initWebMcp } from "./lib/webmcp";
+{{/if}}
 import { ENV } from "./env{{#if (eq webDeploy "cloudflare")}}.public{{/if}}";
 {{else}}
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
@@ -15,6 +18,9 @@ import Loader from "./components/loader";
 import { routeTree } from "./routeTree.gen";
 {{#if (includes addons "errordx")}}
 import { initErrorDx } from "./lib/errordx";
+{{/if}}
+{{#if (includes addons "webmcp")}}
+import { initWebMcp } from "./lib/webmcp";
 {{/if}}
 {{#if (eq api "trpc")}}
 import { QueryCache, QueryClient } from "@tanstack/react-query";
@@ -36,10 +42,13 @@ import { createQueryClient, orpc } from "./utils/orpc";
 {{/if}}
 {{/if}}
 
+{{#if (includes addons "webmcp")}}
+initWebMcp();
+{{/if}}
 {{#if (includes addons "errordx")}}
 initErrorDx();
-
 {{/if}}
+
 {{#if (eq backend "convex")}}
 export function getRouter() {
 	const convexUrl = ENV.VITE_CONVEX_URL;
