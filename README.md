@@ -51,14 +51,14 @@ The `skills` and `mcp` addons give coding agents project guidance and stack-awar
 
 This repository also includes Claude Code and Codex plugin instructions in [`plugin/README.md`](plugin/README.md).
 
-## Documentation and development
+## Development
 
-- Documentation: [better-t-stack.dev](https://better-t-stack.dev)
 - CLI options: [`apps/cli/README.md`](apps/cli/README.md)
 - Contributing: [guide](.github/CONTRIBUTING.md)
 
 ```bash
 bun install
 bun dev:cli
-bun dev:web
+bun run build:cli
+bun run check
 ```

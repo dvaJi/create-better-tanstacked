@@ -9,7 +9,7 @@ const projectConfig: ProjectConfig = {
   relativePath: "../private/project",
   addonOptions: {
     fumadocs: {
-      template: "next-mdx",
+      template: "tanstack-start",
       search: "orama",
     },
   },
@@ -23,7 +23,7 @@ const projectConfig: ProjectConfig = {
   orm: "drizzle",
   backend: "hono",
   runtime: "node",
-  frontend: ["next"],
+  frontend: ["tanstack-start"],
   addons: ["fumadocs"],
   examples: ["todo"],
   auth: "better-auth",
@@ -49,7 +49,7 @@ describe("buildAnalyticsEvent", () => {
     expect(event).toMatchObject({
       database: "postgres",
       backend: "hono",
-      frontend: ["next"],
+      frontend: ["tanstack-start"],
       platform: process.platform,
       node_version: process.version,
     });

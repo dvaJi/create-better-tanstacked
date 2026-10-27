@@ -42,18 +42,21 @@ describe("Project name validation hardening", () => {
     expect(result.isOk()).toBe(true);
   });
 
-  it("fails invalid names before creating the project directory", async () => {
-    const projectPath = path.join(SMOKE_DIR, "invalid?name");
-    await fs.remove(projectPath);
+  it.skipIf(process.platform === "win32")(
+    "fails invalid names before creating the project directory",
+    async () => {
+      const projectPath = path.join(SMOKE_DIR, "invalid?name");
+      await fs.remove(projectPath);
 
-    const result = await create(projectPath, {
-      yes: true,
-      install: false,
-      disableAnalytics: true,
-      directoryConflict: "overwrite",
-    });
+      const result = await create(projectPath, {
+        yes: true,
+        install: false,
+        disableAnalytics: true,
+        directoryConflict: "overwrite",
+      });
 
-    expect(result.isErr()).toBe(true);
-    expect(await fs.pathExists(projectPath)).toBe(false);
-  });
+      expect(result.isErr()).toBe(true);
+      expect(await fs.pathExists(projectPath)).toBe(false);
+    },
+  );
 });

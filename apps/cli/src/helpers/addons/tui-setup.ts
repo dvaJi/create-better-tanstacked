@@ -7,7 +7,7 @@ import pc from "picocolors";
 
 import { isCancel, navigableSelect, setIsFirstPrompt } from "../../prompts/navigable";
 import type { ProjectConfig } from "../../types";
-import { isSilent } from "../../utils/context";
+import { isNonInteractive } from "../../utils/context";
 import { AddonSetupError, UserCancelledError, userCancelled } from "../../utils/errors";
 import { shouldSkipExternalCommands } from "../../utils/external-commands";
 import { getPackageExecutionArgs } from "../../utils/package-runner";
@@ -42,7 +42,7 @@ export function resolveTuiTemplate(config: ProjectConfig): TuiTemplate | undefin
     return configuredTemplate;
   }
 
-  if (isSilent()) {
+  if (isNonInteractive()) {
     return DEFAULT_TEMPLATE;
   }
 

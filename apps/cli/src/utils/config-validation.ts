@@ -150,7 +150,7 @@ export function validateDatabaseSetup(
   } satisfies Partial<Record<DatabaseSetup, { errorMessage: string }>>;
 
   if (dbSetup && dbSetup !== "none") {
-    const validation = setupValidations[dbSetup];
+    const validation = setupValidations[dbSetup as keyof typeof setupValidations];
 
     if (dbSetup !== "docker" && !supportsDatabaseSetup(dbSetup, database)) {
       return validationErr(

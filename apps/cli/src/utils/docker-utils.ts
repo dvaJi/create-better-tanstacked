@@ -48,7 +48,7 @@ export function getDockerInstallInstructions(platform: string) {
   return `${pc.yellow("IMPORTANT:")} Docker required for ${databaseName}. Install for ${platformName}:\n${pc.blue(installUrl)}`;
 }
 
-export async function getDockerStatus(database: Database) {
+export async function getDockerStatus(_database: Database) {
   const platform = os.platform();
   const installed = await isDockerInstalled();
 

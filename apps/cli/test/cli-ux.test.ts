@@ -22,8 +22,8 @@ describe("CLI flow presentation", () => {
       navigableSelect({
         message: "Pick a framework",
         options: [
-          { value: "next", label: "Next.js" },
-          { value: "nuxt", label: "Nuxt" },
+          { value: "tanstack-router", label: "TanStack Router" },
+          { value: "tanstack-start", label: "TanStack Start" },
         ],
         input,
         output,
@@ -36,7 +36,7 @@ describe("CLI flow presentation", () => {
     const plainRendered = stripVTControlCharacters(rendered);
     expect(plainRendered).toContain("Pick a framework");
     expect(plainRendered).toContain("back");
-    expect(plainRendered).toContain("↶  Pick a framework");
+    expect(plainRendered).toContain("<  Pick a framework");
     expect(plainRendered).not.toContain("■");
   });
 
@@ -75,7 +75,7 @@ describe("CLI flow presentation", () => {
         {
           frontend: async () => {
             seen.push(getPromptProgress()!);
-            return "next";
+            return "tanstack-router";
           },
           database: async () => {
             seen.push(getPromptProgress()!);
@@ -90,7 +90,7 @@ describe("CLI flow presentation", () => {
         },
       );
 
-      expect(result).toEqual({ frontend: "next", database: "postgres" });
+      expect(result).toEqual({ frontend: "tanstack-router", database: "postgres" });
       expect(getPromptProgress()).toBeUndefined();
     });
 
@@ -116,12 +116,12 @@ describe("CLI flow presentation", () => {
     const result = await runWithContextAsync({}, () =>
       gatherConfig(
         {
-          frontend: ["nuxt"],
+          frontend: ["tanstack-router"],
           backend: "hono",
           runtime: "bun",
           api: "trpc",
-          database: "mongodb",
-          orm: "drizzle",
+          database: "sqlite",
+          orm: "none",
           dbSetup: "none",
           auth: "none",
           payments: "none",
@@ -140,10 +140,10 @@ describe("CLI flow presentation", () => {
       ),
     );
 
-    expect(result.frontend).toEqual(["nuxt"]);
+    expect(result.frontend).toEqual(["tanstack-router"]);
     expect(result.api).toBe("trpc");
-    expect(result.database).toBe("mongodb");
-    expect(result.orm).toBe("drizzle");
+    expect(result.database).toBe("sqlite");
+    expect(result.orm).toBe("none");
   });
 
   it("preserves the legacy manual database flag without opening a provisioning prompt", async () => {

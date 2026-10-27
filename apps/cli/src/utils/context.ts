@@ -72,6 +72,11 @@ export function isSilent(): boolean {
   return getContext().silent;
 }
 
+export function isNonInteractive(): boolean {
+  const ctx = getContext();
+  return ctx.silent || ctx.mode === "yes";
+}
+
 export function isVerbose(): boolean {
   return getContext().verbose;
 }

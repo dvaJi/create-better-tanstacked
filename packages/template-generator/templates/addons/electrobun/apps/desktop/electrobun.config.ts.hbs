@@ -1,7 +1,6 @@
 import type { ElectrobunConfig } from "electrobun";
 
-const webBuildDir =
-  "../web/dist/client";
+const webBuildDir = {{#if (includes frontend "tanstack-start")}}"../web/dist/client"{{else}}"../web/dist"{{/if}};
 
 export default {
   app: {

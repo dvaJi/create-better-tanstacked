@@ -40,7 +40,6 @@ export type AlchemyDeploymentPlan = {
 };
 
 const AXIOM_SERVER_BACKENDS: readonly SupportedProjectConfig["backend"][] = ["hono", "elysia"];
-const AXIOM_WEB_FRONTENDS: readonly DeployedWebFramework[] = ["tanstack-start"];
 
 function getDeployedWebFramework(config: SupportedProjectConfig): DeployedWebFramework {
   const framework = config.frontend.find(
@@ -73,8 +72,7 @@ export function createAlchemyDeploymentPlan(config: SupportedProjectConfig): Alc
   const hasAlchemyManagedDatabase = usesAlchemyManagedDatabase(config);
   const hasAxiom = config.addons.includes("axiom");
   const hasAxiomServerRuntime = hasAxiom && AXIOM_SERVER_BACKENDS.includes(config.backend);
-  const hasAxiomWebRuntime =
-    hasAxiom && config.frontend.some((frontend) => AXIOM_WEB_FRONTENDS.includes(frontend));
+  const hasAxiomWebRuntime = hasAxiom && config.frontend.includes("tanstack-start");
   const hasAxiomVercelRuntime =
     (hasAxiomWebRuntime && config.webDeploy === "vercel") ||
     (hasAxiomServerRuntime && config.serverDeploy === "vercel");

@@ -5,7 +5,7 @@ import pc from "picocolors";
 import { navigableMultiselect, navigableSelect } from "../../prompts/navigable";
 import { navigableGroup } from "../../prompts/navigable-group";
 import type { AddonOptions, ProjectConfig } from "../../types";
-import { isSilent } from "../../utils/context";
+import { isNonInteractive } from "../../utils/context";
 import { AddonSetupError, UserCancelledError } from "../../utils/errors";
 import { shouldSkipExternalCommands } from "../../utils/external-commands";
 import { getPackageRunnerPrefix } from "../../utils/package-runner";
@@ -254,7 +254,7 @@ export async function setupMcp(
   let selectedServerKeys: McpServerKey[];
   let selectedAgents: McpAgent[];
 
-  if (isSilent()) {
+  if (isNonInteractive()) {
     scope = configuredScope ?? DEFAULT_SCOPE;
     const recommendedServers = getRecommendedMcpServers(config, scope);
     if (recommendedServers.length === 0) return Result.ok(undefined);

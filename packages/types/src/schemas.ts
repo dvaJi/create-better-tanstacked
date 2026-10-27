@@ -2,27 +2,12 @@ import { z } from "zod";
 
 import { TASK_RUNNER_ADDONS, OBSERVABILITY_ADDONS } from "./compatibility";
 
-const LegacyDatabaseSchema = z.enum(["none", "sqlite", "postgres", "mysql", "mongodb"]);
-export const DatabaseSchema = z
-  .enum(["none", "sqlite", "postgres"])
-  .pipe(LegacyDatabaseSchema)
-  .describe("Database type");
+export const DatabaseSchema = z.enum(["none", "sqlite", "postgres"]).describe("Database type");
 
-const LegacyORMSchema = z.enum(["drizzle", "prisma", "mongoose", "none"]);
-export const ORMSchema = z.enum(["drizzle", "none"]).pipe(LegacyORMSchema).describe("ORM type");
+export const ORMSchema = z.enum(["drizzle", "none"]).describe("ORM type");
 
-const LegacyBackendSchema = z.enum([
-  "hono",
-  "express",
-  "fastify",
-  "elysia",
-  "convex",
-  "self",
-  "none",
-]);
 export const BackendSchema = z
   .enum(["hono", "elysia", "self", "none"])
-  .pipe(LegacyBackendSchema)
   .describe("Backend framework");
 
 export const RuntimeSchema = z
@@ -33,34 +18,6 @@ export const FrontendSchema = z
   .enum(["tanstack-router", "tanstack-start", "none"])
   .describe("Frontend framework");
 
-const LegacyAddonsSchema = z.enum([
-  "pwa",
-  "tauri",
-  "electrobun",
-  "starlight",
-  "biome",
-  "lefthook",
-  "husky",
-  "mcp",
-  "turborepo",
-  "nx",
-  "vite-plus",
-  "fumadocs",
-  "ultracite",
-  "oxlint",
-  "opentui",
-  "skills",
-  "evlog",
-  "axiom",
-  "tanstack-table",
-  "tanstack-charts",
-  "tanstack-db",
-  "tanstack-ai",
-  "errordx",
-  "shipboard",
-  "webmcp",
-  "none",
-]);
 export const AddonsSchema = z
   .enum([
     "pwa",
@@ -85,7 +42,6 @@ export const AddonsSchema = z
     "webmcp",
     "none",
   ])
-  .pipe(LegacyAddonsSchema)
   .describe("Additional addons");
 
 const AddonsListSchema = z.array(AddonsSchema).superRefine((addons, ctx) => {
@@ -112,20 +68,8 @@ export const ExamplesSchema = z
 
 export const PackageManagerSchema = z.enum(["npm", "pnpm", "bun"]).describe("Package manager");
 
-const LegacyDatabaseSetupSchema = z.enum([
-  "turso",
-  "neon",
-  "prisma-postgres",
-  "planetscale",
-  "mongodb-atlas",
-  "supabase",
-  "d1",
-  "docker",
-  "none",
-]);
 export const DatabaseSetupSchema = z
   .enum(["turso", "neon", "prisma-postgres", "planetscale", "supabase", "d1", "docker", "none"])
-  .pipe(LegacyDatabaseSetupSchema)
   .describe("Database hosting setup");
 
 export const APISchema = z.enum(["trpc", "orpc", "none"]).describe("API type");
@@ -365,7 +309,6 @@ const addonOptionsFields = {
     .describe("Options for the Skills addon"),
 };
 
-const LegacyAddonOptionsSchema = z.strictObject(addonOptionsFields);
 export const AddonOptionsSchema = z
   .strictObject({
     fumadocs: addonOptionsFields.fumadocs,
@@ -373,7 +316,6 @@ export const AddonOptionsSchema = z
     mcp: addonOptionsFields.mcp,
     skills: addonOptionsFields.skills,
   })
-  .pipe(LegacyAddonOptionsSchema)
   .describe("Addon-specific configuration");
 
 export const DbSetupOptionsSchema = z

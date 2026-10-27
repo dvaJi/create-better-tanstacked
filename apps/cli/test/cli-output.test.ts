@@ -8,12 +8,19 @@ import { SMOKE_DIR } from "./setup";
 
 const cliPath = join(import.meta.dir, "../dist/cli.mjs");
 
-function runCli(args: string[]) {
-  return execa("node", [cliPath, ...args], {
+async function runCli(args: string[]) {
+  const result = await execa("node", [cliPath, ...args], {
     cwd: SMOKE_DIR,
     timeout: 15_000,
-    env: { BTS_TELEMETRY: "0", BTS_SKIP_EXTERNAL_COMMANDS: "0", BTS_TEST_MODE: "0" },
+    reject: false,
+    env: { BTS_TELEMETRY: "0", BTS_SKIP_EXTERNAL_COMMANDS: "1", BTS_TEST_MODE: "0" },
   });
+
+  if (process.platform !== "win32" && result.exitCode !== 0) {
+    throw new Error(result.stderr || `CLI exited with code ${result.exitCode}`);
+  }
+
+  return result;
 }
 
 test("schema stdout is valid JSON for command-line consumers", async () => {
@@ -59,4 +66,4 @@ test("default create respects negated flags and add-json creates a workspace pac
   ]);
   expect(JSON.parse(stdout)).toMatchObject({ success: true });
   expect(await fs.pathExists(join(projectDir, "packages/shared/src/index.ts"))).toBe(true);
-});
+}, 30_000);

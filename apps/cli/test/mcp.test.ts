@@ -36,7 +36,7 @@ async function connectInMemoryClient() {
 function getExplicitCreateInput(projectPath: string) {
   return {
     projectName: projectPath,
-    frontend: ["next"] as const,
+    frontend: ["tanstack-start"] as const,
     backend: "hono" as const,
     runtime: "bun" as const,
     database: "sqlite" as const,
@@ -223,7 +223,7 @@ describe("MCP server", () => {
       name: "bts_plan_project",
       arguments: {
         projectName: "partial-app",
-        frontend: ["next"],
+        frontend: ["tanstack-start"],
         git: true,
         install: true,
       },
@@ -264,17 +264,19 @@ describe("MCP server", () => {
     const result = await client.callTool({
       name: "bts_plan_project",
       arguments: {
-        ...getExplicitCreateInput(path.join(SMOKE_DIR, "mcp-astro-ai")),
-        frontend: ["astro"],
-        api: "orpc",
+        ...getExplicitCreateInput(path.join(SMOKE_DIR, "mcp-no-backend-ai")),
+        backend: "none",
+        runtime: "none",
+        database: "none",
+        orm: "none",
+        api: "none",
+        auth: "none",
         examples: ["ai"],
       },
     });
 
     expect(result.isError).toBe(true);
-    expect(getToolText(result)).toContain(
-      "The 'ai' example is not compatible with the Astro frontend",
-    );
+    expect(getToolText(result)).toContain("The 'ai' example requires a backend");
   });
 
   it("rejects unknown create input keys through MCP", async () => {
@@ -301,7 +303,7 @@ describe("MCP server", () => {
       name: "bts_plan_addons",
       arguments: {
         projectDir: path.join(SMOKE_DIR, "mcp-addon-extra-key"),
-        addons: ["biome"],
+        addons: ["oxlint"],
         packageManager: "bun",
         install: false,
         projectDr: SMOKE_DIR,
@@ -386,7 +388,7 @@ describe("MCP server", () => {
     expect(await fs.pathExists(projectPath)).toBe(true);
 
     const btsConfig = await readBtsConfig(projectPath);
-    expect(btsConfig?.frontend).toEqual(["next"]);
+    expect(btsConfig?.frontend).toEqual(["tanstack-start"]);
   });
 
   it("rejects install=true during MCP project creation with an actionable error", async () => {
@@ -464,7 +466,7 @@ describe("MCP server", () => {
       name: "bts_plan_addons",
       arguments: {
         projectDir: projectPath,
-        addons: ["biome"],
+        addons: ["oxlint"],
         package: "planned-utils",
         packageManager: "bun",
         install: false,
@@ -484,7 +486,7 @@ describe("MCP server", () => {
     expect(payload.ok).toBe(true);
     expect(payload.data?.success).toBe(true);
     expect(payload.data?.dryRun).toBe(true);
-    expect(payload.data?.addedAddons).toEqual(["biome"]);
+    expect(payload.data?.addedAddons).toEqual(["oxlint"]);
     expect(payload.data?.addedPackage).toBe("planned-utils");
     expect(await fs.pathExists(path.join(projectPath, "packages", "planned-utils"))).toBe(false);
 
@@ -523,7 +525,7 @@ describe("MCP server", () => {
       name: "bts_add_addons",
       arguments: {
         projectDir: projectPath,
-        addons: ["biome"],
+        addons: ["oxlint"],
         package: "shared-utils",
         packageManager: "bun",
         install: false,
@@ -537,14 +539,14 @@ describe("MCP server", () => {
 
     expect(payload.ok).toBe(true);
     expect(payload.data?.success).toBe(true);
-    expect(payload.data?.addedAddons).toEqual(["biome"]);
+    expect(payload.data?.addedAddons).toEqual(["oxlint"]);
     expect(payload.data?.addedPackage).toBe("shared-utils");
     expect(
       await fs.readJson(path.join(projectPath, "packages", "shared-utils", "package.json")),
     ).toMatchObject({ name: "@mcp-add-addons/shared-utils", private: true });
 
     const after = await readBtsConfig(projectPath);
-    expect(after?.addons).toEqual(expect.arrayContaining(["turborepo", "biome"]));
+    expect(after?.addons).toEqual(expect.arrayContaining(["turborepo", "oxlint"]));
   });
 
   it("starts over stdio through the CLI entrypoint", async () => {

@@ -2,33 +2,11 @@ import type { DatabaseSetup, Examples, Frontend, ProjectConfig } from "../../src
 
 import { evaluateMatrixConfig, type MatrixOracleResult } from "./oracle";
 
-export const MATRIX_DATABASES = ["none", "sqlite", "postgres", "mysql", "mongodb"] as const;
-export const MATRIX_ORMS = ["drizzle", "prisma", "mongoose", "none"] as const;
-export const MATRIX_BACKENDS = [
-  "hono",
-  "express",
-  "fastify",
-  "elysia",
-  "convex",
-  "self",
-  "none",
-] as const;
+export const MATRIX_DATABASES = ["none", "sqlite", "postgres"] as const;
+export const MATRIX_ORMS = ["drizzle", "none"] as const;
+export const MATRIX_BACKENDS = ["hono", "elysia", "self", "none"] as const;
 export const MATRIX_RUNTIMES = ["bun", "node", "workers", "none"] as const;
-export const MATRIX_WEB_FRONTENDS = [
-  "tanstack-router",
-  "react-router",
-  "tanstack-start",
-  "next",
-  "nuxt",
-  "svelte",
-  "solid",
-  "astro",
-] as const;
-export const MATRIX_NATIVE_FRONTENDS = [
-  "native-bare",
-  "native-uniwind",
-  "native-unistyles",
-] as const;
+export const MATRIX_WEB_FRONTENDS = ["tanstack-router", "tanstack-start"] as const;
 export const MATRIX_APIS = ["trpc", "orpc", "none"] as const;
 export const MATRIX_AUTHS = ["better-auth", "clerk", "none"] as const;
 export const MATRIX_PAYMENTS = ["polar", "none"] as const;
@@ -37,7 +15,6 @@ export const MATRIX_DB_SETUPS = [
   "neon",
   "prisma-postgres",
   "planetscale",
-  "mongodb-atlas",
   "supabase",
   "d1",
   "docker",
@@ -64,10 +41,6 @@ export interface MatrixShard {
 export const MATRIX_FRONTEND_SETS: readonly MatrixFrontendSet[] = [
   [],
   ...MATRIX_WEB_FRONTENDS.map((frontend) => [frontend] as const),
-  ...MATRIX_NATIVE_FRONTENDS.map((frontend) => [frontend] as const),
-  ...MATRIX_WEB_FRONTENDS.flatMap((webFrontend) =>
-    MATRIX_NATIVE_FRONTENDS.map((nativeFrontend) => [webFrontend, nativeFrontend] as const),
-  ),
 ];
 
 export const TOTAL_MATRIX_CASES =
@@ -241,13 +214,9 @@ function getCompatibleDatabaseSetup(dbSetup: DatabaseSetup): Partial<MatrixConfi
       return { database: "sqlite", orm: "drizzle" };
     case "neon":
     case "supabase":
-      return { database: "postgres", orm: "drizzle" };
     case "prisma-postgres":
-      return { database: "postgres", orm: "prisma" };
     case "planetscale":
-      return { database: "mysql", orm: "drizzle" };
-    case "mongodb-atlas":
-      return { database: "mongodb", orm: "mongoose" };
+      return { database: "postgres", orm: "drizzle" };
     case "d1":
       return {
         database: "sqlite",
@@ -259,6 +228,8 @@ function getCompatibleDatabaseSetup(dbSetup: DatabaseSetup): Partial<MatrixConfi
     case "docker":
       return { database: "postgres", orm: "drizzle" };
     case "none":
+      return {};
+    default:
       return {};
   }
 }
@@ -277,43 +248,33 @@ export function createSmokeMatrixCases(): MatrixCase[] {
 
   for (const backend of MATRIX_BACKENDS) {
     for (const runtime of MATRIX_RUNTIMES) {
-      const terminalBackend = backend === "convex" || backend === "none";
+      const terminal = backend === "none";
+      const self = backend === "self";
       pushUnique(configs, seen, {
         backend,
         runtime,
-        database: terminalBackend ? "none" : "sqlite",
-        orm: terminalBackend ? "none" : "drizzle",
-        api: terminalBackend ? "none" : "trpc",
-        auth: terminalBackend ? "none" : "none",
-        frontend: backend === "self" ? ["next"] : ["tanstack-router"],
+        database: terminal ? "none" : "sqlite",
+        orm: terminal ? "none" : "drizzle",
+        api: terminal ? "none" : "trpc",
+        auth: "none",
+        frontend: self ? ["tanstack-start"] : ["tanstack-router"],
+        serverDeploy: runtime === "workers" ? "cloudflare" : "none",
       });
     }
   }
 
   for (const frontend of MATRIX_FRONTEND_SETS) {
     for (const api of MATRIX_APIS) {
-      pushUnique(configs, seen, {
-        frontend: [...frontend],
-        api,
-      });
+      pushUnique(configs, seen, { frontend: [...frontend], api });
     }
   }
 
   for (const frontend of MATRIX_FRONTEND_SETS) {
     pushUnique(configs, seen, { frontend: [...frontend], auth: "clerk" });
-    pushUnique(configs, seen, {
-      frontend: [...frontend],
-      backend: "convex",
-      runtime: "none",
-      database: "none",
-      orm: "none",
-      api: "none",
-      auth: "better-auth",
-    });
   }
 
   for (const payments of MATRIX_PAYMENTS) {
-    for (const frontend of [[], ["native-bare"], ["next"]] as const) {
+    for (const frontend of [[], ["tanstack-router"], ["tanstack-start"]] as const) {
       pushUnique(configs, seen, {
         payments,
         auth: payments === "polar" ? "better-auth" : "none",
@@ -327,18 +288,13 @@ export function createSmokeMatrixCases(): MatrixCase[] {
       dbSetup,
       ...getCompatibleDatabaseSetup(dbSetup),
     });
-    if (dbSetup === "planetscale") {
+    if (dbSetup !== "none" && dbSetup !== "d1") {
       pushUnique(configs, seen, {
         dbSetup,
-        database: "postgres",
-        orm: "drizzle",
+        database: "none",
+        orm: "none",
       });
     }
-    pushUnique(configs, seen, {
-      dbSetup,
-      database: dbSetup === "none" ? "sqlite" : "none",
-      orm: dbSetup === "none" ? "drizzle" : "none",
-    });
   }
 
   for (const webDeploy of MATRIX_WEB_DEPLOYS) {
@@ -349,26 +305,22 @@ export function createSmokeMatrixCases(): MatrixCase[] {
         backend: "hono",
         runtime: serverDeploy === "cloudflare" ? "workers" : "bun",
       });
-      pushUnique(configs, seen, {
-        webDeploy,
-        serverDeploy,
-        frontend: ["native-bare"],
-        backend: "hono",
-        runtime: serverDeploy === "cloudflare" ? "workers" : "bun",
-      });
     }
   }
 
+  pushUnique(configs, seen, {
+    webDeploy: "cloudflare",
+    frontend: [],
+    backend: "hono",
+    runtime: "bun",
+  });
+
   for (const examples of MATRIX_EXAMPLE_SETS) {
-    pushUnique(configs, seen, { examples: [...examples] });
     pushUnique(configs, seen, {
       examples: [...examples],
-      backend: "convex",
-      runtime: "none",
-      database: "none",
-      orm: "none",
-      api: "none",
-      auth: "none",
+      backend: "hono",
+      database: "sqlite",
+      api: "trpc",
     });
     pushUnique(configs, seen, {
       examples: [...examples],
@@ -381,41 +333,34 @@ export function createSmokeMatrixCases(): MatrixCase[] {
     });
     pushUnique(configs, seen, {
       examples: [...examples],
-      frontend: ["solid"],
-      api: "orpc",
-    });
-    pushUnique(configs, seen, {
-      examples: [...examples],
-      frontend: ["astro"],
-      api: "orpc",
+      backend: "self",
+      runtime: "none",
+      frontend: ["tanstack-start"],
+      database: "sqlite",
+      api: "trpc",
+      auth: "better-auth",
     });
   }
 
-  for (const frontend of ["next", "tanstack-start", "nuxt", "svelte", "solid", "astro"] as const) {
-    pushUnique(configs, seen, {
-      backend: "self",
-      runtime: "none",
-      frontend: [frontend],
-      api:
-        frontend === "nuxt" || frontend === "svelte" || frontend === "solid" || frontend === "astro"
-          ? "orpc"
-          : "trpc",
-      auth: "better-auth",
-    });
-    pushUnique(configs, seen, {
-      backend: "self",
-      runtime: "bun",
-      frontend: [frontend],
-    });
+  for (const frontend of ["tanstack-start"] as const) {
+    for (const api of ["trpc", "orpc"] as const) {
+      pushUnique(configs, seen, {
+        backend: "self",
+        runtime: "none",
+        frontend: [frontend],
+        api,
+        auth: "better-auth",
+      });
+    }
   }
 
   for (const backend of MATRIX_BACKENDS) {
     pushUnique(configs, seen, {
       backend,
       runtime: "workers",
-      database: backend === "convex" || backend === "none" ? "none" : "sqlite",
-      orm: backend === "convex" || backend === "none" ? "none" : "drizzle",
-      api: backend === "convex" || backend === "none" ? "none" : "trpc",
+      database: backend === "none" ? "none" : "sqlite",
+      orm: backend === "none" ? "none" : "drizzle",
+      api: backend === "none" ? "none" : "trpc",
       serverDeploy: "cloudflare",
     });
   }

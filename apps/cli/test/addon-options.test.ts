@@ -37,12 +37,6 @@ describe("Addon options", () => {
           },
         ],
       },
-      ultracite: {
-        linter: "biome",
-        editors: ["vscode", "cursor"],
-        agents: ["claude", "codex"],
-        hooks: ["claude"],
-      },
     };
 
     const result = await create(projectPath, {
@@ -54,7 +48,7 @@ describe("Addon options", () => {
       auth: "none",
       payments: "none",
       api: "trpc",
-      addons: ["opentui", "fumadocs", "mcp", "skills", "ultracite"],
+      addons: ["opentui", "fumadocs", "mcp", "skills"],
       examples: ["none"],
       dbSetup: "none",
       webDeploy: "none",
@@ -68,9 +62,7 @@ describe("Addon options", () => {
 
     expect(result.value.projectConfig.addonOptions).toEqual(addonOptions);
     expect(result.value.reproducibleCommand).toContain("--frontend tanstack-router");
-    expect(result.value.reproducibleCommand).toContain(
-      "--addons opentui fumadocs mcp skills ultracite",
-    );
+    expect(result.value.reproducibleCommand).toContain("--addons opentui fumadocs mcp skills");
     expect(result.value.reproducibleCommand).not.toContain("create-json --input");
 
     const btsConfig = await readBtsConfig(projectPath);
@@ -82,8 +74,22 @@ describe("Addon options", () => {
     await fs.remove(projectPath);
 
     const createResult = await create(projectPath, {
-      yes: true,
+      frontend: ["tanstack-router"],
+      backend: "hono",
+      runtime: "bun",
+      database: "sqlite",
+      orm: "drizzle",
+      auth: "none",
+      payments: "none",
+      api: "trpc",
+      addons: ["turborepo"],
+      examples: ["none"],
+      dbSetup: "none",
+      webDeploy: "none",
+      serverDeploy: "none",
       install: false,
+      git: false,
+      packageManager: "bun",
       disableAnalytics: true,
     });
 
@@ -118,8 +124,22 @@ describe("Addon options", () => {
     await fs.remove(projectPath);
 
     const createResult = await create(projectPath, {
-      yes: true,
+      frontend: ["tanstack-router"],
+      backend: "hono",
+      runtime: "bun",
+      database: "sqlite",
+      orm: "drizzle",
+      auth: "none",
+      payments: "none",
+      api: "trpc",
+      addons: ["turborepo"],
+      examples: ["none"],
+      dbSetup: "none",
+      webDeploy: "none",
+      serverDeploy: "none",
       install: false,
+      git: false,
+      packageManager: "bun",
       disableAnalytics: true,
     });
 

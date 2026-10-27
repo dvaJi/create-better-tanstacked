@@ -6,7 +6,7 @@ import { navigableMultiselect, navigableSelect } from "../../prompts/navigable";
 import { navigableGroup } from "../../prompts/navigable-group";
 import type { AddonOptions, ProjectConfig } from "../../types";
 import { readBtsConfig } from "../../utils/bts-config";
-import { isSilent } from "../../utils/context";
+import { isNonInteractive } from "../../utils/context";
 import { AddonSetupError, UserCancelledError } from "../../utils/errors";
 import { shouldSkipExternalCommands } from "../../utils/external-commands";
 import { getPackageRunnerPrefix } from "../../utils/package-runner";
@@ -355,10 +355,6 @@ const CURATED_SKILLS_BY_SOURCE = {
       return [];
     }
 
-    if (config.database === "postgres") {
-      return ["postgres", "neki"];
-    }
-
     return config.database === "postgres" ? ["postgres", "neki"] : [];
   },
   "elysiajs/skills": () => ["elysiajs"],
@@ -434,7 +430,7 @@ export async function setupSkills(
   let selectedSkills: string[];
   let selectedAgents: SkillAgent[];
 
-  if (isSilent()) {
+  if (isNonInteractive()) {
     scope = configuredScope ?? DEFAULT_SCOPE;
     selectedSkills =
       configuredSelections !== undefined

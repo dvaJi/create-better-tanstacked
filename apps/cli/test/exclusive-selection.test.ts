@@ -5,37 +5,32 @@ import { stripVTControlCharacters } from "node:util";
 import { navigableGroupMultiselect, resolveExclusiveSelection } from "../src/prompts/navigable";
 import { runWithContextAsync } from "../src/utils/context";
 
-const TASK_RUNNERS = ["turborepo", "nx", "vite-plus"] as const;
+const TASK_RUNNERS = ["turborepo", "vite-plus"] as const;
 
 describe("resolveExclusiveSelection", () => {
   it("drops the other members of a set when a new one is selected", () => {
     expect(
       resolveExclusiveSelection(
-        ["turborepo", "biome"],
-        ["turborepo", "biome", "nx"],
+        ["turborepo", "oxlint"],
+        ["turborepo", "oxlint", "vite-plus"],
         [TASK_RUNNERS],
       ),
-    ).toEqual(["biome", "nx"]);
+    ).toEqual(["oxlint", "vite-plus"]);
   });
 
   it("keeps a single member when a whole exclusive group is toggled on", () => {
     expect(
-      resolveExclusiveSelection(
-        ["biome"],
-        ["biome", "turborepo", "nx", "vite-plus"],
-        [TASK_RUNNERS],
-      ),
-    ).toEqual(["biome", "turborepo"]);
+      resolveExclusiveSelection(["oxlint"], ["oxlint", "turborepo", "vite-plus"], [TASK_RUNNERS]),
+    ).toEqual(["oxlint", "turborepo"]);
   });
 
   it("leaves deselection and unrelated values untouched", () => {
-    expect(resolveExclusiveSelection(["nx", "biome"], ["biome"], [TASK_RUNNERS])).toEqual([
-      "biome",
+    expect(resolveExclusiveSelection(["vite-plus", "oxlint"], ["oxlint"], [TASK_RUNNERS])).toEqual([
+      "oxlint",
     ]);
-    expect(resolveExclusiveSelection(["nx"], ["nx", "husky"], [TASK_RUNNERS])).toEqual([
-      "nx",
-      "husky",
-    ]);
+    expect(
+      resolveExclusiveSelection(["vite-plus"], ["vite-plus", "oxlint"], [TASK_RUNNERS]),
+    ).toEqual(["vite-plus", "oxlint"]);
   });
 });
 
@@ -52,12 +47,11 @@ describe("navigableGroupMultiselect exclusive sets", () => {
         options: {
           "Monorepo & Tasks": [
             { value: "turborepo", label: "Turborepo" },
-            { value: "nx", label: "Nx" },
             { value: "vite-plus", label: "Vite+" },
           ],
-          "Code Quality": [{ value: "biome", label: "Biome" }],
+          "Code Quality": [{ value: "oxlint", label: "Oxlint" }],
         },
-        initialValues: ["biome"],
+        initialValues: ["oxlint"],
         required: false,
         exclusive: [TASK_RUNNERS],
         input,
@@ -79,9 +73,9 @@ describe("navigableGroupMultiselect exclusive sets", () => {
     await press(" ");
     await press("\r");
 
-    expect(await resultPromise).toEqual(["biome", "nx"]);
+    expect(await resultPromise).toEqual(["oxlint", "vite-plus"]);
     const plain = stripVTControlCharacters(rendered);
     expect(plain).toContain("Monorepo & Tasks (choose one)");
-    expect(plain).toContain("● Nx");
+    expect(plain).toContain("Vite+, Oxlint");
   });
 });

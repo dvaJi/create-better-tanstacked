@@ -173,7 +173,7 @@ describe("add()", () => {
 
     const result = await add({
       projectDir,
-      addons: ["biome"],
+      addons: ["oxlint"],
       install: false,
     });
 
@@ -195,7 +195,7 @@ describe("add()", () => {
         orm: "none",
         backend: "none",
         runtime: "none",
-        frontend: ["next"],
+        frontend: ["tanstack-start"],
         addons: ["none"],
         examples: ["none"],
         auth: "none",

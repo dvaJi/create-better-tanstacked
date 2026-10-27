@@ -8,7 +8,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "templates-binary/**"]
+      "outputs": ["dist/**", "templates-binary/**"]
     },
     "lint": {
       "dependsOn": ["transit"]
@@ -16,18 +16,9 @@
     "check": {
       "dependsOn": ["transit"]
     },
-    "generate-schema": {
-      "cache": false
-    },
     "dev": {
       "cache": false,
       "persistent": true
-    },
-    "deploy": {
-      "cache": false
-    },
-    "deploy:convex": {
-      "cache": false
     }
   }
 }

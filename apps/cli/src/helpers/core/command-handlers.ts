@@ -43,7 +43,6 @@ import {
 import { validateProjectName } from "../../utils/project-name-validation";
 import { renderTitle } from "../../utils/render-title";
 import { checkBaselineRequirements, checkLocalRequirements } from "../../utils/requirements";
-import { getTemplateConfig, getTemplateDescription } from "../../utils/templates";
 import {
   getProvidedFlags,
   processAndValidateFlags,
@@ -138,9 +137,10 @@ async function executeCreateProjectHandler(
   options: CreateHandlerOptions,
 ): Promise<CreateHandlerExecution> {
   const { silent = false, mode } = options;
+  const invocationMode = mode ?? (input.yes ? "yes" : undefined);
 
   return runWithContextAsync(
-    { silent, mode, analyticsDisabled: input.disableAnalytics },
+    { silent, mode: invocationMode, analyticsDisabled: input.disableAnalytics },
     async () => {
       const startTime = Date.now();
       const timeScaffolded = new Date().toISOString();
@@ -300,30 +300,7 @@ async function createProjectHandlerInternal(
 
     const providedFlags = getProvidedFlags(originalInput);
 
-    let cliInput = originalInput;
-
-    // Handle template
-    if (input.template && input.template !== "none") {
-      const templateConfig = getTemplateConfig(input.template);
-      if (templateConfig) {
-        const templateName = input.template.toUpperCase();
-        const templateDescription = getTemplateDescription(input.template);
-        if (!isSilent()) {
-          log.info(
-            `${pc.dim("Template")} ${pc.bold(pc.cyan(templateName))}\n${pc.dim(templateDescription)}`,
-          );
-        }
-        const userOverrides = Object.fromEntries(
-          Object.entries(originalInput).filter(([, value]) => value !== undefined),
-        );
-        cliInput = {
-          ...templateConfig,
-          ...userOverrides,
-          template: input.template,
-          projectDirectory: originalInput.projectDirectory,
-        };
-      }
-    }
+    const cliInput = originalInput;
 
     // Build config
     let config: ProjectConfig;

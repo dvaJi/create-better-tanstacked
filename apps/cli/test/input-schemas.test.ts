@@ -37,17 +37,9 @@ describe("Input schemas", () => {
   });
 
   it("rejects conflicting task-runner addon combinations", () => {
-    const conflictingAddonPairs = [
-      ["nx", "vite-plus"],
-      ["turborepo", "vite-plus"],
-      ["nx", "turborepo"],
-    ];
+    const result = AddInputSchema.safeParse({ addons: ["turborepo", "vite-plus"] });
 
-    for (const addons of conflictingAddonPairs) {
-      const result = AddInputSchema.safeParse({ addons });
-
-      expect(result.success).toBe(false);
-    }
+    expect(result.success).toBe(false);
   });
 
   it("rejects conflicting observability addon combinations", () => {
@@ -138,7 +130,7 @@ describe("Input schemas", () => {
     const result = CLIInputSchema.safeParse({
       projectDirectory: ".",
       projectName: "app",
-      addons: ["biome"],
+      addons: ["oxlint"],
     });
 
     expect(result.success).toBe(true);

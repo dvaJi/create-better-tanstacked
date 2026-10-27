@@ -9,7 +9,10 @@ Thank you for your interest in contributing to Better-T-Stack! This document pro
 This repository is organized as a monorepo containing:
 
 - **CLI**: [`apps/cli`](apps/cli) - The scaffolding CLI tool (`create-better-tanstacked`)
-- **Documentation**: [`apps/web`](apps/web) - Official website and documentation
+- **Template generator**: [`packages/template-generator`](packages/template-generator) - The project generation engine
+- **Shared types**: [`packages/types`](packages/types) - Schemas and types shared by the CLI packages
+- **CLI alias**: [`packages/create-bts`](packages/create-bts) - The shorter `create-bts` package
+- **Agent plugin**: [`plugin`](plugin) - Claude Code and Codex skills, commands, and MCP wiring
 
 ## Development Setup
 
@@ -64,43 +67,6 @@ This repository is organized as a monorepo containing:
    ```
    This will run the locally installed CLI.
 
-### Web Development
-
-1. **Install dependencies**
-
-   ```bash
-   # from repo root
-   bun i
-   ```
-
-2. **Setup backend**
-
-   ```bash
-   cd packages/backend
-   bun dev:setup  # you can choose local development too in prompts
-   ```
-
-3. **Configure environment**
-   Copy the Convex URL from `packages/backend/.env.local` to `apps/web/.env`:
-
-   ```
-   NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210/
-   ```
-
-4. **Set GitHub tokens**
-   Now run `bun dev` in the root. It will complain about GitHub token, so run this in `packages/backend`:
-
-   ```bash
-   npx convex env set GITHUB_ACCESS_TOKEN=xxxxx
-   npx convex env set GITHUB_WEBHOOK_SECRET=xxxxx
-   ```
-
-5. **Start the documentation website**
-   ```bash
-   bun dev
-   ```
-   This starts the Next.js development server for the documentation site.
-
 ## Contribution Guidelines
 
 ### Standard Contribution Steps
@@ -132,7 +98,7 @@ This repository is organized as a monorepo containing:
 
    ```bash
    git add .
-   git commit -m "feat(web): add your feature description"
+   git commit -m "feat(cli): add your feature description"
    # or
    git commit -m "fix(cli): fix your bug description"
    ```
@@ -163,7 +129,6 @@ bun run check
 
 - **Manual testing**: Test your changes manually to ensure everything works as expected
 - For CLI changes: Test with different configurations and options
-- For web changes: Ensure the site builds and displays correctly
 
 ## Commit Conventions
 
@@ -171,9 +136,7 @@ Use conventional commit messages with the appropriate scope:
 
 - `feat(cli): add new CLI feature`
 - `fix(cli): fix CLI bug`
-- `feat(web): add new web feature`
-- `fix(web): fix web bug`
-- `chore(web): update dependencies`
+- `docs(cli): update CLI documentation`
 
 ## Getting Help
 

@@ -36,10 +36,10 @@ describe("persisted project configuration", () => {
     });
     expect(await fs.readFile(configPath, "utf8")).toBe(content);
 
-    const added = await add({ projectDir: result.projectDir, addons: ["biome"], install: false });
+    const added = await add({ projectDir: result.projectDir, addons: ["oxlint"], install: false });
     expect(added.success).toBe(true);
     const updated = await readBtsConfig(result.projectDir);
-    expect(updated?.addons).toContain("biome");
+    expect(updated?.addons).toContain("oxlint");
     expect(updated?.addonOptions?.skills).toEqual(loaded?.addonOptions?.skills);
     expect(await fs.readFile(configPath, "utf8")).toContain("// keep my settings");
   });
@@ -53,9 +53,9 @@ describe("persisted project configuration", () => {
     const before = await readBtsConfig(result.projectDir);
     if (!before) throw new Error("Expected a valid generated config");
 
-    const updated = await updateBtsConfig(result.projectDir, { addons: ["biome"] });
+    const updated = await updateBtsConfig(result.projectDir, { addons: ["oxlint"] });
     expect(updated.isOk()).toBe(true);
-    expect(await readBtsConfig(result.projectDir)).toEqual({ ...before, addons: ["biome"] });
+    expect(await readBtsConfig(result.projectDir)).toEqual({ ...before, addons: ["oxlint"] });
     expect(await fs.readFile(configPath, "utf8")).toContain("// my project");
   });
 
@@ -88,7 +88,11 @@ describe("persisted project configuration", () => {
       return writeFile(...args);
     });
     try {
-      const added = await add({ projectDir: result.projectDir, addons: ["biome"], install: false });
+      const added = await add({
+        projectDir: result.projectDir,
+        addons: ["oxlint"],
+        install: false,
+      });
       expect(added.success).toBe(false);
       expect(added.error).toContain("Failed to update bts.jsonc");
       expect(added.error).toContain("Disk is full");

@@ -8,8 +8,7 @@ export const EMBEDDED_TEMPLATES: Map<string, string> = new Map([
 `],
   ["addons/electrobun/apps/desktop/electrobun.config.ts.hbs", `import type { ElectrobunConfig } from "electrobun";
 
-const webBuildDir =
-  "../web/dist/client";
+const webBuildDir = {{#if (includes frontend "tanstack-start")}}"../web/dist/client"{{else}}"../web/dist"{{/if}};
 
 export default {
   app: {

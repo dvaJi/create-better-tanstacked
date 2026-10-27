@@ -89,31 +89,7 @@ describe("Electrobun addon scaffolding", () => {
     expect(desktopGitignore).toContain(".hutch/");
   });
 
-  it("uses the React Router client build output for packaged desktop assets", async () => {
-    const result = await runCreateTest({
-      projectName: "electrobun-files-react-router-static-v2",
-      addons: ["electrobun"],
-      frontend: ["react-router"],
-    });
-
-    expectSuccess(result);
-    expect(result.projectDir).toBeDefined();
-    if (!result.projectDir) return;
-
-    const desktopConfig = await fs.readFile(
-      path.join(result.projectDir, "apps", "desktop", "electrobun.config.ts"),
-      "utf8",
-    );
-    const desktopEntry = await fs.readFile(
-      path.join(result.projectDir, "apps", "desktop", "src", "bun", "index.ts"),
-      "utf8",
-    );
-
-    expect(desktopConfig).toContain('const webBuildDir = "../web/build/client";');
-    expect(desktopEntry).toContain("const DEV_SERVER_PORT = 5173;");
-  });
-
-  it("maps desktop asset output and dev ports for non-Vite frontends", async () => {
+  it("maps desktop asset output and dev ports for supported frontends", async () => {
     const cases = [
       {
         frontend: "tanstack-start",
@@ -122,38 +98,6 @@ describe("Electrobun addon scaffolding", () => {
         expectedPort: "const DEV_SERVER_PORT = 3001;",
         expectedWebConfigPath: "vite.config.ts",
         expectedWebConfig: ["prerender", "enabled: true"],
-      },
-      {
-        frontend: "next",
-        api: "trpc",
-        expectedOutputDir: 'const webBuildDir = "../web/out";',
-        expectedPort: "const DEV_SERVER_PORT = 3001;",
-        expectedWebConfigPath: "next.config.ts",
-        expectedWebConfig: ['output: "export"'],
-      },
-      {
-        frontend: "nuxt",
-        api: "orpc",
-        expectedOutputDir: 'const webBuildDir = "../web/.output/public";',
-        expectedPort: "const DEV_SERVER_PORT = 3001;",
-        expectedBuildCommand: "bun run --filter web generate",
-      },
-      {
-        frontend: "svelte",
-        api: "orpc",
-        expectedOutputDir: 'const webBuildDir = "../web/build";',
-        expectedPort: "const DEV_SERVER_PORT = 5173;",
-        expectedWebConfigPath: "vite.config.ts",
-        expectedWebConfig: ["@sveltejs/adapter-static", 'fallback: "index.html"'],
-      },
-      {
-        frontend: "astro",
-        api: "orpc",
-        expectedOutputDir: 'const webBuildDir = "../web/dist";',
-        expectedPort: "const DEV_SERVER_PORT = 4321;",
-        expectedWebConfigPath: "astro.config.mjs",
-        expectedWebConfig: ['output: "static"'],
-        unexpectedWebDependency: "@astrojs/node",
       },
     ] as const;
 
@@ -176,13 +120,6 @@ describe("Electrobun addon scaffolding", () => {
         path.join(result.projectDir, "apps", "desktop", "src", "bun", "index.ts"),
         "utf8",
       );
-      const desktopPackageJson = await fs.readJson(
-        path.join(result.projectDir, "apps", "desktop", "package.json"),
-      );
-      const webPackageJson = await fs.readJson(
-        path.join(result.projectDir, "apps", "web", "package.json"),
-      );
-
       expect(desktopConfig).toContain(testCase.expectedOutputDir);
       expect(desktopEntry).toContain(testCase.expectedPort);
       if ("expectedWebConfig" in testCase && "expectedWebConfigPath" in testCase) {
@@ -193,13 +130,6 @@ describe("Electrobun addon scaffolding", () => {
         for (const expectedConfig of testCase.expectedWebConfig) {
           expect(webConfig).toContain(expectedConfig);
         }
-      }
-      if ("unexpectedWebDependency" in testCase) {
-        expect(webPackageJson.dependencies?.[testCase.unexpectedWebDependency]).toBeUndefined();
-        expect(webPackageJson.devDependencies?.[testCase.unexpectedWebDependency]).toBeUndefined();
-      }
-      if ("expectedBuildCommand" in testCase) {
-        expect(desktopPackageJson.scripts["build:stable"]).toContain(testCase.expectedBuildCommand);
       }
     }
   });
@@ -213,15 +143,6 @@ describe("Electrobun addon scaffolding", () => {
         expectedHmr: "turbo run dev",
         expectedRootDev: "turbo run dev",
         expectedRootBuild: "turbo run build --filter='!desktop' && turbo run build -F desktop",
-      },
-      {
-        projectName: "electrobun-nx-runner-static-v2",
-        addons: ["nx", "electrobun"] as const,
-        expectedRunner: "nx run-many -t build --projects=web",
-        expectedHmr: "nx run-many -t dev",
-        expectedRootDev: "nx run-many -t dev",
-        expectedRootBuild:
-          "nx run-many -t build --exclude=desktop && nx run-many -t build --projects=desktop",
       },
       {
         projectName: "electrobun-vite-plus-runner-static-v2",

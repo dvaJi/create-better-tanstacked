@@ -7,7 +7,7 @@ import { Result } from "better-result";
 import fs from "fs-extra";
 import pc from "picocolors";
 
-import type { DbSetupOptions, SupportedProjectConfig } from "../../types";
+import type { DbSetupOptions, ProjectConfig, SupportedProjectConfig } from "../../types";
 import { isSilent } from "../../utils/context";
 import { ProjectCreationError } from "../../utils/errors";
 import { formatProject } from "../../utils/file-formatter";

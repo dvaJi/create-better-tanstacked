@@ -5,18 +5,16 @@
 This repo is a Bun + Turborepo monorepo.
 
 - `apps/cli`: published CLI (`create-better-tanstacked`), with source in `apps/cli/src` and tests in `apps/cli/test`.
-- `apps/web`: Next.js docs/site (`apps/web/src`, `apps/web/content/docs`, `apps/web/public`).
 - `packages/template-generator`: template generation engine used by the CLI.
 - `packages/types`: shared schemas/types.
-- `packages/backend`: Convex backend used by web features.
+- `packages/create-bts`: short alias package for the CLI.
 - `plugin/`: installable agent plugin (Claude Code + Codex) — skills, commands, and MCP wiring; published via the root marketplaces (`.claude-plugin/`, `.agents/plugins/`).
 
 ## Build, Test, and Development Commands
 
 - `bun install`: install workspace dependencies.
 - `bun dev:cli`: watch-build CLI package.
-- `bun dev:web`: run web app locally (`next dev --port 3333`).
-- `bun build`: build all packages/apps through Turbo.
+- `bun build`: build all packages through Turbo.
 - `bun build:cli`: build only the CLI target.
 - `bun run check`: format + lint (`oxfmt . && oxlint .`).
 - `cd apps/cli && bun run test`: run CLI tests.
@@ -50,7 +48,7 @@ This repo is a Bun + Turborepo monorepo.
 ## Testing Guidelines
 
 - Framework: `bun:test`.
-- Test files use `*.test.ts` naming (see `apps/cli/test` and `packages/template-generator/test`).
+- Test files use `*.test.ts` naming (see `apps/cli/test` and `packages/types/test`).
 - Add or update tests with behavior changes, especially prompt flows, template output, and config validation.
 - Keep tests deterministic; reuse shared setup utilities in `apps/cli/test/setup.ts`.
 - Test generated projects through installation, typechecking, builds, and runtime behavior. Keep focused assertions for conditional generation, dependency relationships, and preservation of user edits; avoid copying static template source or dependency versions into expectations.
@@ -58,13 +56,12 @@ This repo is a Bun + Turborepo monorepo.
 ## Commit & Pull Request Guidelines
 
 - Use Conventional Commits with scope, matching history:
-  - `feat(cli): ...`, `fix(web): ...`, `docs(cli): ...`
+  - `feat(cli): ...`, `fix(cli): ...`, `docs(cli): ...`
 - Open an issue/discussion before major feature work.
 - PRs should include:
   - clear summary,
   - linked issue (if applicable),
-  - verification steps run (`bun run check`, relevant tests),
-  - screenshots/GIFs for web UI changes.
+  - verification steps run (`bun run check`, relevant tests).
 
 ## Agent skills
 

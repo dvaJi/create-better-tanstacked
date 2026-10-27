@@ -14,6 +14,8 @@ import { runWithContextAsync } from "../src/utils/context";
 
 import { SMOKE_DIR } from "./setup";
 
+const itFakeBunx = process.platform === "win32" ? it.skip : it;
+
 function createProjectConfig(overrides: Partial<ProjectConfig> = {}): ProjectConfig {
   return {
     projectName: "test-app",
@@ -98,7 +100,7 @@ describe("Addon setup regressions", () => {
   it("does not recommend the Better T Stack scaffold MCP for generated projects", () => {
     const servers = getRecommendedMcpServers(createProjectConfig(), "project");
 
-    expect(servers.map((server) => server.key)).toEqual(["context7", "shadcn"]);
+    expect(servers.map((server) => server.key)).toEqual(["context7", "deepwiki", "shadcn"]);
   });
 
   it("recommends product MCP servers for ErrorDX and Shipboard addons", () => {
@@ -144,33 +146,36 @@ describe("Addon setup regressions", () => {
     expect(await fs.pathExists(markerFile)).toBe(false);
   });
 
-  it("installs explicitly configured MCP servers even when they are not recommended", async () => {
-    const projectDir = path.join(SMOKE_DIR, "mcp-nonrecommended-server");
-    await fs.remove(projectDir);
+  itFakeBunx(
+    "installs explicitly configured MCP servers even when they are not recommended",
+    async () => {
+      const projectDir = path.join(SMOKE_DIR, "mcp-nonrecommended-server");
+      await fs.remove(projectDir);
 
-    const config = createProjectConfig({
-      projectDir,
-      addons: ["mcp"],
-      addonOptions: {
-        mcp: {
-          scope: "project",
-          servers: ["next-devtools"],
-          agents: ["cursor"],
+      const config = createProjectConfig({
+        projectDir,
+        addons: ["mcp"],
+        addonOptions: {
+          mcp: {
+            scope: "project",
+            servers: ["clerk"],
+            agents: ["cursor"],
+          },
         },
-      },
-    });
+      });
 
-    const { markerFile, result } = await runWithFakeBunx(
-      projectDir,
-      () => runWithContextAsync({ silent: true }, () => setupMcp(config)),
-      0,
-    );
+      const { markerFile, result } = await runWithFakeBunx(
+        projectDir,
+        () => runWithContextAsync({ silent: true }, () => setupMcp(config)),
+        0,
+      );
 
-    expect(result.isOk()).toBe(true);
-    expect(await fs.readFile(markerFile, "utf8")).toContain("--name next-devtools");
-  });
+      expect(result.isOk()).toBe(true);
+      expect(await fs.readFile(markerFile, "utf8")).toContain("--name clerk");
+    },
+  );
 
-  it("returns an error when every requested MCP install fails", async () => {
+  itFakeBunx("returns an error when every requested MCP install fails", async () => {
     const projectDir = path.join(SMOKE_DIR, "mcp-all-installs-fail");
     await fs.remove(projectDir);
 
@@ -194,7 +199,7 @@ describe("Addon setup regressions", () => {
     expect(await fs.readFile(markerFile, "utf8")).toContain("context7");
   });
 
-  it("expands the universal skills option before invoking the skills CLI", async () => {
+  itFakeBunx("expands the universal skills option before invoking the skills CLI", async () => {
     const projectDir = path.join(SMOKE_DIR, "skills-universal-agents");
     await fs.remove(projectDir);
 
@@ -254,7 +259,7 @@ describe("Addon setup regressions", () => {
 
     const config = createProjectConfig({
       projectDir,
-      frontend: ["next"],
+      frontend: ["tanstack-router"],
       addons: ["skills"],
       addonOptions: {
         skills: {
@@ -278,65 +283,68 @@ describe("Addon setup regressions", () => {
     expect(await fs.pathExists(markerFile)).toBe(false);
   });
 
-  it("uses persisted skills options and preserves explicit non-recommended selections", async () => {
-    const projectDir = path.join(SMOKE_DIR, "skills-persisted-selections");
-    await fs.remove(projectDir);
-    await fs.ensureDir(projectDir);
-    await fs.writeFile(
-      path.join(projectDir, "bts.jsonc"),
-      JSON.stringify({
-        version: "0.0.0-test",
-        createdAt: new Date(0).toISOString(),
-        projectName: "test-app",
-        database: "sqlite",
-        orm: "drizzle",
-        backend: "hono",
-        runtime: "bun",
+  itFakeBunx(
+    "uses persisted skills options and preserves explicit non-recommended selections",
+    async () => {
+      const projectDir = path.join(SMOKE_DIR, "skills-persisted-selections");
+      await fs.remove(projectDir);
+      await fs.ensureDir(projectDir);
+      await fs.writeFile(
+        path.join(projectDir, "bts.jsonc"),
+        JSON.stringify({
+          version: "0.0.0-test",
+          createdAt: new Date(0).toISOString(),
+          projectName: "test-app",
+          database: "sqlite",
+          orm: "drizzle",
+          backend: "hono",
+          runtime: "bun",
+          frontend: ["tanstack-router"],
+          addons: ["skills"],
+          examples: ["none"],
+          auth: "none",
+          payments: "none",
+          packageManager: "bun",
+          dbSetup: "none",
+          api: "trpc",
+          webDeploy: "none",
+          serverDeploy: "none",
+          addonOptions: {
+            skills: {
+              scope: "project",
+              agents: ["codex"],
+              selections: [
+                {
+                  source: "vercel/turborepo",
+                  skills: ["turborepo"],
+                },
+              ],
+            },
+          },
+        }),
+      );
+
+      const config = createProjectConfig({
+        projectDir,
         frontend: ["tanstack-router"],
         addons: ["skills"],
-        examples: ["none"],
-        auth: "none",
-        payments: "none",
-        packageManager: "bun",
-        dbSetup: "none",
-        api: "trpc",
-        webDeploy: "none",
-        serverDeploy: "none",
-        addonOptions: {
-          skills: {
-            scope: "project",
-            agents: ["codex"],
-            selections: [
-              {
-                source: "vercel/turborepo",
-                skills: ["turborepo"],
-              },
-            ],
-          },
-        },
-      }),
-    );
+      });
 
-    const config = createProjectConfig({
-      projectDir,
-      frontend: ["tanstack-router"],
-      addons: ["skills"],
-    });
+      const { markerFile, result } = await runWithFakeBunx(
+        projectDir,
+        () => runWithContextAsync({ silent: true }, () => setupSkills(config)),
+        0,
+      );
 
-    const { markerFile, result } = await runWithFakeBunx(
-      projectDir,
-      () => runWithContextAsync({ silent: true }, () => setupSkills(config)),
-      0,
-    );
+      expect(result.isOk()).toBe(true);
+      const commandLog = await fs.readFile(markerFile, "utf8");
+      expect(commandLog).toContain("skills@latest add vercel/turborepo");
+      expect(commandLog).toContain("--agent codex");
+      expect(commandLog).toContain("--skill turborepo");
+    },
+  );
 
-    expect(result.isOk()).toBe(true);
-    const commandLog = await fs.readFile(markerFile, "utf8");
-    expect(commandLog).toContain("skills@latest add vercel/turborepo");
-    expect(commandLog).toContain("--agent codex");
-    expect(commandLog).toContain("--skill turborepo");
-  });
-
-  it("recommends evlog skills when evlog addon is selected", async () => {
+  itFakeBunx("recommends evlog skills when evlog addon is selected", async () => {
     const projectDir = path.join(SMOKE_DIR, "skills-evlog-recommended");
     await fs.remove(projectDir);
 
@@ -364,13 +372,13 @@ describe("Addon setup regressions", () => {
     expect(commandLog).toContain("--agent codex");
   });
 
-  it("omits the local log analysis skill for edge-only evlog projects", async () => {
+  itFakeBunx("omits the local log analysis skill for edge-only evlog projects", async () => {
     const projectDir = path.join(SMOKE_DIR, "skills-evlog-edge");
     await fs.remove(projectDir);
 
     const config = createProjectConfig({
       projectDir,
-      frontend: ["next"],
+      frontend: ["tanstack-start"],
       backend: "self",
       runtime: "none",
       webDeploy: "cloudflare",
@@ -395,13 +403,13 @@ describe("Addon setup regressions", () => {
     expect(commandLog).not.toContain("analyze-logs");
   });
 
-  it("does not install upgrade skills from the curated skills addon", async () => {
+  itFakeBunx("does not install upgrade skills from the curated skills addon", async () => {
     const projectDir = path.join(SMOKE_DIR, "skills-no-upgrade-skills");
     await fs.remove(projectDir);
 
     const config = createProjectConfig({
       projectDir,
-      frontend: ["native-bare"],
+      frontend: ["tanstack-router"],
       addons: ["skills"],
       addonOptions: {
         skills: {

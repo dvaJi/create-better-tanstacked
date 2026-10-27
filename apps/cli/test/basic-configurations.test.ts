@@ -39,14 +39,14 @@ describe("Basic Configurations", () => {
       expect(result.result?.projectConfig.projectName).toBe("explicit-defaults");
     });
 
-    it("should create Next.js fullstack project with self backend", async () => {
+    it("should create TanStack Start fullstack project with self backend", async () => {
       const result = await runCreateTest({
-        projectName: "nextjs-fullstack-defaults",
+        projectName: "tanstack-start-fullstack-defaults",
         database: "sqlite",
         orm: "drizzle",
         backend: "self",
         runtime: "none",
-        frontend: ["next"],
+        frontend: ["tanstack-start"],
         auth: "better-auth",
         api: "trpc",
         addons: ["turborepo"],
@@ -58,10 +58,10 @@ describe("Basic Configurations", () => {
       });
 
       expectSuccess(result);
-      expect(result.result?.projectConfig.projectName).toBe("nextjs-fullstack-defaults");
+      expect(result.result?.projectConfig.projectName).toBe("tanstack-start-fullstack-defaults");
       expect(result.result?.projectConfig.backend).toBe("self");
       expect(result.result?.projectConfig.runtime).toBe("none");
-      expect(result.result?.projectConfig.frontend).toEqual(["next"]);
+      expect(result.result?.projectConfig.frontend).toEqual(["tanstack-start"]);
     });
   });
 
@@ -102,8 +102,8 @@ describe("Basic Configurations", () => {
         backend: "hono",
         runtime: "bun",
         api: "trpc",
-        database: "mongodb",
-        orm: "drizzle", // Incompatible combination
+        database: "sqlite",
+        orm: "none", // Incompatible combination
         auth: "better-auth",
         addons: ["none"],
         examples: ["none"],

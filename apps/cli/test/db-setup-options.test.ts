@@ -54,7 +54,7 @@ describe("Database setup options", () => {
     await fs.remove(projectPath);
 
     const result = await create(projectPath, {
-      frontend: ["react-router"],
+      frontend: ["tanstack-router"],
       backend: "elysia",
       runtime: "node",
       database: "postgres",
@@ -62,7 +62,7 @@ describe("Database setup options", () => {
       auth: "better-auth",
       payments: "none",
       api: "trpc",
-      addons: ["nx"],
+      addons: ["turborepo"],
       examples: ["todo"],
       dbSetup: "neon",
       webDeploy: "none",

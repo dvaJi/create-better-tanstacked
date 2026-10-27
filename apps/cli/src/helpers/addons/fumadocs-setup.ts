@@ -8,7 +8,7 @@ import { navigableSelect } from "../../prompts/navigable";
 import { navigableGroup } from "../../prompts/navigable-group";
 import type { ProjectConfig } from "../../types";
 import { readBtsConfig } from "../../utils/bts-config";
-import { isSilent } from "../../utils/context";
+import { isNonInteractive } from "../../utils/context";
 import { AddonSetupError, UserCancelledError, userCancelled } from "../../utils/errors";
 import { shouldSkipExternalCommands } from "../../utils/external-commands";
 import { getPackageExecutionArgs } from "../../utils/package-runner";
@@ -70,7 +70,7 @@ export async function setupFumadocs(
   let ogImage: FumadocsOgImage | undefined = configuredOptions?.ogImage;
   let aiChat: FumadocsAiChat | undefined = configuredOptions?.aiChat;
 
-  if (isSilent()) {
+  if (isNonInteractive()) {
     template = template ?? DEFAULT_TEMPLATE;
   } else {
     const promptResult = await Result.tryPromise({
