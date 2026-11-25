@@ -1,10 +1,10 @@
 import { describe, expect, it } from "bun:test";
 
-import type { SponsorEntry } from "../src/utils/sponsors";
 import {
   formatPostInstallSpecialSponsorsSection,
   formatSpecialSponsorsDetails,
 } from "../src/utils/sponsors";
+import type { SponsorEntry } from "../src/utils/sponsors";
 
 function createSponsorsFixture(): SponsorEntry {
   return {
