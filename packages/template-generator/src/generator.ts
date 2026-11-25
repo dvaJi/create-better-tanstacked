@@ -33,8 +33,8 @@ import {
   processExtrasTemplates,
   processDeployTemplates,
 } from "./template-handlers";
-import type { GeneratorOptions, VirtualFileTree } from "./types";
 import { GeneratorError } from "./types";
+import type { GeneratorOptions, VirtualFileTree } from "./types";
 import { generateReproducibleCommand } from "./utils/reproducible-command";
 
 export type { TemplateData };

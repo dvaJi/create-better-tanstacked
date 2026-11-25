@@ -1,6 +1,7 @@
 import { box, log } from "@clack/prompts";
 import pc from "picocolors";
 
+import { isAlchemyDeployTarget, usesAlchemyManagedDatabase, webFrontends } from "../../types";
 import type {
   Backend,
   Database,
@@ -13,7 +14,6 @@ import type {
   ServerDeploy,
   WebDeploy,
 } from "../../types";
-import { isAlchemyDeployTarget, usesAlchemyManagedDatabase, webFrontends } from "../../types";
 import { getDockerStatus } from "../../utils/docker-utils";
 import {
   fetchSponsorsQuietly,

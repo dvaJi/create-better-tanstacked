@@ -49,10 +49,10 @@ export default {
   "type": "module",
   "scripts": {},
   "devDependencies": {
-    "@types/bun": "^1.4.2",
-    "concurrently": "^10.0.5",
-    "electrobun": "^2.0.2",
-    "typescript": "^6.0.3"
+    "@types/bun": "^1.4.5",
+    "concurrently": "^10.0.7",
+    "electrobun": "^2.0.7",
+    "typescript": "^7.0.2"
   }
 }
 `],
@@ -5037,9 +5037,10 @@ See https://docs.convex.dev/functions for more.
 A query function that takes two arguments looks like:
 
 \`\`\`ts
+import { v } from "convex/values";
+
 // convex/myFunctions.ts
 import { query } from "./_generated/server";
-import { v } from "convex/values";
 
 export const myQueryFunction = query({
   // Validators for arguments.
@@ -5076,9 +5077,10 @@ const data = useQuery(api.myFunctions.myQueryFunction, {
 A mutation function looks like:
 
 \`\`\`ts
+import { v } from "convex/values";
+
 // convex/myFunctions.ts
 import { mutation } from "./_generated/server";
-import { v } from "convex/values";
 
 export const myMutationFunction = mutation({
   // Validators for arguments.
@@ -5168,7 +5170,7 @@ export default defineSchema({
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/node": "^26.6.4"
+    "@types/node": "^26.6.7"
   },
   "dependencies": {}
 }
@@ -9834,25 +9836,25 @@ declare module "cloudflare:workers" {
 	},
 	"dependencies": {
         "@{{projectName}}/ui": "{{#if (eq packageManager "npm")}}*{{else}}workspace:*{{/if}}",
-		"@tailwindcss/vite": "^4.3.3",
-		"@tanstack/react-router": "^1.170.41",
-		"lucide-react": "^1.52.0",
+		"@tailwindcss/vite": "^4.3.5",
+		"@tanstack/react-router": "^1.170.46",
+		"lucide-react": "^1.79.0",
         "next-themes": "^0.4.6",
-		"react": "^19.3.0",
-		"react-dom": "^19.3.0",
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1",
         "sonner": "^2.0.8"
 	},
 	"devDependencies": {
-		"@tanstack/react-router-devtools": "^1.167.2",
-		"@tanstack/router-plugin": "^1.168.42",
-		"@types/node": "^26.6.4",
-		"@types/react": "^19.3.0",
+		"@tanstack/react-router-devtools": "^1.167.4",
+		"@tanstack/router-plugin": "^1.169.0",
+		"@types/node": "^26.6.7",
+		"@types/react": "^19.3.1",
 		"@types/react-dom": "^19.3.0",
-		"@vitejs/plugin-react": "^6.1.2",
-		"oxc-transform-react": "^0.152.0",
-		"postcss": "^8.5.28",
-		"tailwindcss": "^4.3.3",
-		"vite": "^8.3.2"
+		"@vitejs/plugin-react": "^6.3.0",
+		"oxc-transform-react": "^0.158.0",
+		"postcss": "^8.5.33",
+		"tailwindcss": "^4.3.5",
+		"vite": "^8.3.8"
 	}
 }
 `],
@@ -10301,28 +10303,28 @@ export default defineConfig({
   },
   "dependencies": {
     "@{{projectName}}/ui": "{{#if (eq packageManager "npm")}}*{{else}}workspace:*{{/if}}",
-    "@tailwindcss/vite": "^4.3.3",
-    "@tanstack/react-query": "^5.104.1",
-    "@tanstack/react-router": "^1.170.41",
-    "@tanstack/react-start": "^1.168.60",
-    "lucide-react": "^1.52.0",
+    "@tailwindcss/vite": "^4.3.5",
+    "@tanstack/react-query": "^5.108.4",
+    "@tanstack/react-router": "^1.170.46",
+    "@tanstack/react-start": "^1.169.7",
+    "lucide-react": "^1.79.0",
     "next-themes": "^0.4.6",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "sonner": "^2.0.8",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
-    "@tanstack/react-router-devtools": "^1.167.2",
+    "@tanstack/react-router-devtools": "^1.167.4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
-    "@types/react": "^19.3.0",
+    "@types/react": "^19.3.1",
     "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.2",
-    "oxc-transform-react": "^0.152.0",
-    "jsdom": "^30.1.1",
-    "vite": "^8.3.2",
-    "web-vitals": "^6.2.2"
+    "@vitejs/plugin-react": "^6.3.0",
+    "oxc-transform-react": "^0.158.0",
+    "jsdom": "^31.0.1",
+    "vite": "^8.3.8",
+    "web-vitals": "^6.2.3"
   }
 }
 `],
@@ -11222,24 +11224,24 @@ export default function Loader() {
     "./postcss.config": "./postcss.config.mjs"
   },
   "dependencies": {
-    "@base-ui/react": "^1.8.0",
+    "@base-ui/react": "^1.9.0",
     "@fontsource-variable/inter": "^5.3.0",
     "@shadcn/react": "^0.3.1",
-    "shadcn": "^4.21.1",
+    "shadcn": "^4.23.0",
     "class-variance-authority": "^0.7.1",
-    "cn": "^0.4.0",
-    "lucide-react": "^1.52.0",
+    "cn": "^0.5.2",
+    "lucide-react": "^1.79.0",
     "next-themes": "^0.4.6",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "sonner": "^2.0.8",
     "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.3",
-    "@types/react": "^19.3.0",
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/react": "^19.3.1",
     "@types/react-dom": "^19.3.0",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.5"
   },
   "scripts": {
     "check-types": "tsc --noEmit"
