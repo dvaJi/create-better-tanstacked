@@ -6,6 +6,7 @@ The plugin bundles:
 
 - **MCP server** — the official `create-better-tanstacked mcp` server (stdio, no auth/key). Exposes `bts_get_stack_guidance`, `bts_get_schema`, `bts_plan_project`, `bts_create_project`, `bts_plan_addons`, `bts_add_addons`.
 - **Skills** — `scaffold-project` (start a new project) and `add-to-project` (add addons to an existing project). Each is a reusable `SKILL.md` workflow: the assistant loads it when the request matches its description, or when you invoke it directly. The workflow calls the MCP to plan and generate changes.
+- **Vendored lint skills** — `install-anti-slop` ([dmmulroy/anti-slop](https://github.com/dmmulroy/anti-slop)), `install-landmines` ([interfere-inc/landmines](https://github.com/interfere-inc/landmines)), and `migrate-oxlint-config` ([cloudflare/oxlint-config](https://github.com/cloudflare/oxlint-config)). Opinionated Oxlint rulesets the assistant can install into any repository; provenance in each skill's `UPSTREAM.md`.
 - **Claude Code commands** — `/better-t-stack:new` and `/better-t-stack:add`.
 - **Claude Code agent** — `stack-architect`, which designs a coherent stack from a product description and generates it.
 
