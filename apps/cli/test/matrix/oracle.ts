@@ -187,7 +187,7 @@ function validatePayments(config: ProjectConfig, rules: Set<MatrixRule>) {
 }
 
 function validateExamples(config: ProjectConfig, rules: Set<MatrixRule>) {
-  if (config.examples.includes("todo") && config.backend !== "none") {
+  if (config.examples.includes("todo")) {
     addRule(rules, config.database === "none", "example-todo-requires-database");
     addRule(rules, config.api === "none", "example-todo-requires-api");
   }
